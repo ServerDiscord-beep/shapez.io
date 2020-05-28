@@ -162,6 +162,10 @@ export class MapChunk {
             [enumSubShape.star]: Math_round(20 + clamp(distanceToOriginInChunks, 0, 30)),
             [enumSubShape.windmill]: Math_round(6 + clamp(distanceToOriginInChunks / 2, 0, 20)),
         };
+        for (let k in enumSubShape) {
+            if (weights[enumSubShape[k]]) continue;
+            weights[enumSubShape[k]] = Math_round(2 + clamp(distanceToOriginInChunks / 3, 0, 10));
+        }
 
         if (distanceToOriginInChunks < 7) {
             // Initial chunks can not spawn the good stuff
