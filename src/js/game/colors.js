@@ -10,6 +10,8 @@ export const enumColors = {
 
     white: "white",
     uncolored: "uncolored",
+
+    black: "black",
 };
 
 /** @enum {string} */
@@ -24,6 +26,8 @@ export const enumColorToShortcode = {
 
     [enumColors.white]: "w",
     [enumColors.uncolored]: "u",
+
+    [enumColors.black]: "k",
 };
 
 /** @enum {enumColors} */
@@ -51,6 +55,8 @@ export const enumColorsToHexCode = {
     [enumColors.white]: "#ffffff",
 
     [enumColors.uncolored]: "#aaaaaa",
+
+    [enumColors.black]: "#333333",
 };
 
 const c = enumColors;
@@ -113,6 +119,10 @@ export const enumColorMixingResults = {
     [c.uncolored]: {
         // auto
     },
+
+    [c.black]: {
+        // auto
+    },
 };
 
 // Create same color lookups
@@ -122,8 +132,12 @@ for (const color in enumColors) {
     // Anything with white is white again
     enumColorMixingResults[color][c.white] = c.white;
 
+    // Anything with black is the same color
+    enumColorMixingResults[color][c.black] = color;
+
     // Anything with uncolored is the same color
     enumColorMixingResults[color][c.uncolored] = color;
+    enumColorMixingResults[c.uncolored][color] = color;
 }
 
 // Create reverse lookup and check color mixing lookups
