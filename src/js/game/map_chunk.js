@@ -140,6 +140,9 @@ export class MapChunk {
         if (distanceToOriginInChunks > 2) {
             availableColors.push(enumColors.blue);
         }
+        if (distanceToOriginInChunks > 5) {
+            availableColors.push(enumColors.black);
+        }
         this.internalGeneratePatch(rng, colorPatchSize, new ColorItem(rng.choice(availableColors)));
     }
 
