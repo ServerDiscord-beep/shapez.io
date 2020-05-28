@@ -62,10 +62,18 @@ export const enumSubShapeToShortcode = {
     [enumSubShape.sun]: "U",
 };
 
+/** @enum {string} */
+export const enumDefaultSubShapeColor = {
+    [enumSubShape.clover]: enumColors.green,
+    [enumSubShape.sun]: enumColors.yellow,
+}
+
 /** @enum {enumSubShape} */
 export const enumShortcodeToSubShape = {};
 for (const key in enumSubShapeToShortcode) {
     enumShortcodeToSubShape[enumSubShapeToShortcode[key]] = key;
+    if (!enumDefaultSubShapeColor[key])
+        enumDefaultSubShapeColor[key] = enumColors.uncolored;
 }
 
 /**

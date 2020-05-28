@@ -12,7 +12,7 @@ import { enumColors } from "./colors";
 import { Entity } from "./entity";
 import { ColorItem } from "./items/color_item";
 import { ShapeItem } from "./items/shape_item";
-import { enumSubShape } from "./shape_definition";
+import { enumSubShape, enumDefaultSubShapeColor } from "./shape_definition";
 import { RandomNumberGenerator } from "../core/rng";
 
 const logger = createLogger("map_chunk");
@@ -207,7 +207,14 @@ export class MapChunk {
             subShapes[1] = enumSubShape.rect;
         }
 
-        const definition = this.root.shapeDefinitionMgr.getDefinitionFromSimpleShapes(subShapes);
+        const colors = [
+            enumDefaultSubShapeColor[subShapes[0]],
+            enumDefaultSubShapeColor[subShapes[1]],
+            enumDefaultSubShapeColor[subShapes[2]],
+            enumDefaultSubShapeColor[subShapes[3]],
+        ];
+
+        const definition = this.root.shapeDefinitionMgr.getDefinitionFromSimpleShapesAndColors(subShapes, colors);
         this.internalGeneratePatch(rng, shapePatchSize, new ShapeItem(definition));
     }
 
