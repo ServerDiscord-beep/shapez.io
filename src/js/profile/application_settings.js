@@ -2,6 +2,7 @@
 import { Application } from "../application";
 /* typehints:end */
 
+import { globalConfig } from "../core/config";
 import { ReadWriteProxy } from "../core/read_write_proxy";
 import { BoolSetting, EnumSetting, BaseSetting } from "./setting_types";
 import { createLogger } from "../core/logging";
@@ -14,6 +15,7 @@ const logger = createLogger("application_settings");
 
 const categoryGame = "game";
 const categoryApp = "app";
+const categoryDebug = "debug";
 
 export const uiScales = [
     {
@@ -150,6 +152,12 @@ export const allApplicationSettings = [
     new BoolSetting("alwaysMultiplace", categoryGame, (app, value) => {}),
     new BoolSetting("offerHints", categoryGame, (app, value) => {}),
 ];
+
+/** @type {Array<BaseSetting>} */
+export const allDebugSettings = [];
+for (const k in globalConfig.debug) {
+    allDebugSettings.push(new BoolSetting(k, categoryDebug, (app, value) => globalConfig.debug[k] = value));
+}
 
 export function getApplicationSettingById(id) {
     return allApplicationSettings.find(setting => setting.id === id);
