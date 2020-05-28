@@ -205,4 +205,18 @@ export class ShapeDefinitionManager extends BasicSerializableObject {
 
         return this.registerOrReturnHandle(new ShapeDefinition({ layers: [shapeLayer] }));
     }
+
+    /**
+     *
+     * @param {[enumSubShape, enumSubShape, enumSubShape, enumSubShape]} subShapes
+     * @param {[enumColors, enumColors, enumColors, enumColors]} colors
+     * @returns {ShapeDefinition}
+     */
+    getDefinitionFromSimpleShapesAndColors(subShapes, colors) {
+        const shapeLayer = /** @type {import("./shape_definition").ShapeLayer} */ (subShapes.map(
+            (subShape, i) => ({ subShape, color: colors[i] })
+        ));
+
+        return this.registerOrReturnHandle(new ShapeDefinition({ layers: [shapeLayer] }));
+    }
 }
