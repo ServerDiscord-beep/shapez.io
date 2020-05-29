@@ -22,7 +22,6 @@ import { DynamicDomAttach } from "../dynamic_dom_attach";
 import { T } from "../../../translations";
 import { KEYMAPPINGS } from "../../key_action_mapper";
 
-
 export class HUDBuildingPlacer extends BaseHUDPart {
     initialize() {
         /** @type {TypedTrackedState<MetaBuilding?>} */
@@ -37,7 +36,6 @@ export class HUDBuildingPlacer extends BaseHUDPart {
             .getBinding(KEYMAPPINGS.placement.abortBuildingPlacement)
             .add(this.abortPlacement, this);
         keyActionMapper.getBinding(KEYMAPPINGS.general.back).add(this.abortPlacement, this);
-
 
         keyActionMapper.getBinding(KEYMAPPINGS.placement.rotateWhilePlacing).add(this.tryRotate, this);
         keyActionMapper.getBinding(KEYMAPPINGS.placement.cycleBuildingVariants).add(this.cycleVariants, this);
@@ -117,9 +115,6 @@ export class HUDBuildingPlacer extends BaseHUDPart {
             return;
         }
 
-
-
-
         const mousePos = this.root.app.mousePosition;
         if (!mousePos) {
             return;
@@ -128,7 +123,7 @@ export class HUDBuildingPlacer extends BaseHUDPart {
         const worldTile = worldPos.toTileSpace();
 
         const entity = this.root.map.getTileContent(worldTile);
-        if (!entity){
+        if (!entity) {
             return;
         }
         const staticEntity = entity.components.StaticMapEntity;
@@ -143,21 +138,10 @@ export class HUDBuildingPlacer extends BaseHUDPart {
         const id = match[1];
         const variant = match[3] || defaultBuildingVariant;
 
-        window.g = gMetaBuildingRegistry   
-        window.m = match
-        window.e = entity
-
         const metaBuilding = gMetaBuildingRegistry.findById(id);
 
-        // wut
-        //this.root.hud.parts.buildingsToolbar.selectBuildingForPlacement(metaBuilding);
-        // idk if I can make ^^^ simplier
         this.currentMetaBuilding.set(metaBuilding);
-
-
         this.currentVariant.set(variant);
-
-
     }
 
     /**
