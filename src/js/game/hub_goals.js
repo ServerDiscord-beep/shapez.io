@@ -55,7 +55,9 @@ export class HubGoals extends BasicSerializableObject {
         }
 
         if (G_IS_DEV) {
-            this.storedShapes[blueprintShape] = 1000;
+            if (!this.storedShapes[blueprintShape] || this.storedShapes[blueprintShape] < 1000) {
+                this.storedShapes[blueprintShape] = 1000;
+            }
         }
     }
 
@@ -82,7 +84,9 @@ export class HubGoals extends BasicSerializableObject {
         this.storedShapes = {};
 
         if (G_IS_DEV) {
-            this.storedShapes[blueprintShape] = 1000;
+            if (!this.storedShapes[blueprintShape] || this.storedShapes[blueprintShape] < 1000) {
+                this.storedShapes[blueprintShape] = 1000;
+            }
         }
 
         /**
