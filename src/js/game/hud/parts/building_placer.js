@@ -127,16 +127,21 @@ export class HUDBuildingPlacer extends BaseHUDPart {
             return;
         }
         const staticEntity = entity.components.StaticMapEntity;
+
+        this.currentBaseRotation = (Math.round(staticEntity.originalRotation / 90) * 90 + 360) % 360;
+        // maybe not originalRotation, but rotation
+
         if (!staticEntity.spriteKey) {
+            if (entity.components.Belt) {
+                this.currentMetaBuilding.set(gMetaBuildingRegistry.findById("belt"));
+            }
             return;
         }
 
-        // maybe not originalRotation, but rotation
-        this.currentBaseRotation = (Math.round(staticEntity.originalRotation / 90) * 90 + 360) % 360;
 
-        let match = staticEntity.spriteKey.match(/sprites\/buildings\/(.*?)(|-(.*))\.png/);
+        let match = staticEntity.spriteKey.match(/sprites\/buildings\/(.*?)(_entry|_exit|_[a-z]+|)(|-(.*))\.png/);
         const id = match[1];
-        const variant = match[3] || defaultBuildingVariant;
+        const variant = match[4] || defaultBuildingVariant;
 
         const metaBuilding = gMetaBuildingRegistry.findById(id);
 
