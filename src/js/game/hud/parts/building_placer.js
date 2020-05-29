@@ -150,11 +150,12 @@ export class HUDBuildingPlacer extends BaseHUDPart {
         const metaBuilding = gMetaBuildingRegistry.findById(id);
 
         // wut
-        this.root.hud.parts.buildingsToolbar.selectBuildingForPlacement(metaBuilding);
+        //this.root.hud.parts.buildingsToolbar.selectBuildingForPlacement(metaBuilding);
         // idk if I can make ^^^ simplier
+        this.currentMetaBuilding.set(metaBuilding);
 
 
-
+        this.currentVariant.set(variant);
 
 
     }
