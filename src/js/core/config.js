@@ -83,7 +83,11 @@ export const globalConfig = {
 
     debug: {
         /* dev:start */
-        showDebugSettings: true,
+
+        // Settings menu is generated *automatically*, 
+        // but does not changes globalConfig.debug if enableDebugSettings is off
+        // DEFAULT VALUES:
+        enableDebugSettings: true,
         fastGameEnter: false,
         noArtificialDelays: false,
         disableSavegameWrite: false,
