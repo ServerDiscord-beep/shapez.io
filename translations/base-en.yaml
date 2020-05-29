@@ -596,6 +596,7 @@ keybindings:
         cycleBuildingVariants: Cycle Variants
         confirmMassDelete: Confirm Mass Delete
         cycleBuildings: Cycle Buildings
+        pippete: Pipette (select hovered)
 
         massSelectStart: Hold and drag to start
         massSelectSelectMultiple: Select multiple areas
