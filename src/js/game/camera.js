@@ -10,13 +10,14 @@ import {
 import { clickDetectorGlobals } from "../core/click_detector";
 import { globalConfig } from "../core/config";
 import { createLogger } from "../core/logging";
+import { queryParamOptions } from "../core/query_parameters";
 import { Rectangle } from "../core/rectangle";
 import { Signal, STOP_PROPAGATION } from "../core/signal";
 import { clamp } from "../core/utils";
 import { mixVector, Vector } from "../core/vector";
 import { BasicSerializableObject, types } from "../savegame/serialization";
-import { KEYMAPPINGS } from "./key_action_mapper";
 import { GameRoot } from "./root";
+import { KEYMAPPINGS } from "./key_action_mapper";
 
 const logger = createLogger("camera");
 
@@ -50,6 +51,8 @@ export class Camera extends BasicSerializableObject {
         // Find optimal initial zoom
 
         this.zoomLevel = this.findInitialZoom();
+        this.doubleZoomCount = 4;
+        this.kbDoubleZoomCount = 4;
         this.clampZoomLevel();
 
         /** @type {Vector} */
@@ -100,7 +103,7 @@ export class Camera extends BasicSerializableObject {
         this.bindKeys();
         if (G_IS_DEV) {
             window.addEventListener("keydown", ev => {
-                if (ev.key === "i") {
+                if (ev.key === "l") {
                     this.zoomLevel = 3;
                 }
             });
@@ -345,15 +348,13 @@ export class Camera extends BasicSerializableObject {
      */
     bindKeys() {
         const mapper = this.root.keyMapper;
-        mapper
-            .getBinding(KEYMAPPINGS.ingame.mapMoveUp)
-            .add(() => console.log("move up") || (this.keyboardForce.y = -1));
+        mapper.getBinding(KEYMAPPINGS.ingame.mapMoveUp).add(() => (this.keyboardForce.y = -1));
         mapper.getBinding(KEYMAPPINGS.ingame.mapMoveDown).add(() => (this.keyboardForce.y = 1));
         mapper.getBinding(KEYMAPPINGS.ingame.mapMoveRight).add(() => (this.keyboardForce.x = 1));
         mapper.getBinding(KEYMAPPINGS.ingame.mapMoveLeft).add(() => (this.keyboardForce.x = -1));
 
-        mapper.getBinding(KEYMAPPINGS.ingame.mapZoomIn).add(() => (this.desiredZoom = this.zoomLevel * 1.2));
-        mapper.getBinding(KEYMAPPINGS.ingame.mapZoomOut).add(() => (this.desiredZoom = this.zoomLevel * 0.8));
+        mapper.getBinding(KEYMAPPINGS.ingame.mapZoomIn).add(() => this.changePowZoomLevel(+1, true, this.kbDoubleZoomCount));
+        mapper.getBinding(KEYMAPPINGS.ingame.mapZoomOut).add(() => this.changePowZoomLevel(-1, true, this.kbDoubleZoomCount));
     }
 
     centerOnMap() {
@@ -406,6 +407,34 @@ export class Camera extends BasicSerializableObject {
     canZoomOut() {
         const minLevel = this.root.app.platformWrapper.getMinimumZoom();
         return this.zoomLevel >= minLevel + 0.01;
+    }
+
+    /**
+     * Changes zoom level as a power of 2
+     * @param {number} level
+     * @param {boolean} asDesired
+     * @param {number} divider
+     */
+    setPowZoomLevel(level, asDesired = false, divider = this.doubleZoomCount) {
+        const value = Math.pow(2, Math.round(level * divider) / divider);
+        console.log({newZoomLevel:value, level, asDesired, divider})
+        if (asDesired) {
+            this.desiredZoom = value;
+        } else {
+            this.zoomLevel = value;
+        }
+    }
+
+    /**
+     * Changes zoom level as a power of 2 relatively
+     * @param {number} delta
+     * @param {boolean} asDesired
+     * @param {number} divider
+     */
+    changePowZoomLevel(delta, asDesired = false, divider = this.doubleZoomCount) {
+        const prevPow = Math.log2(asDesired && this.desiredZoom != null ? this.desiredZoom : this.zoomLevel);
+        const nextPow = prevPow + delta / divider;
+        this.setPowZoomLevel(nextPow, asDesired, divider);
     }
 
     // EVENTS
@@ -499,10 +528,10 @@ export class Camera extends BasicSerializableObject {
             // event.stopPropagation();
         }
 
-        const delta = Math.sign(event.deltaY) * -0.15;
+        const delta = -Math.sign(event.deltaY);
         assert(Number.isFinite(delta), "Got invalid delta in mouse wheel event: " + event.deltaY);
         assert(Number.isFinite(this.zoomLevel), "Got invalid zoom level *before* wheel: " + this.zoomLevel);
-        this.zoomLevel *= 1 + delta;
+        this.changePowZoomLevel(delta);
         assert(Number.isFinite(this.zoomLevel), "Got invalid zoom level *after* wheel: " + this.zoomLevel);
 
         this.clampZoomLevel();
@@ -896,6 +925,7 @@ export class Camera extends BasicSerializableObject {
             if (actionMapper.getBinding(KEYMAPPINGS.ingame.mapMoveRight).isCurrentlyPressed()) {
                 forceX += 1;
             }
+
 
             this.center.x += moveAmount * forceX;
             this.center.y += moveAmount * forceY;
