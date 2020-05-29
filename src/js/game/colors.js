@@ -127,21 +127,16 @@ export const enumColorMixingResults = {
 
 // Create same color lookups
 for (const color in enumColors) {
-    if (!enumColorMixingResults[color][color])
-        enumColorMixingResults[color][color] = color;
+    if (!enumColorMixingResults[color][color]) enumColorMixingResults[color][color] = color;
 
     // Anything with white is white again
-    if (!enumColorMixingResults[color][c.white])
-        enumColorMixingResults[color][c.white] = c.white;
+    if (!enumColorMixingResults[color][c.white]) enumColorMixingResults[color][c.white] = c.white;
 
     // Anything with black is black
-    if (!enumColorMixingResults[color][c.black])
-        enumColorMixingResults[color][c.black] = color;
+    if (!enumColorMixingResults[color][c.black]) enumColorMixingResults[color][c.black] = color;
 
     // Anything with uncolored is the same color
-    if (!enumColorMixingResults[color][c.uncolored])
-        enumColorMixingResults[color][c.uncolored] = color;
-
+    if (!enumColorMixingResults[color][c.uncolored]) enumColorMixingResults[color][c.uncolored] = color;
 }
 
 // Create reverse lookup and check color mixing lookups

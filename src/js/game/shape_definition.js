@@ -66,14 +66,13 @@ export const enumSubShapeToShortcode = {
 export const enumDefaultSubShapeColor = {
     [enumSubShape.clover]: enumColors.green,
     [enumSubShape.sun]: enumColors.yellow,
-}
+};
 
 /** @enum {enumSubShape} */
 export const enumShortcodeToSubShape = {};
 for (const key in enumSubShapeToShortcode) {
     enumShortcodeToSubShape[enumSubShapeToShortcode[key]] = key;
-    if (!enumDefaultSubShapeColor[key])
-        enumDefaultSubShapeColor[key] = enumColors.uncolored;
+    if (!enumDefaultSubShapeColor[key]) enumDefaultSubShapeColor[key] = enumColors.uncolored;
 }
 
 /**
@@ -302,7 +301,6 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                 const insetPadding = 0.0;
 
-
                 const dims = quadrantSize * layerScale;
                 const innerDims = insetPadding - quadrantHalfSize;
                 switch (subShape) {
@@ -364,7 +362,7 @@ export class ShapeDefinition extends BasicSerializableObject {
                     }
 
                     case enumSubShape.clover: {
-                        context.save()
+                        context.save();
                         context.translate(innerDims, -innerDims);
                         context.scale(dims, -dims);
                         context.beginPath();
@@ -374,15 +372,15 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                         context.moveTo(0, 0);
                         context.lineTo(0, inner);
-                        context.bezierCurveTo(0, 1,  inner, 1,  inner_center, inner_center);
-                        context.bezierCurveTo(1, inner,  1, 0,  inner, 0);
+                        context.bezierCurveTo(0, 1, inner, 1, inner_center, inner_center);
+                        context.bezierCurveTo(1, inner, 1, 0, inner, 0);
 
                         context.closePath();
                         context.restore();
                         break;
                     }
                     case enumSubShape.star8: {
-                        context.save()
+                        context.save();
                         context.translate(innerDims, -innerDims);
                         context.scale(dims, -dims);
                         context.beginPath();
@@ -393,7 +391,7 @@ export class ShapeDefinition extends BasicSerializableObject {
                         context.lineTo(0, inner);
                         context.lineTo(Math.sin(Math.PI / 8), Math.cos(Math.PI / 8));
                         context.lineTo(inner * Math.sin(Math.PI / 4), inner * Math.cos(Math.PI / 4));
-                        context.lineTo(Math.sin(Math.PI * 3 / 8), Math.cos(Math.PI * 3 / 8));
+                        context.lineTo(Math.sin((Math.PI * 3) / 8), Math.cos((Math.PI * 3) / 8));
                         context.lineTo(inner, 0);
 
                         context.closePath();
@@ -401,7 +399,7 @@ export class ShapeDefinition extends BasicSerializableObject {
                         break;
                     }
                     case enumSubShape.rhombus: {
-                        context.save()
+                        context.save();
                         context.translate(innerDims, -innerDims);
                         context.scale(dims, -dims);
                         context.beginPath();
@@ -410,15 +408,15 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                         // with rounded borders
                         context.moveTo(0, 0);
-                        context.arcTo(0, 1,  1, 0,  rad);
-                        context.arcTo(1, 0,  0, 0,  rad);
+                        context.arcTo(0, 1, 1, 0, rad);
+                        context.arcTo(1, 0, 0, 0, rad);
 
                         context.closePath();
                         context.restore();
                         break;
                     }
                     case enumSubShape.plus: {
-                        context.save()
+                        context.save();
                         context.translate(innerDims, -innerDims);
                         context.scale(dims, -dims);
                         context.beginPath();
@@ -437,7 +435,7 @@ export class ShapeDefinition extends BasicSerializableObject {
                         break;
                     }
                     case enumSubShape.razor: {
-                        context.save()
+                        context.save();
                         context.translate(innerDims, -innerDims);
                         context.scale(dims, -dims);
                         context.beginPath();
@@ -446,18 +444,32 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                         context.moveTo(0, 0);
                         context.lineTo(inner, 0);
-                        context.bezierCurveTo(inner, 0.3,  1, 0.3,  1, 0);
-                        context.bezierCurveTo(1, inner,  inner * Math.SQRT2 * 0.9, inner * Math.SQRT2 * 0.9,  inner * Math.SQRT1_2, inner * Math.SQRT1_2);
+                        context.bezierCurveTo(inner, 0.3, 1, 0.3, 1, 0);
+                        context.bezierCurveTo(
+                            1,
+                            inner,
+                            inner * Math.SQRT2 * 0.9,
+                            inner * Math.SQRT2 * 0.9,
+                            inner * Math.SQRT1_2,
+                            inner * Math.SQRT1_2
+                        );
                         context.rotate(Math.PI / 4);
-                        context.bezierCurveTo(inner, 0.3,  1, 0.3,  1, 0);
-                        context.bezierCurveTo(1, inner,  inner * Math.SQRT2 * 0.9, inner * Math.SQRT2 * 0.9,  inner * Math.SQRT1_2, inner * Math.SQRT1_2);
+                        context.bezierCurveTo(inner, 0.3, 1, 0.3, 1, 0);
+                        context.bezierCurveTo(
+                            1,
+                            inner,
+                            inner * Math.SQRT2 * 0.9,
+                            inner * Math.SQRT2 * 0.9,
+                            inner * Math.SQRT1_2,
+                            inner * Math.SQRT1_2
+                        );
 
                         context.closePath();
                         context.restore();
                         break;
                     }
                     case enumSubShape.sun: {
-                        context.save()
+                        context.save();
                         context.translate(innerDims, -innerDims);
                         context.scale(dims, -dims);
                         context.beginPath();
@@ -470,11 +482,11 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                         context.moveTo(0, 0);
                         context.rotate(Math.PI / 2);
-                        context.arc(c, 0,  b, -Math.PI, -(5/8)*Math.PI);
+                        context.arc(c, 0, b, -Math.PI, -(5 / 8) * Math.PI);
                         context.rotate(-Math.PI / 4);
-                        context.arc(c, 0,  b, (-1-3/8)*Math.PI, (-5/8)*Math.PI);
+                        context.arc(c, 0, b, (-1 - 3 / 8) * Math.PI, (-5 / 8) * Math.PI);
                         context.rotate(-Math.PI / 4);
-                        context.arc(c, 0,  b, (5/8)*Math.PI, 1*Math.PI);
+                        context.arc(c, 0, b, (5 / 8) * Math.PI, 1 * Math.PI);
 
                         context.closePath();
                         context.restore();

@@ -84,7 +84,7 @@ export const globalConfig = {
     debug: {
         /* dev:start */
 
-        // Settings menu is generated *automatically*, 
+        // Settings menu is generated *automatically*,
         // but does not changes globalConfig.debug if enableDebugSettings is off
         // DEFAULT VALUES:
         enableDebugSettings: true,

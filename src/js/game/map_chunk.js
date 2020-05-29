@@ -214,7 +214,10 @@ export class MapChunk {
             enumDefaultSubShapeColor[subShapes[3]],
         ];
 
-        const definition = this.root.shapeDefinitionMgr.getDefinitionFromSimpleShapesAndColors(subShapes, colors);
+        const definition = this.root.shapeDefinitionMgr.getDefinitionFromSimpleShapesAndColors(
+            subShapes,
+            colors
+        );
         this.internalGeneratePatch(rng, shapePatchSize, new ShapeItem(definition));
     }
 
