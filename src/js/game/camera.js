@@ -355,6 +355,8 @@ export class Camera extends BasicSerializableObject {
 
         mapper.getBinding(KEYMAPPINGS.ingame.mapZoomIn).add(() => this.changePowZoomLevel(+1, true, this.kbDoubleZoomCount));
         mapper.getBinding(KEYMAPPINGS.ingame.mapZoomOut).add(() => this.changePowZoomLevel(-1, true, this.kbDoubleZoomCount));
+
+        document.ondblclick = () => this.setPowZoomLevel(0);
     }
 
     centerOnMap() {
