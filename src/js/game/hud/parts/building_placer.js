@@ -107,6 +107,33 @@ export class HUDBuildingPlacer extends BaseHUDPart {
         }
     }
 
+    usePippete() {
+        if (this.currentMetaBuilding.get()) {
+            return;
+        }
+        if (this.root.camera.getIsMapOverlayActive()) {
+            return;
+        }
+
+
+
+
+        const mousePos = this.root.app.mousePosition;
+        if (!mousePos) {
+            return;
+        }
+        const worldPos = this.root.camera.screenToWorld(mousePos);
+        const worldTile = worldPos.toTileSpace();
+
+        const entity = this.root.map.getTileContent(worldTile);
+        if (!entity){
+            return;
+        }
+        const staticEntity = entity.components.StaticMapEntity;
+        // maybe not originalRotation, but rotation
+        this.currentBaseRotation = (Math.round(staticEntity.originalRotation / 90) * 90 + 360) % 360;
+    }
+
     /**
      * mouse down pre handler
      * @param {Vector} pos
