@@ -204,7 +204,7 @@ ingame:
     # every situation
     keybindingsOverlay:
         moveMap: Move
-        removeBuildings: Delete
+        selectBuildings: Select area
         stopPlacement: Stop placement
         rotateBuilding: Rotate building
         placeMultiple: Place multiple
@@ -599,6 +599,7 @@ keybindings:
     categoryLabels:
         general: Application
         ingame: Game
+        navigation: Navigating
         placement: Placement
         massSelect: Mass Select
         buildings: Building Shortcuts
@@ -611,9 +612,11 @@ keybindings:
         mapMoveRight: Move Right
         mapMoveDown: Move Down
         mapMoveLeft: Move Left
+        centerMap: Center Map
 
         mapZoomIn: Zoom in
         mapZoomOut: Zoom out
+        createMarker: Create Marker
 
         menuOpenShop: Upgrades
         menuOpenStats: Statistics

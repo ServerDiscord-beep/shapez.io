@@ -1,5 +1,21 @@
 export const CHANGELOG = [
     {
+        version: "1.1.2",
+        date: "30.05.2020",
+        entries: [
+            "The official trailer is now ready! Check it out <a href='https://www.youtube.com/watch?v=KyorY1uIqiQ' target='_blank'>here</a>!",
+            "The <a href='https://steam.shapez.io' target='_blank'>steam page</a> is now live!",
+            "Experimental linux builds are now available! Please give me feedback on them in the discord",
+            "Allow hovering pinned shapes to enlarge them",
+            "Allow deselecting blueprints with right click and 'Q'",
+            "Move default key for deleting from 'X' to 'DEL'",
+            "Show confirmation when deleting more than 100 buildings",
+            "Reintroduce 'SPACE' keybinding to center on map",
+            "Improved keybinding hints",
+            "Fixed some keybindings showing as 'undefined'",
+        ],
+    },
+    {
         version: "1.1.1",
         date: "28.05.2020",
         entries: ["Fix crash when 'Show Hints' setting was turned off"],

@@ -348,16 +348,17 @@ export class Camera extends BasicSerializableObject {
      */
     bindKeys() {
         const mapper = this.root.keyMapper;
-        mapper.getBinding(KEYMAPPINGS.ingame.mapMoveUp).add(() => (this.keyboardForce.y = -1));
-        mapper.getBinding(KEYMAPPINGS.ingame.mapMoveDown).add(() => (this.keyboardForce.y = 1));
-        mapper.getBinding(KEYMAPPINGS.ingame.mapMoveRight).add(() => (this.keyboardForce.x = 1));
-        mapper.getBinding(KEYMAPPINGS.ingame.mapMoveLeft).add(() => (this.keyboardForce.x = -1));
+        mapper.getBinding(KEYMAPPINGS.navigation.mapMoveUp).add(() => (this.keyboardForce.y = -1));
+        mapper.getBinding(KEYMAPPINGS.navigation.mapMoveDown).add(() => (this.keyboardForce.y = 1));
+        mapper.getBinding(KEYMAPPINGS.navigation.mapMoveRight).add(() => (this.keyboardForce.x = 1));
+        mapper.getBinding(KEYMAPPINGS.navigation.mapMoveLeft).add(() => (this.keyboardForce.x = -1));
 
+        mapper.getBinding(KEYMAPPINGS.navigation.centerMap).add(() => this.centerOnMap());
         mapper
-            .getBinding(KEYMAPPINGS.ingame.mapZoomIn)
+            .getBinding(KEYMAPPINGS.navigation.mapZoomIn)
             .add(() => this.changePowZoomLevel(+1, true, this.kbDoubleZoomCount));
         mapper
-            .getBinding(KEYMAPPINGS.ingame.mapZoomOut)
+            .getBinding(KEYMAPPINGS.navigation.mapZoomOut)
             .add(() => this.changePowZoomLevel(-1, true, this.kbDoubleZoomCount));
 
         document.ondblclick = () => this.setPowZoomLevel(0);
@@ -918,19 +919,19 @@ export class Camera extends BasicSerializableObject {
             let forceY = 0;
 
             const actionMapper = this.root.keyMapper;
-            if (actionMapper.getBinding(KEYMAPPINGS.ingame.mapMoveUp).isCurrentlyPressed()) {
+            if (actionMapper.getBinding(KEYMAPPINGS.navigation.mapMoveUp).isCurrentlyPressed()) {
                 forceY -= 1;
             }
 
-            if (actionMapper.getBinding(KEYMAPPINGS.ingame.mapMoveDown).isCurrentlyPressed()) {
+            if (actionMapper.getBinding(KEYMAPPINGS.navigation.mapMoveDown).isCurrentlyPressed()) {
                 forceY += 1;
             }
 
-            if (actionMapper.getBinding(KEYMAPPINGS.ingame.mapMoveLeft).isCurrentlyPressed()) {
+            if (actionMapper.getBinding(KEYMAPPINGS.navigation.mapMoveLeft).isCurrentlyPressed()) {
                 forceX -= 1;
             }
 
-            if (actionMapper.getBinding(KEYMAPPINGS.ingame.mapMoveRight).isCurrentlyPressed()) {
+            if (actionMapper.getBinding(KEYMAPPINGS.navigation.mapMoveRight).isCurrentlyPressed()) {
                 forceX += 1;
             }
 
