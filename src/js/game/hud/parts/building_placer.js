@@ -138,8 +138,9 @@ export class HUDBuildingPlacer extends BaseHUDPart {
             return;
         }
 
-
-        let match = staticEntity.spriteKey.match(/sprites\/buildings\/(.*?)(_entry|_exit|_[a-z]+|)(|-(.*))\.png/);
+        let match = staticEntity.spriteKey.match(
+            /sprites\/buildings\/(.*?)(_entry|_exit|_[a-z]+|)(|-(.*))\.png/
+        );
         const id = match[1];
         const variant = match[4] || defaultBuildingVariant;
 
