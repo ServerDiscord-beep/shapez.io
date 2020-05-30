@@ -36,6 +36,7 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
             .getBinding(KEYMAPPINGS.placement.abortBuildingPlacement)
             .add(this.abortPlacement, this);
         keyActionMapper.getBinding(KEYMAPPINGS.placement.rotateWhilePlacing).add(this.rotateBlueprint, this);
+        keyActionMapper.getBinding(KEYMAPPINGS.placement.rotateWhilePlacing_2).add(this.rotateBlueprint, this);
         keyActionMapper
             .getBinding(KEYMAPPINGS.placement.abortBuildingPlacement)
             .add(this.abortPlacement, this);
