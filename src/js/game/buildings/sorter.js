@@ -52,9 +52,7 @@ export class MetaSorterBuilding extends MetaBuilding {
                 processorType: enumItemProcessorTypes.sorter,
             })
         );
-        entity.addComponent(
-            new SorterComponent({})
-        );
+        entity.addComponent(new SorterComponent({}));
         entity.addComponent(
             new ItemEjectorComponent({
                 slots: [

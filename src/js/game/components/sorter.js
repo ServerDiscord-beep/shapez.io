@@ -17,10 +17,7 @@ export class SorterComponent extends Component {
             isfil: types.bool,
         };
     }
-    constructor({
-        filter = "CuCuCuCu",
-        isfil = false,
-    }) {
+    constructor({ filter = "CuCuCuCu", isfil = false }) {
         super();
 
         this.filter = filter;

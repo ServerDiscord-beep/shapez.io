@@ -353,8 +353,12 @@ export class Camera extends BasicSerializableObject {
         mapper.getBinding(KEYMAPPINGS.ingame.mapMoveRight).add(() => (this.keyboardForce.x = 1));
         mapper.getBinding(KEYMAPPINGS.ingame.mapMoveLeft).add(() => (this.keyboardForce.x = -1));
 
-        mapper.getBinding(KEYMAPPINGS.ingame.mapZoomIn).add(() => this.changePowZoomLevel(+1, true, this.kbDoubleZoomCount));
-        mapper.getBinding(KEYMAPPINGS.ingame.mapZoomOut).add(() => this.changePowZoomLevel(-1, true, this.kbDoubleZoomCount));
+        mapper
+            .getBinding(KEYMAPPINGS.ingame.mapZoomIn)
+            .add(() => this.changePowZoomLevel(+1, true, this.kbDoubleZoomCount));
+        mapper
+            .getBinding(KEYMAPPINGS.ingame.mapZoomOut)
+            .add(() => this.changePowZoomLevel(-1, true, this.kbDoubleZoomCount));
 
         document.ondblclick = () => this.setPowZoomLevel(0);
     }
@@ -419,7 +423,7 @@ export class Camera extends BasicSerializableObject {
      */
     setPowZoomLevel(level, asDesired = false, divider = this.doubleZoomCount) {
         const value = Math.pow(2, Math.round(level * divider) / divider);
-        console.log({newZoomLevel:value, level, asDesired, divider})
+        console.log({ newZoomLevel: value, level, asDesired, divider });
         if (asDesired) {
             this.desiredZoom = value;
         } else {
@@ -932,7 +936,6 @@ export class Camera extends BasicSerializableObject {
             if (actionMapper.getBinding(KEYMAPPINGS.ingame.mapMoveRight).isCurrentlyPressed()) {
                 forceX += 1;
             }
-
 
             this.center.x += moveAmount * forceX;
             this.center.y += moveAmount * forceY;
