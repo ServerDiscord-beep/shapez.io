@@ -24,7 +24,7 @@ export const BOTTOM = new Vector(0, 1);
 export const LEFT = new Vector(-1, 0);
 export const ALL_DIRECTIONS = [TOP, RIGHT, BOTTOM, LEFT];
 
-const bigNumberSuffixes = ["k", "M", "B", "T"];
+const bigNumberSuffixes = ["", "k", "M", "B", "T", "e15", "e18"];
 
 /**
  * Returns the build id
@@ -430,24 +430,28 @@ export function formatBigNumber(num, divider = ".") {
         return sign + num.toFixed(1);
     }
     num = Math_floor(num);
-
-    if (num < 1000) {
-        return sign + "" + num;
-    } else {
-        let leadingDigits = num;
-        let suffix = "";
-        for (let suffixIndex = 0; suffixIndex < bigNumberSuffixes.length; ++suffixIndex) {
-            leadingDigits = leadingDigits / 1000;
-            suffix = bigNumberSuffixes[suffixIndex];
-            if (leadingDigits < 1000) {
-                break;
-            }
-        }
-        // round down to nearest 0.1
-        const leadingDigitsRounded = Math_floor(leadingDigits * 10) / 10;
-        const leadingDigitsNoTrailingDecimal = leadingDigitsRounded.toString().replace(".0", "");
-        return sign + leadingDigitsNoTrailingDecimal + suffix;
+    if (num < 10000) {
+        return `${sign}${num}`;
     }
+
+    let suffixIndex = 0;
+    while (num > 1000) {
+        num /= 1000;
+        suffixIndex++;
+    }
+
+    let pow = 1000;
+
+    while (num > 1000 / pow) {
+        pow /= 10;
+    }
+    num = Math_floor(num * pow ) / pow;
+    let strNum = num.toString();
+    if (divider != '.') {
+        strNum = strNum.replace('.', divider);
+    }
+
+    return `${sign}${num}${bigNumberSuffixes[suffixIndex]}`;
 }
 
 /**
