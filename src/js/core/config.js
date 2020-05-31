@@ -110,6 +110,9 @@ export const globalConfig = {
         disableMapOverview: false,
         disableTutorialHints: false,
         disableUpgradeNotification: false,
+        disableShortNumbers: false,
+        disableBulkOperations: false,
+        disableDynamicTickrate: false,
         /* dev:end */
     },
 
