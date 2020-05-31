@@ -38,7 +38,6 @@ export class HUDBuildingPlacer extends BaseHUDPart {
         keyActionMapper.getBinding(KEYMAPPINGS.general.back).add(this.abortPlacement, this);
 
         keyActionMapper.getBinding(KEYMAPPINGS.placement.rotateWhilePlacing).add(this.tryRotate, this);
-        keyActionMapper.getBinding(KEYMAPPINGS.placement.rotateWhilePlacing_2).add(this.tryRotate, this);
         keyActionMapper.getBinding(KEYMAPPINGS.placement.cycleBuildingVariants).add(this.cycleVariants, this);
         keyActionMapper.getBinding(KEYMAPPINGS.placement.pippete).add(this.usePippete, this);
 

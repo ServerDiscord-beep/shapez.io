@@ -57,7 +57,6 @@ export const KEYMAPPINGS = {
     placement: {
         abortBuildingPlacement: { keyCode: key("Q") },
         rotateWhilePlacing: { keyCode: key("R") },
-        rotateWhilePlacing_2: { keyCode: -1 },
         rotateInverseModifier: { keyCode: 16 }, // SHIFT
         cycleBuildingVariants: { keyCode: key("T") },
         cycleBuildings: { keyCode: 9 }, // TAB

@@ -59,7 +59,6 @@ export class HUDKeybindingOverlay extends BaseHUDPart {
 
             <div class="binding placementOnly">
                 <code class="keybinding">${getKeycode(KEYMAPPINGS.placement.rotateWhilePlacing)}</code>
-                <code class="keybinding">${getKeycode(KEYMAPPINGS.placement.rotateWhilePlacing_2)}</code>
                 <label>${T.ingame.keybindingsOverlay.rotateBuilding}</label>
             </div>
 
