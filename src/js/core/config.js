@@ -112,6 +112,8 @@ export const globalConfig = {
         disableTutorialHints: false,
         disableUpgradeNotification: false,
         disableShortNumbers: false,
+        disableBulkOperations: false,
+        disableDynamicTickrate: false,
         /* dev:end */
     },
 
