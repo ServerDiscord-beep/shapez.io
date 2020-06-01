@@ -175,6 +175,10 @@ export class BeltSystem extends GameSystemWithFilter {
         }
         visited.add(entity.uid);
 
+        if (entity.components.Belt) {
+            entity.components.ItemEjector.instantEject = true;
+        }
+
         const followUp = this.findFollowUpEntity(entity);
         if (followUp) {
             // Process followup first
