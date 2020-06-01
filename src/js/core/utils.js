@@ -445,8 +445,7 @@ export function formatBigNumber(num, divider = ".") {
     while (num > 1000 / pow) {
         pow /= 10;
     }
-    if (!globalConfig.debug.disableShortNumbers)
-        num = Math_floor(num * pow) / pow;
+    if (!globalConfig.debug.disableShortNumbers) num = Math_floor(num * pow) / pow;
     let strNum = num.toString();
     if (divider != ".") {
         strNum = strNum.replace(".", divider);
