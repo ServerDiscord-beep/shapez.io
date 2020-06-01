@@ -118,6 +118,7 @@ export const globalConfig = {
         disableShortNumbers: false,
         disableBulkOperations: false,
         disableDynamicTickrate: false,
+        disableInternalCheckTile: false,
         /* dev:end */
     },
 
