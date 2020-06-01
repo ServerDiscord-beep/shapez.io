@@ -41,6 +41,7 @@ export class HUDMassSelector extends BaseHUDPart {
         this.deletionMarker = Loader.getSprite("sprites/misc/deletion_marker.png");
 
         this.currentSelectionStart = null;
+        this.currentSelectionStartWorld = null;
         this.currentSelectionEnd = null;
         this.selectedUids = new Set();
 
@@ -116,7 +117,11 @@ export class HUDMassSelector extends BaseHUDPart {
                 return;
             }
             this.root.hud.signals.buildingsSelectedForCopy.dispatch(Array.from(this.selectedUids));
-            this.selectedUids = new Set();
+            if (
+                !this.root.keyMapper.getBinding(KEYMAPPINGS.massSelect.confirmMassDelete).isCurrentlyPressed()
+            ) {
+                this.selectedUids = new Set();
+            }
             this.root.soundProxy.playUiClick();
         } else {
             this.root.soundProxy.playUiError();
@@ -147,6 +152,7 @@ export class HUDMassSelector extends BaseHUDPart {
         }
 
         this.currentSelectionStart = pos.copy();
+        this.currentSelectionStartWorld = this.root.camera.screenToWorld(this.currentSelectionStart);
         this.currentSelectionEnd = pos.copy();
         return STOP_PROPAGATION;
     }
@@ -163,7 +169,7 @@ export class HUDMassSelector extends BaseHUDPart {
 
     onMouseUp() {
         if (this.currentSelectionStart) {
-            const worldStart = this.root.camera.screenToWorld(this.currentSelectionStart);
+            const worldStart = this.currentSelectionStartWorld;
             const worldEnd = this.root.camera.screenToWorld(this.currentSelectionEnd);
 
             const tileStart = worldStart.toTileSpace();
@@ -182,6 +188,7 @@ export class HUDMassSelector extends BaseHUDPart {
             }
 
             this.currentSelectionStart = null;
+            this.currentSelectionStartWorld = null;
             this.currentSelectionEnd = null;
         }
     }
@@ -198,7 +205,7 @@ export class HUDMassSelector extends BaseHUDPart {
         const boundsBorder = 2;
 
         if (this.currentSelectionStart) {
-            const worldStart = this.root.camera.screenToWorld(this.currentSelectionStart);
+            const worldStart = this.currentSelectionStartWorld;
             const worldEnd = this.root.camera.screenToWorld(this.currentSelectionEnd);
 
             const realWorldStart = worldStart.min(worldEnd);

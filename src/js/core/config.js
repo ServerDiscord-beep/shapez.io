@@ -1,4 +1,6 @@
 export const IS_DEBUG =
+    typeof window !== "undefined" &&
+    window.location.search.indexOf("isdebug") >= 0 ||
     G_IS_DEV &&
     typeof window !== "undefined" &&
     window.location.port === "3005" &&
@@ -6,8 +8,11 @@ export const IS_DEBUG =
     window.location.search.indexOf("nodebug") < 0;
 
 export const IS_DEMO =
-    (G_IS_PROD && !G_IS_STANDALONE) ||
-    (typeof window !== "undefined" && window.location.search.indexOf("demo") >= 0);
+    (
+        G_IS_PROD && !G_IS_STANDALONE &&
+        !(typeof window !== "undefined" && window.location.search.indexOf("nodemo") >= 0)
+    ) ||
+    (typeof window !== "undefined" && window.location.search.indexOf("isdemo") >= 0);
 
 const smoothCanvas = true;
 
@@ -112,6 +117,8 @@ export const globalConfig = {
         disableTutorialHints: false,
         disableUpgradeNotification: false,
         disableShortNumbers: false,
+        disableBulkOperations: false,
+        disableDynamicTickrate: false,
         /* dev:end */
     },
 
