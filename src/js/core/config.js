@@ -119,6 +119,7 @@ export const globalConfig = {
         disableBulkOperations: false,
         disableDynamicTickrate: false,
         disableInternalCheckTile: false,
+        disableGetTileAsserts: false,
         /* dev:end */
     },
 
