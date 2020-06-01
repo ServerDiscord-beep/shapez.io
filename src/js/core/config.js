@@ -119,8 +119,10 @@ export const globalConfig = {
         disableShortNumbers: false,
         disableBulkOperations: false,
         disableDynamicTickrate: false,
+
         disableInternalCheckTile: false,
         disableGetTileAsserts: false,
+        disableBeltAsserts: false,
 
         instantBelts: false,
         instantProcessors: false,
