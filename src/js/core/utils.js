@@ -25,6 +25,7 @@ export const LEFT = new Vector(-1, 0);
 export const ALL_DIRECTIONS = [TOP, RIGHT, BOTTOM, LEFT];
 
 const bigNumberSuffixTranslationKeys = ["thousands", "millions", "billions", "trillions"];
+const bigNumberSuffixes = ["", "k", "M", "B", "T", "e15", "e18"];
 
 /**
  * Returns the build id
