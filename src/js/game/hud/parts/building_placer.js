@@ -39,7 +39,7 @@ export class HUDBuildingPlacer extends BaseHUDPart {
 
         keyActionMapper.getBinding(KEYMAPPINGS.placement.rotateWhilePlacing).add(this.tryRotate, this);
         keyActionMapper.getBinding(KEYMAPPINGS.placement.cycleBuildingVariants).add(this.cycleVariants, this);
-        keyActionMapper.getBinding(KEYMAPPINGS.placement.pippete).add(this.usePippete, this);
+        keyActionMapper.getBinding(KEYMAPPINGS.placement.pipette).add(this.usePipette, this);
 
         this.root.hud.signals.buildingsSelectedForCopy.add(this.abortPlacement, this);
 
@@ -107,7 +107,7 @@ export class HUDBuildingPlacer extends BaseHUDPart {
         }
     }
 
-    usePippete() {
+    usePipette() {
         if (this.currentMetaBuilding.get()) {
             return;
         }
