@@ -1,5 +1,15 @@
 export const CHANGELOG = [
     {
+        version: "1.1.3",
+        date: "unreleased",
+        entries: [
+            "Added setting to configure zoom / mouse wheel / touchpad sensitivity",
+            "Fix belts being too slow when copied via blueprint (by Dimava)",
+            "Allow binding mouse buttons to actions (by Dimava)",
+            "Increase readability of certain HUD elements",
+        ],
+    },
+    {
         version: "1.1.2",
         date: "30.05.2020",
         entries: [

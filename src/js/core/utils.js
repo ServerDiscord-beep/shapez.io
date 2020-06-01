@@ -24,7 +24,7 @@ export const BOTTOM = new Vector(0, 1);
 export const LEFT = new Vector(-1, 0);
 export const ALL_DIRECTIONS = [TOP, RIGHT, BOTTOM, LEFT];
 
-const bigNumberSuffixes = ["", "k", "M", "B", "T", "e15", "e18"];
+const bigNumberSuffixTranslationKeys = ["thousands", "millions", "billions", "trillions"];
 
 /**
  * Returns the build id
@@ -452,6 +452,26 @@ export function formatBigNumber(num, divider = ".") {
     }
 
     return `${sign}${num}${bigNumberSuffixes[suffixIndex]}`;
+
+    /*
+    if (num < 1000) {
+        return sign + "" + num;
+    } else {
+        let leadingDigits = num;
+        let suffix = "";
+        for (let suffixIndex = 0; suffixIndex < bigNumberSuffixTranslationKeys.length; ++suffixIndex) {
+            leadingDigits = leadingDigits / 1000;
+            suffix = T.global.suffix[bigNumberSuffixTranslationKeys[suffixIndex]];
+            if (leadingDigits < 1000) {
+                break;
+            }
+        }
+        const leadingDigitsRounded = round1Digit(leadingDigits);
+        const leadingDigitsNoTrailingDecimal = leadingDigitsRounded.toString().replace(".0", "");
+        return sign + leadingDigitsNoTrailingDecimal + suffix;
+    }
+    */
+
 }
 
 /**

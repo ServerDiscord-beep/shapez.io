@@ -104,6 +104,7 @@ export const globalConfig = {
         showChunkBorders: false,
         rewardsInstant: false,
         allBuildingsUnlocked: false,
+        blueprintsNoCost: true,
         upgradesNoCost: false,
         disableUnlockDialog: false,
         disableLogicTicks: false,
@@ -120,6 +121,11 @@ export const globalConfig = {
         disableDynamicTickrate: false,
         disableInternalCheckTile: false,
         disableGetTileAsserts: false,
+
+        instantBelts: false,
+        instantProcessors: false,
+        instantMiners: false,
+        renderForTrailer: false,
         /* dev:end */
     },
 
