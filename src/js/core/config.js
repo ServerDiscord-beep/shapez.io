@@ -93,40 +93,51 @@ export const globalConfig = {
         // but does not changes globalConfig.debug if enableDebugSettings is off
         // DEFAULT VALUES:
         enableDebugSettings: true,
-        fastGameEnter: false,
-        noArtificialDelays: false,
-        disableSavegameWrite: false,
-        showEntityBounds: false,
-        showAcceptorEjectors: false,
-        disableMusic: false,
-        doNotRenderStatics: false,
-        disableZoomLimits: false,
+        
+        // UI
+        waitForImages: true,
         showChunkBorders: false,
-        rewardsInstant: false,
-        allBuildingsUnlocked: false,
-        blueprintsNoCost: true,
-        upgradesNoCost: false,
+        disableZoomLimits: false,
+        disableShortNumbers: false,
+
+        // FEATURE
+        fastGameEnter: false,
+        disableSavegameWrite: false,
         disableUnlockDialog: false,
-        disableLogicTicks: false,
-        testClipping: false,
-        // framePausesBetweenTicks: 40,
-        testTranslations: false,
-        enableEntityInspector: false,
-        testAds: false,
-        disableMapOverview: false,
         disableTutorialHints: false,
         disableUpgradeNotification: false,
-        disableShortNumbers: false,
-        disableBulkOperations: false,
         disableDynamicTickrate: false,
 
+        // ASSERT
         disableInternalCheckTile: false,
         disableGetTileAsserts: false,
         disableBeltAsserts: false,
 
+        // CHEATS
+        rewardsInstant: false,
+        allBuildingsUnlocked: false,
+        blueprintsNoCost: true,
+        upgradesNoCost: false,
         instantBelts: false,
         instantProcessors: false,
         instantMiners: false,
+
+        // TEST
+        noArtificialDelays: false,
+        showEntityBounds: false,
+        showAcceptorEjectors: false,
+        disableMusic: false,
+        doNotRenderStatics: false,
+        disableLogicTicks: false,
+        testClipping: false,
+        testTranslations: false,
+        enableEntityInspector: false,
+        testAds: false,
+        disableMapOverview: false,
+        disableBulkOperations: false,
+
+        // framePausesBetweenTicks: 40,
+
         renderForTrailer: false,
         /* dev:end */
     },

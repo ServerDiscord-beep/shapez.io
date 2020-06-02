@@ -367,7 +367,10 @@ export class MainMenuState extends GameState {
         const savegame = this.app.savegameMgr.getSavegameById(game.internalId);
         savegame.readAsync().then(() => {
             const data = ReadWriteProxy.serializeObject(savegame.currentData);
-            generateFileDownload(savegame.filename, data);
+            generateFileDownload(
+                savegame.filename.replace("savegame_", `shapez_lv${game.level}_${new Date()}_`),
+                data
+            );
         });
     }
 
