@@ -356,7 +356,7 @@ export class ShapeDefinition extends BasicSerializableObject {
                             insetPadding + -quadrantHalfSize,
                             -insetPadding + quadrantHalfSize,
                             quadrantSize * layerScale,
-                            -Math_PI * 0.5,
+                            -Math.PI * 0.5,
                             0
                         );
                         context.closePath();
@@ -371,6 +371,8 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                         const inner = 0.5;
                         const inner_center = 0.45;
+                        const size = 1.3;
+                        context.scale(size, size);
 
                         context.moveTo(0, 0);
                         context.lineTo(0, inner);
@@ -388,6 +390,8 @@ export class ShapeDefinition extends BasicSerializableObject {
                         context.beginPath();
 
                         const inner = 0.5;
+                        const size = 1.22;
+                        context.scale(size, size);
 
                         context.moveTo(0, 0);
                         context.lineTo(0, inner);
@@ -406,7 +410,9 @@ export class ShapeDefinition extends BasicSerializableObject {
                         context.scale(dims, -dims);
                         context.beginPath();
 
-                        const rad = 0.02;
+                        const rad = 0.001;
+                        const size = 1.2;
+                        context.scale(size, size);
 
                         // with rounded borders
                         context.moveTo(0, 0);
@@ -424,6 +430,8 @@ export class ShapeDefinition extends BasicSerializableObject {
                         context.beginPath();
 
                         const inner = 0.4;
+                        const size = 1.2;
+                        context.scale(size, size);
 
                         context.moveTo(0, 0);
                         context.lineTo(1, 0);
@@ -443,6 +451,8 @@ export class ShapeDefinition extends BasicSerializableObject {
                         context.beginPath();
 
                         const inner = 0.5;
+                        const size = 1.1;
+                        context.scale(size, size);
 
                         context.moveTo(0, 0);
                         context.lineTo(inner, 0);
@@ -464,24 +474,39 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                         const inner = 0.4;
                         const rad = 0.02;
+                        const size = 1.22;
+                        context.scale(size, size);
+
+                        const PI = Math.PI;
+                        const PI3 = (PI * 3) / 8;
 
                         const c = 1 / Math.cos(Math.PI / 8);
                         const b = c * Math.sin(Math.PI / 8);
 
                         context.moveTo(0, 0);
                         context.rotate(Math.PI / 2);
-                        context.arc(c, 0,  b, -Math.PI, -(5/8)*Math.PI);
+                        context.arc(c, 0, b, -PI, -PI + PI3);
                         context.rotate(-Math.PI / 4);
-                        context.arc(c, 0,  b, (-1-3/8)*Math.PI, (-5/8)*Math.PI);
+                        context.arc(c, 0, b, -PI - PI3, -PI + PI3);
                         context.rotate(-Math.PI / 4);
-                        context.arc(c, 0,  b, (5/8)*Math.PI, 1*Math.PI);
+                        context.arc(c, 0, b, PI - PI3, PI);
 
                         context.closePath();
                         context.restore();
                         break;
                     }
+                    // case enumSubShape.none:
+                    //     {
+                    //         context.beginPath();
+                    //         break;
+                    //     }
                     default: {
-                        assertAlways(false, "Unkown sub shape: " + subShape);
+                        context.save();
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims / 8, dims / 8);
+                        context.beginPath();
+                        context.fillText(subShape || "?", 0, 0);
+                        context.restore();
                     }
                 }
 
