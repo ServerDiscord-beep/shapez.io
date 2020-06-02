@@ -28,7 +28,7 @@ export class HUDPinnedShapes extends BaseHUDPart {
         /** @type {Array<{ key: string, goal: number }>} */
         this.pinnedShapes = [];
 
-        /** @type {Array<{key: string, amountLabel: HTMLElement, lastRenderedValue: number, element: HTMLElement, detector?: ClickDetector}>} */
+        /** @type {Array<{key: string, amountLabel: HTMLElement, lastRenderedValue: number, goal?: number, element: HTMLElement, detector?: ClickDetector}>} */
         this.handles = [];
         this.rerenderFull();
 
@@ -129,6 +129,7 @@ export class HUDPinnedShapes extends BaseHUDPart {
             element,
             amountLabel,
             lastRenderedValue: -1,
+            goal,
         });
     }
 
@@ -139,7 +140,12 @@ export class HUDPinnedShapes extends BaseHUDPart {
             const currentValue = this.root.hubGoals.getShapesStoredByKey(handle.key);
             if (currentValue !== handle.lastRenderedValue) {
                 handle.lastRenderedValue = currentValue;
-                handle.amountLabel.innerText = formatBigNumber(currentValue);
+                let text = formatBigNumber(currentValue);
+                if (handle.goal && currentValue >= handle.goal) {
+                    text = "✓ " + text;
+                    handle.element.classList.toggle("amountReached", true);
+                }
+                handle.amountLabel.innerText = text;
             }
         }
     }
