@@ -536,7 +536,9 @@ export class Camera extends BasicSerializableObject {
         }
 
         const delta = -Math.sign(event.deltaY);
-        const zoomSteps = Math.ceil(this.doubleZoomCount / this.root.app.settings.getScrollWheelSensitivity());
+        const zoomSteps = Math.ceil(
+            this.doubleZoomCount / this.root.app.settings.getScrollWheelSensitivity()
+        );
         assert(Number.isFinite(delta), "Got invalid delta in mouse wheel event: " + event.deltaY);
         assert(Number.isFinite(this.zoomLevel), "Got invalid zoom level *before* wheel: " + this.zoomLevel);
         this.changePowZoomLevel(delta, false, zoomSteps);

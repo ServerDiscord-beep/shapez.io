@@ -472,7 +472,6 @@ export function formatBigNumber(num, divider = ".") {
         return sign + leadingDigitsNoTrailingDecimal + suffix;
     }
     */
-
 }
 
 /**
