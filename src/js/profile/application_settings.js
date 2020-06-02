@@ -140,7 +140,7 @@ export const allApplicationSettings = [
     }),
 
     new EnumSetting("refreshRate", {
-        options: ["60", "100", "144", "165"],
+        options: ["29", "30", "31", "59", "60", "61", "100", "144", "165"],
         valueGetter: rate => rate,
         textGetter: rate => rate + " Hz",
         category: categoryGame,
