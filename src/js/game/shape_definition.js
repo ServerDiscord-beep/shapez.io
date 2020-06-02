@@ -298,7 +298,7 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                 context.fillStyle = enumColorsToHexCode[color];
                 context.strokeStyle = THEME.items.outline;
-                context.lineWidth = THEME.items.outlineWidth;
+                context.lineWidth = THEME.items.outlineWidth * Math.pow(0.8, layerIndex);
 
                 const insetPadding = 0.0;
 
