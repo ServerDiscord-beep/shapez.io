@@ -20798,7 +20798,7 @@ function getBuildId() {
     if ( true && _config__WEBPACK_IMPORTED_MODULE_0__["IS_DEBUG"]) {
         return "local-dev";
     } else if (true) {
-        return "dev-" + getPlatformName() + "-" + "4eaaf87";
+        return "dev-" + getPlatformName() + "-" + "edca32d";
     } else {}
 }
 
@@ -37833,7 +37833,7 @@ class ShapeDefinition extends _savegame_serialization__WEBPACK_IMPORTED_MODULE_7
 
                 context.fillStyle = _colors__WEBPACK_IMPORTED_MODULE_8__["enumColorsToHexCode"][color];
                 context.strokeStyle = _theme__WEBPACK_IMPORTED_MODULE_9__["THEME"].items.outline;
-                context.lineWidth = _theme__WEBPACK_IMPORTED_MODULE_9__["THEME"].items.outlineWidth;
+                context.lineWidth = _theme__WEBPACK_IMPORTED_MODULE_9__["THEME"].items.outlineWidth * Math.pow(0.8, layerIndex);
 
                 const insetPadding = 0.0;
 
@@ -38020,13 +38020,11 @@ class ShapeDefinition extends _savegame_serialization__WEBPACK_IMPORTED_MODULE_7
                         context.scale(dims, -dims);
                         context.beginPath();
 
-                        const inner = 0.4;
-                        const rad = 0.02;
-                        const size = 1.22;
+                        const size = 1.3;
                         context.scale(size, size);
 
                         const PI = Math.PI;
-                        const PI3 = (PI * 3) / 8;
+                        const PI3 = (PI * 3) / 8 * 0.75;
 
                         const c = 1 / Math.cos(Math.PI / 8);
                         const b = c * Math.sin(Math.PI / 8);
@@ -41398,8 +41396,8 @@ if (window.coreThreadLoadedCb) {
 }
 
 console.log(
-    `%cshapez.io ️%c\n© 2020 Tobias Springer IT Solutions\nCommit %c${"4eaaf87"}%c on %c${new Date(
-        1591112380633
+    `%cshapez.io ️%c\n© 2020 Tobias Springer IT Solutions\nCommit %c${"edca32d"}%c on %c${new Date(
+        1591124031117
     ).toLocaleString()}\n`,
     "font-size: 35px; font-family: Arial;font-weight: bold; padding: 10px 0;",
     "color: #aaa",
@@ -42702,7 +42700,7 @@ class PlatformWrapperImplBrowser extends _wrapper__WEBPACK_IMPORTED_MODULE_6__["
         logger.log("Initializing sentry");
         window.Sentry.init({
             dsn: "TODO SENTRY DSN",
-            release: "dev" + "-" + "1.1.3" + "@" + "4eaaf87",
+            release: "dev" + "-" + "1.1.3" + "@" + "edca32d",
             // Will cause a deprecation warning, but the demise of `ignoreErrors` is still under discussion.
             // See: https://github.com/getsentry/raven-js/issues/73
             ignoreErrors: [
@@ -48855,7 +48853,7 @@ class PreloadState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameSt
                         
                     <div class="lower">
                         <button class="resetApp styledButton">Reset App</button>
-                        <i>Build ${"1.1.3"} @ ${"4eaaf87"}</i>
+                        <i>Build ${"1.1.3"} @ ${"edca32d"}</i>
                     </div>
                 </div>
         `;
@@ -48981,14 +48979,14 @@ class SettingsState extends _core_textual_game_state__WEBPACK_IMPORTED_MODULE_1_
 
     renderBuildText() {
         const labelVersion = this.htmlElement.querySelector(".buildVersion");
-        const lastBuildMs = new Date().getTime() - 1591112380633;
+        const lastBuildMs = new Date().getTime() - 1591124031117;
         const lastBuildText = Object(_core_utils__WEBPACK_IMPORTED_MODULE_2__["formatSecondsToTimeAgo"])(lastBuildMs / 1000.0);
 
         const version = _translations__WEBPACK_IMPORTED_MODULE_4__["T"].settings.versionBadges["dev"];
 
         labelVersion.innerHTML = `
             <span class='version'>
-                ${"1.1.3"} @ ${version} @ ${"4eaaf87"}
+                ${"1.1.3"} @ ${version} @ ${"edca32d"}
             </span>
             <span class='buildTime'>
                 ${_translations__WEBPACK_IMPORTED_MODULE_4__["T"].settings.buildDate.replace("<at-date>", lastBuildText)}<br />
