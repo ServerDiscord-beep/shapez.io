@@ -472,13 +472,11 @@ export class ShapeDefinition extends BasicSerializableObject {
                         context.scale(dims, -dims);
                         context.beginPath();
 
-                        const inner = 0.4;
-                        const rad = 0.02;
-                        const size = 1.22;
+                        const size = 1.3;
                         context.scale(size, size);
 
                         const PI = Math.PI;
-                        const PI3 = (PI * 3) / 8;
+                        const PI3 = (PI * 3) / 8 * 0.75;
 
                         const c = 1 / Math.cos(Math.PI / 8);
                         const b = c * Math.sin(Math.PI / 8);
