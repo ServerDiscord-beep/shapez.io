@@ -8,6 +8,7 @@ import { MetaRotaterBuilding } from "../../buildings/rotater";
 import { MetaSplitterBuilding } from "../../buildings/splitter";
 import { MetaStackerBuilding } from "../../buildings/stacker";
 import { MetaTrashBuilding } from "../../buildings/trash";
+import { MetaTargetShapeCheckerBuilding } from "../../buildings/targetShapeChecker";
 import { MetaUndergroundBeltBuilding } from "../../buildings/underground_belt";
 import { enumLayer } from "../../root";
 import { HUDBaseToolbar } from "./base_toolbar";
@@ -27,6 +28,7 @@ const supportedBuildings = [
 
     MetaEnergyGenerator,
     MetaAdvancedProcessorBuilding,
+    MetaTargetShapeCheckerBuilding,
 ];
 
 export class HUDBuildingsToolbar extends HUDBaseToolbar {

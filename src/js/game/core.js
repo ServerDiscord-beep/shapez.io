@@ -420,6 +420,7 @@ export class GameCore {
 
             // Storage items
             systems.storage.draw(params);
+            systems.targetShapeChecker.draw(params);
 
             // Energy consumer (Battery icons)
             systems.energyConsumer.draw(params);

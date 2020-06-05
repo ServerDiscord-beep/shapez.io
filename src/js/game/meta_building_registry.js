@@ -8,6 +8,7 @@ import { MetaRotaterBuilding } from "./buildings/rotater";
 import { MetaSplitterBuilding } from "./buildings/splitter";
 import { MetaStackerBuilding } from "./buildings/stacker";
 import { MetaTrashBuilding } from "./buildings/trash";
+import { MetaTargetShapeCheckerBuilding } from "./buildings/targetShapeChecker";
 import { MetaUndergroundBeltBuilding } from "./buildings/underground_belt";
 import { MetaHubBuilding } from "./buildings/hub";
 import { MetaEnergyGenerator } from "./buildings/energy_generator";
@@ -18,6 +19,7 @@ import { MetaWireCrossingsBuilding } from "./buildings/wire_crossings";
 
 export function initMetaBuildingRegistry() {
     gMetaBuildingRegistry.register(MetaSplitterBuilding);
+    gMetaBuildingRegistry.register(MetaTargetShapeCheckerBuilding);
     gMetaBuildingRegistry.register(MetaMinerBuilding);
     gMetaBuildingRegistry.register(MetaCutterBuilding);
     gMetaBuildingRegistry.register(MetaRotaterBuilding);
