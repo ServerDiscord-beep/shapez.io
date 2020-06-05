@@ -1,7 +1,33 @@
 export const CHANGELOG = [
     {
+        version: "1.1.7",
+        date: "04.06.2020",
+        entries: ["HOTFIX: Fix savegames not showing up on the standalone version"],
+    },
+    {
+        version: "1.1.6",
+        date: "04.06.2020",
+        entries: [
+            "The steam release will happen on the <strong>7th of June</strong> - Be sure to add it to your wishlist! <a href='https://steam.shapez.io' target='blank'>View on steam</a>",
+            "Fixed level complete dialog being blurred when the shop was opened before",
+            "Standalone: Increased icon visibility for windows builds",
+            "Web version: Fixed firefox not loading the game when browsing in private mode",
+        ],
+    },
+
+    {
+        version: "1.1.5",
+        date: "03.06.2020",
+        entries: ["Added weekly contests!"],
+    },
+    {
+        version: "1.1.4",
+        date: "01.06.2020",
+        entries: ["Add 'interactive' tutorial for the first level to improve onboarding experience"],
+    },
+    {
         version: "1.1.3",
-        date: "unreleased",
+        date: "01.06.2020",
         entries: [
             "Added setting to configure zoom / mouse wheel / touchpad sensitivity",
             "Fix belts being too slow when copied via blueprint (by Dimava)",

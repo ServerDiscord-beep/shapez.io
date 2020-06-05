@@ -36,7 +36,7 @@ export const tutorialGoals = [
     // Circle
     {
         shape: "CuCuCuCu", // belts t1
-        required: 20,
+        required: 40,
         reward: enumHubGoalRewards.reward_cutter_and_trash,
     },
 
