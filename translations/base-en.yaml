@@ -495,6 +495,11 @@ buildings:
             name: Storage
             description: Stores excess items, up to a given capacity. Can be used as an overflow gate.
 
+    targetShapeChecker:
+        default:
+            name: &targetShapeChecker TargetShapeChecker
+            description: TargetShapeChecker items. too lazy to explain
+
 storyRewards:
     # Those are the rewards gained from completing the store
     reward_cutter_and_trash:

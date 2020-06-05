@@ -13,6 +13,7 @@ import { HubSystem } from "./systems/hub";
 import { StaticMapEntitySystem } from "./systems/static_map_entity";
 import { ItemAcceptorSystem } from "./systems/item_acceptor";
 import { StorageSystem } from "./systems/storage";
+import { TargetShapeCheckerSystem } from "./systems/targetShapeChecker";
 
 const logger = createLogger("game_system_manager");
 
@@ -56,6 +57,9 @@ export class GameSystemManager {
             /** @type {StorageSystem} */
             storage: null,
 
+            /** @type {TargetShapeCheckerSystem} */
+            targetShapeChecker: null,
+
             /* typehints:end */
         };
         this.systemUpdateOrder = [];
@@ -79,6 +83,8 @@ export class GameSystemManager {
         add("undergroundBelt", UndergroundBeltSystem);
 
         add("miner", MinerSystem);
+
+        add("targetShapeChecker", TargetShapeCheckerSystem);
 
         add("storage", StorageSystem);
 

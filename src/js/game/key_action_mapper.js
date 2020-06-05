@@ -52,6 +52,7 @@ export const KEYMAPPINGS = {
         mixer: { keyCodes: [key("8")] },
         painter: { keyCodes: [key("9")] },
         trash: { keyCodes: [key("0")] },
+        targetShapeChecker: { keyCodes: [key("=")] },
     },
 
     placement: {
