@@ -13357,25 +13357,16 @@ class Application {
      * Initializes all platform instances
      */
     initPlatformDependentInstances() {
-        logger.log("Creating platform dependent instances");
-
-        // Start with empty ad provider
-        this.adProvider = new _platform_ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_14__["NoAdProvider"](this);
-
-        if (false) {} else {
-            if (window.indexedDB) {
-                this.storage = new _platform_browser_storage_indexed_db__WEBPACK_IMPORTED_MODULE_20__["StorageImplBrowserIndexedDB"](this);
-            } else {
-                this.storage = new _platform_browser_storage__WEBPACK_IMPORTED_MODULE_19__["StorageImplBrowser"](this);
-            }
-        }
-        this.sound = new _platform_browser_sound__WEBPACK_IMPORTED_MODULE_18__["SoundImplBrowser"](this);
+        logger.log("Creating platform dependent instances (standalone=", false, ")");
 
         if (false) {} else {
             this.platformWrapper = new _platform_browser_wrapper__WEBPACK_IMPORTED_MODULE_21__["PlatformWrapperImplBrowser"](this);
         }
-        this.analytics = new _platform_browser_google_analytics__WEBPACK_IMPORTED_MODULE_17__["GoogleAnalyticsImpl"](this);
 
+        // Start with empty ad provider
+        this.adProvider = new _platform_ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_14__["NoAdProvider"](this);
+        this.sound = new _platform_browser_sound__WEBPACK_IMPORTED_MODULE_18__["SoundImplBrowser"](this);
+        this.analytics = new _platform_browser_google_analytics__WEBPACK_IMPORTED_MODULE_17__["GoogleAnalyticsImpl"](this);
         this.gameAnalytics = new _platform_browser_game_analytics__WEBPACK_IMPORTED_MODULE_16__["ShapezGameAnalytics"](this);
     }
 
@@ -13499,11 +13490,15 @@ class Application {
     onAppRenderableStateChanged(renderable) {
         logger.log("Application renderable:", renderable);
         window.focus();
+        const currentState = this.stateMgr.getCurrentState();
         if (!renderable) {
-            this.stateMgr.getCurrentState().onAppPause();
+            if (currentState) {
+                currentState.onAppPause();
+            }
         } else {
-            // Got resume
-            this.stateMgr.getCurrentState().onAppResume();
+            if (currentState) {
+                currentState.onAppResume();
+            }
             this.checkResize();
         }
 
@@ -13517,7 +13512,10 @@ class Application {
         if (!this.unloaded) {
             Object(_core_logging__WEBPACK_IMPORTED_MODULE_8__["logSection"])("UNLOAD HANDLER", "#f77");
             this.unloaded = true;
-            this.stateMgr.getCurrentState().onBeforeExit();
+            const currentState = this.stateMgr.getCurrentState();
+            if (currentState) {
+                currentState.onBeforeExit();
+            }
             this.deinitialize();
         }
     }
@@ -13527,6 +13525,7 @@ class Application {
      */
     onBeforeUnload(event) {
         Object(_core_logging__WEBPACK_IMPORTED_MODULE_8__["logSection"])("BEFORE UNLOAD HANDLER", "#f77");
+        const currentState = this.stateMgr.getCurrentState();
 
         if (false) {}
     }
@@ -13572,7 +13571,10 @@ class Application {
             return;
         }
 
-        this.stateMgr.getCurrentState().onBackgroundTick(dt);
+        const currentState = this.stateMgr.getCurrentState();
+        if (currentState) {
+            currentState.onBackgroundTick(dt);
+        }
     }
 
     /**
@@ -13592,7 +13594,10 @@ class Application {
             this.lastResizeCheck = time;
         }
 
-        this.stateMgr.getCurrentState().onRender(dt);
+        const currentState = this.stateMgr.getCurrentState();
+        if (currentState) {
+            currentState.onRender(dt);
+        }
     }
 
     /**
@@ -13605,7 +13610,10 @@ class Application {
         if (this.screenWidth !== w || this.screenHeight !== h || forceUpdate) {
             this.screenWidth = w;
             this.screenHeight = h;
-            this.stateMgr.getCurrentState().onResized(this.screenWidth, this.screenHeight);
+            const currentState = this.stateMgr.getCurrentState();
+            if (currentState) {
+                currentState.onResized(this.screenWidth, this.screenHeight);
+            }
 
             const scale = this.getEffectiveUiScale();
             Object(_core_utils__WEBPACK_IMPORTED_MODULE_11__["waitNextFrame"])().then(() => document.documentElement.style.setProperty("--ui-scale", scale));
@@ -13639,7 +13647,7 @@ class Application {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (function() {
-        return JSON.parse(__webpack_require__(/*! global-compression */ "./src/js/core/lzstring.js").decompressX64("N4KABGBEDmA2D2AjAhrSAuMoIUg5AJgJYB20GUAMvIaeQDTg6QCmATm-GxZAKIddIjHFAAuAC3gBXAM7ISBGQBEiANyIF2PekKa4ZUgGaGiADwrYRYybPmKeAa11WoAWyKxYReCRk8Ass5WkIgeXj5+mJAAQkEikKJsYd6+PAAqkHpgAL7CzKQmJESiLDwFcWJErqWYlvE+LADKLADGPgQAgtDwPA1gMq3tYMjdFbimzW0KMl09UQA8pgB8-YPTw6N59SQs-qRSJbO9O2DuJAcsGz1bzKZ75yUzowvLp-uPV2NQDQAS0mxHKJ9GxsT43cZ-KRsJ5zKCLFYgmRgrK4BpKZAAT0B3xOBExyJckFM6IxMJ48LAeNJBOCAymikakjYonJdPaMiWfnBbneLBmCkm7MZXBZCzOFw5rjA8zZ005X0giI6CnuEuFzPJiKW4ml4se8u5RNVj3Jrz1fMyIlyWUgDhYpIsKLEyEQ6Q6sUNU0S8DQUQAwmkAEqUBWoUVQDqUDKGvktZAABxqUF4jT9Cpk4iIhnDkEaPwAkgAxaNOyAyePIFpJ3MABQ6ft4lpw2SY1twmlc8Gi8h20Md8VExVg1Z+9oAhBVIKRvTx84YwBjpGAWCQAFbwDFgCREJHQZDVehgePD5ADMBTGQadhgRBSDF0LfiS6GKSeMCqdiXnwTm6QQiqeRRBGC1MAAbVLABVEgvHcEoCH6ZAPz3aouVLAB1TF43gadUMJdE2AcU54E0MAADIiLYUpDQ6Tx4AAd1OS5RHgMAX2ZJ9QU0D8EHjfpxATFgAC8ADpvDAQATckAeD+mwgABdVs8kgVxkFIfwVykftmGPTEeBrWAdN-Fp+LIFgEHIf1jOgUz4AYG0qiw5lGkQlhkOrfNXAcllf3gRMSEaf4qx+ad0kzXd90uHcwB8ld+gClgfxtYgZDaNgCEoUgnCiAB5YwiBaIhUDAFRkq4eDmjYD9uF-RBODogY2AwtgijIHh-I4DFD1vURH0uVywEihwSHokgtxYtgpBGmQEAYnwF3+G9avqscwAAcRYbqJEuGQgIUVA+kqr8Rq4SlhvweCjM4apWOOzbWNfWBl1MRMkhXKthMnOQkPCygWG4ngfu46Vlg+5zXIB0yoMG4aeEhoa6JG8G0AUphIGIPboEiLAbS65jUlqUt4EyqAsoAaQVTRhxKHglFM9aqNLOMSCrX0oD9eRmYVfSSm4KJKGQbmFUo7bkA1KJAz5ICNUNIX1p4cWBi80srNERodrxBAdh4NbutVuw9s1w0KbplbwtnMAoYYuj+O6-MToVdQWDoiD4zxKmogANSIR2wGd136cJDN6Od6A2EIECoGFBjg9DzRcNpSQ6JJ+1QgUOhMdzBOwCTjEU+IMg-CyNt8g8kUnK+6p+E4HmscJQdRGHWcS+ZMBK8EQ0SlMHNCxU4d4OY-qm+6xcoQQ8uWHQGScl-ezS9B8LGikFoqxkTG6mYOuG6iMuXPCsB3M8lgCAVDucwATXmz6d6u-ikUQFgYoMJe+RkF9PE3GfmUP97C9-MGaAIbuHgoRJjXrgDe1YTZXUijVQmK5j4sE7jwQBvdRpgDOnNEel9XITx-jaKYJg2CuG3q5GmlMQGlnATwP0PgCFSiNoOHw8DEFRA6JRDB-RgHsLooBVB9CmJPjAK5AA-JPIu+g57VFIetFIrdq6gMqPXasyDD68NplTduCCu49xUf3PhPVR5X3HqI38QtJaiHFgARykEQSiR98a1yHNWeWZiwCUSsTYw+TCz5Lh2DosaEsRYbQEX1fuCZjyblugrQc+dv5Wl-IfYo2dc50E0gORxVDLKXCSaQPOtlCSxxaLpIWSJbp2k3MdTsshLg41msPMA3CSAbRYqeS80ASCHmOrGASqDGbM1ic2ExfJ1rZNTvnahJBaH8xSKk9e6SxZDO6mU5J+dyaxhCpFOiYRXELOGG+JZOS06oM2jYykLBDDIFfN1ACsApB8mEmAPSLBTyXHwTY1w-SIBiKgPs0ZGN5brSykTeRCQ5lQBGbkpEMtFb5LWVENIAifkQrAPxD8N574jShUcp8JyhaJhaIOVFmhzmXJkBOXB8RDBPNEMA5xSR8XTPscEShUQaadjAO7T80zDawqgOfKQW4Xp92aU-FewxWJUs4QACnmJS-mwClgAEp6mZiMv1JEQ1uqIR7i6Yc-URq3Q7PAe54zLyaFBP3ZW+jha7Q1s+G6AjX4PQQc9L2TN4rGJtJfAAcvAUQNZ4AryIIgYc+YSCsthMCgpPA+Wgj6jfNFD9nIEE6gcbZ20uAPmKGqqK0FNxYUDcGiK+qBHWvVvtTlPhjURCvOalilrIlq31na81Dr7qPRda9d15LmAng-D6v1AbLyFtDeGmZYDQWQHDe+CtJBVnJWjfNPq3CkSX3gl1LhWyNVouGIW1BpiuARW6qQfRhr7nOIzWQDBoIsHhSRJFHwsA82DqDbq49t1HXTuhCke5rDLh1IMJRER3bcA7Cdi7fm5CHGKJhuBkowwAIeB1f7YIUa4UcQikieQYApCwebY+SKfUtWIcLWSuJiUWCdl4E9fSJApmMMZWk6DUR+15WfJdfRNNuLRSqqWVDUBbb7lOVx+MD5txhSgSNVwm5DCUSYlUFgh47B72RdFdhK51zv1EMtOc7CCDwEPMeJ5Z4Lw1tQbeCJJbG22s-YdUjAybQNGId9KoxQx0KM3lQFzcEDGuTjvEPjkA+Xniww+zcKLLh9BvVdfmYrBwSZPRRliB1v0PJPGeSinZUW3QQTuaJ0Ac0RdjetK1VmGh2c+b+HDfsF6uGUmwDEbmQVMagF672VWIMJRhfOqIo42Ei34S8zJK7SBVnYfpbaR59IYkPjgsj8RMyNJpslJI8YGGzoY7M5rkA0gHAzagOdhSohoSfDsSq7DfHwSfLAXix1+v9GpS0Bwh4jKtEItIIJlwADkkdkXTk+zeA4uM9X6OmteYc2ZhgKD3p9t80A1CXCk2iib-cru8WHuVqeNocMhzDjIUN3oCCLzW415lUAoIIEez7eMOPY4HZ4DRB6GYBJIjqfGTghPRuM23VUoV2HoLwEp9jmOfIwAAFppTbU4GQJYSgfCfe6rHb0m5h6gh9PBc5+KM18jHPMAA9JLnw0AVjwsuEL3HW4XTBZGnfa6E14KzVusxXiSRoDiG6ilXsUV5yRJaLJkgHzMfxGUivKRJRxm0JJxO8PbzTlkLp1EILd36EPmQGg31XuAceCRdKtoE1RArH7jbhBlZRAKuWr+9hAG-1LgaU0k6+GZBAbm8wYNty2c4X7eTgXdo7E1yZRO-tfOKc94XLLbl3WoDRBuSwdvjSkThbAFuu+MUJrD5UdNrTYBqEeTIRRS4w5uIlJYqv7vPV3keviIitO+P2dE4ZX3xjHnIAQQGK-c2ycDkrPH4dqA8KCO73jVTwQG6ngHnCv3zmVTyh1GUjtH6m6iMy9lrUz1gDXSIHyw12YhehkHuV60uDu1T0pTohTW6htyr1QRlG9Glxe0p3e30XAIxj1wN2lx1xqiWHmFYOlDaBIhaHGxkAAF5Pt6DPslgAxgw9cuCWAVgABqIqUOaATAZoYcfFYYSiVPfuNoeMTcXXWPOmYSdgtgFYeYCQ88XggQoQpYPMIsNIcQ4iSQzAP4FA1BbSUbVwS5IgQzDPPoW8LPOgPQjgow2wkwlpMwj-X5YQyMaw3XCQpYTAUNSqEAl6RpOjI6ecZwlRO+WAUQbA-QpYC-ZgX3KlXYEWO0ORChAfb2fwYorQb-LWeHOAsVaoeQOgN-WjaoURZGXAOgU2DbW0UIiFLKSqKbRrTLIo+MAIeAD8dMWmfFaIaxFAtOVqaYzVVQ9MJ3PSSsCjFcHMVWHySbDY6oRpQWX1CDWYnwlqMWY4uDbw+YlqQ0NI-wNwwzXSfSFwx4huaWX6T8FgLKRIoCYneZA6QrV1P4rlXjHcJDDoXbH44E5I6mcE3dC5fuLXJI4nduGyOAFgH4KQXvbbdE3VH4CCJQBUNI04m48yKAdY0ba43JBUAoiDSogiLQf0VQuDBkkovI3AakugSkzYw4jbXAFoDEHglgUk3Jd2EWAqOfIpZ+aUMpAvFiQU4U98CUwCbAhUSQUQMpPmDIngP4TU+0TAeYOUhUAoeANITRVeJ0fQRMTxLeG0o+bkXAUOEyOWeQKyL4fQTA4CVqL090x0nEFgfMEoVwGsdgQUBQHgAARjgIozAG0NlAdKtKgGKAoxkFDLYHDJxIpBTNcCRHjI9OTODLTLDLWAIFlykELR4ElVMAACYFUCyQVhx04KRBwmzJ5PlgMoAD9TJt9DMSgWMTA4x-iH8e1PjYA0gJ1EZpRuzYBcjPR4Ad86YcTeyyFEzCQT9HtzTmEyd+dHsVF5hKJuFUolhOtggakSBWtO5EYeBLzuprzOzIANUsw8pkjLTCRQNo4w56dF82tqdhds0iN9ISMFRXJt4cSY1BEADTwE1Jok0A8vklIWlFDWhwxgVTStycwaxilZT7RqFND5TzwfIOocKMRQ9JC91EtUUlMjTcL2ZTICLelTJ4LfxA4xj+T3NqxPzadDRzyu9HsYMadkM0kmTf9ECgY5yyj2BtTTJMZwIXBcB8wGz8xFL-TIBlKVKky1L3YGztLVL3YNL5KoB9KDL5LIBjKTLCR8wAANBsmyp0WSQ0ZSUwKoKQVwa8qIfwDoKy-MfwCCfwMASgXgd2XgSgMASVRoe0sAUwIwqESiRpB4zIxVDkqAYWQcbaPKN8-vLbXWNKwcFoPzZgV2ZAfyKEZeNzT0g9XveRR-asHY2xAs9sWMFbYcydHcbSe8S9fcaQRpDPdNWxPiZnYHFXc8LY0OB6LksgAPZvQkNnYiReW0kcqDJ-LCuaqsNcwyqAApZq+-Vq8sKbFPN8JnRMFneaK2H0Z8EvLgPNW-ZeQ8EbG5XJPVbmaoNGODWajnLIqa+zQy1GUyeHeq9imq6mP6yqTxf0xq5bdwlq4qdqh8I6kXK2KAlQy4Cmf6vxK9EaxpMa5A3JL6jslwL5EDeARkZnFajnBayAH1Aa465FZyGCo8G6lRGQFic5Ngd6Q0eG4stgY0asGUfiY6lYbQ1wZKssdaPLGQNSc4RrdquLasdYjEWWhUCajGHknE0UhYni0yLI1WngaILWgqzkwHCIcqqAL0fYascZaJW5BsqJBYreMWjWzSg4jSeZalJqVBZ29snIB86lTAgqWAIKKU9iprJ-VrFRVHERDmhOQO7YzOBbaFYITMTQGOqhBAAYEW1vGfJIRpHk0owkNobaKhANFkB87hDELCHCRrMuiuoOqANkz8dUis3UiCD0XjJqqGnan6bMUXHgvKQiVPOrEo1BVcVy3ifuYoQ8F3N3HurwSnXRNRQ9PwgwnIrCmUminOT-I3HpFkvA04Ko0EGTBc-RFoWKrY98L2IgqKUECgqXI3Ke0QGevuxgygre9Qneho-e4YD7VYJQ7zCnZI9mhmFklIBeEVGQAcl8lq+u0EeNZfEaOkuCeCjolKyQeMLi8ONeEILWxrVo6sPWzImQQ8YqRIINXbUEciHbEgHYWAA2za9u1bHaiK++eCaKk+jgLYhK-PMAQAJMIor5hQNOHciHyzgRLgVcGeAqNEgS9QSutfcO76MI5IrWHT74rLkVheHoqBG1GRbZrl5ma+xg7xH-RAc6BDxAxLiHxyJdZHsUlv9tqFHcwlGYr2HVHEqeG+GtHEqdGVJGkUlDHui66zBLGHkfG8sDt7H1tFHmG+G2G4rRBBH3HNHHZBH2iKsUZlbMrOTsHg6iULlMiTbHyAnIBxkPxFxQR8GE7ZGIn0hnTywRQ70izDxJBHClMCA5CnCXiEc3iWAvqWxpqeRexGtcnLkCmjHkxO5Q5NceMfqtr5HInIAeSooztU94ar7CKEAkDNFJmj1RBenPR+JSAkNRminJHtnjpJU-QDmSB6zVLZmGGHHFmJjrwVn+bCt1mboWItmS84DjUsMbcjIfGv4va+nvrmA7d2AQ5uqCAAB9DI1Ctu4lfJwGqAMZ7bCaahhsu5lqhneiI-LcdF0yNNOKJEcF0EDJyHNdfWvZyStgGs45touFAlh6Cc68ZSzF+h7F2iOqI5Jlol0qkXUlnGw5JTOFtUp0EFtJ+IPa4oAWHJs5PJ+Fn61F7sGjKsaZ0yrFnazhrMCaelHwQqcXXgD8XNSkXLJILqEXVAB6UgeMA4JEHwUJN8d7W1z64F+cjyEvel6sNSNgKyUESVNoD1-FG5zSzVhxn1qyEpOiBUnwUp46UVp6liBoal-OhcisfFUXUgQEr1gICF68ANtNkvENmZjlrVvNqNmNkgONsl-WxNgrXph8k+0QWVxauhxFxV0y1Fv0QHao0N0thx7trI6mkXQ+qUJ3MzX1ZiKUJTZ1u1m8X1HUfiWAQwbAiXF+pYHTOpKpHNR9ArI8QJTqLaTheeg3CzCLTaUECsZuY6LNTZQ6oCTwHXfXddt10sKxQgHN4x5t-NgARSkEIGLY1f7fmcHZXVebvUaRZvmivc+rXdvo3fnC3bPFCz3Zg8PY4TYRPaV30QXevBg7Wdva2WFkfefvg+BYfM4D+NEYRYVc-agHMao-ZchvufmYY4gzA8Gp4O702TPEQE3AAE4AAGU5EOe+MVgmz0FoOiOjyANjuDC5v0NCQDqpuZuWS4kXTmwivPa8Ljx7Hj6pAT4TzQUTu5cj-pssICPcvOlDeVkZ5FwphliOSz9k254Dn0ysBwW+BdmM3M+5HTTaTcLnJfBHPN5NfRe+nz7NNI+CF0J5kHM5HZijBt8z9wUwajmFdtmT6hDZsAPYNL9VlTljgIMwEXUQaN956EbDS8TqggYgAlapYcX5ZL0F3ACsacdLmzzL+z1FmsUJ3tkt5jlq7LrgEpARM63VVZh3ARcHI9EgF1+pYoHUW6NoHL0d8LtAt3PVF1lNlDaQSs7rop3r9r-18swtZTmzwbna4byr26RAbzzTqb-fBLrb1NTZCQY+n0Y6Nb26CLm1g4Hb+Id9qqzSnrvr-1v9gDpjuRorlhLlvFlbzpSsHUIH50kA73EtV5hb971PYgYwdgM+hHtmszlrsQUODMIZ2zpF1tkDIptIMn8QKH6plhJ+VbCDl1pENbq1-oK8TDKHRXTgakTad5MAQsA9SqAH5gPq70g7xz3MX0oSi76HlquqkXBBPRnzwh7DMe5pQReHeBhMSsYoDEX563U3AYGL3npZ9gQwaaSCkoZryVyXkUDr-zSnjt98optqAWVzy7hxr3hp1M+5ZiFifSQSCJT56jHx4n-GwPFKzAjEcWI8+wHow8kWGFpt7maFuwaFqR8n4O0nYpkxy9Em46+PXlJcEeibDckfW6G+w3JYDP9gUj+vsXeoptjjmmpd+cNbuv6XcdwvSdhc5v6XbZPcVKJs+1+cYoe1345Ilg5e1gvWjDpiOtYrJIe3dHy4ZdEoDpVXC9-TuD+vwj+9q14fre8XUXltSKW1tgfNS4W2PcVFOpNQ+nw8RG1VfnjcJET4+rbcS9VnVNNOBYjFAMcCFVPqlGhaUcIM1nIGhcRBK3E26E+bbAIl75311ObAM-giGgpwMh83eQ+Npm6hQCPgmnXTg4AP58cwAQnETrJnE4k9IA4AmFm10aQu9Nsy1UJrY0QE-5kBlwVAUsCYHcxMBtNW+OilwF7l4IhrCZt82ZpXRCe06UgEiElSV9NUJ1flHpix46hOaSqJTIGxTiHp1BYqVZm+gET8Drw6hT7i2gozz82CrBGsI0FiKIclwd2QnsGhySHh8wn2KUNGwIgPhZoKzH0AcBSC7JVCBADEKAMGRJ9oWqXFgeOi2zXdcuQTBAbIxCg8CmCRuKIRgOfbwchB9NavionFzb5dBW4croTxJbVd8svAwgHVzqKFpfkggt7kt1ChCsyAYQm0AwOhbCwrOkeWIQuV0EFdCqPKQLEuCC70RCKrgQoZp3qH6JeBOg0gE30yH19lo0Qbzn9yHZOCehswsLkpizA9RAufzS4PNx2CdxUETyVVLhzYCHgAuC3N8Dbl4EvhzemAvzvOA1QXCBEv3OboAKRC8COhI+B3D5EEGgF4uEOFYS0PiBtDpW37GAawNqrHgZW7AXXBG366K9khpwNwi+CZhrZCovAlAKqzmGpCsBwglfLuRHzi4gyVubnObzMxzFUC0AP1qxEupYEbwm4L4TCObYp4oc1QX1pmiLL-DIOKIzIu4V1SisrBOREWm0OpRUNTIXQp-JQwxY1E0MKQ9duKOoaCDYGIg3IeILABBZhhDEETImA16PhOAUgV3GigIYUsmhGMfQSANFGOw0+kA9AdCyXjSd8+UeRTmADk4cCkhCeJcAvnVFioAISQHhACNr54iiBuI9dq31JFWtcWe6dTlp2YGghSB+nZaGkBYjUk4Ch4AYL-XC7oCzRvAtnDKU+xpB-s6hIUq+iHb+jJSWRTASCOYBtCRGbAB0VcyObOjYhVzB8Kc3pFl9Bh-KH0USJ0QoC8RALUgA+C+ZTNqxe8d3FhluFcAk+cBSFHyGJaCCkSF7R6FIymYroWIdSLnJ2DYRnJBywJXdqOMIELj+WpKa0RENJaQs7csLLWjn0QLQs6WLY6UbyxZagg2Wco8vj2Lpq+jU8oGZUgGJ6pBiBxioploIJJHdRACh-aXKEBpHXhnSVkTAYpihxbisMqAZmm8FMCi4SAouZSKIFVQSAA0TEJluqnog1inSNoiAeCMz6Bt027vKEUXSDbdQVWdFPoRDS4FBZexa+GLqMNon-jKxGeYMeu2xEsSwJE44YCzyHZldgB7w1YeyPLZn462ZWc8baMb4NigeUo6sBD3giDswmH47sbTVRQ-i+JgYzflBKNyqTRJkYuHuwnUKppNOx6acSPBg4yBBB8gkoIQAzxKCih8AMiVADaEmCGxemCsh5mBQF9TuuqI7r40SFIivRX4wyX2O4kViTJUwvEQFMsndQvBnnYYKN0uCURoAr4EWPu2O4A5uoujZ+CLl4FSTh2mGEAm6kEEXhXKD4LyX0FkFuSnkG-byb5PoEUTGBYPaFupKfGaT-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-s34r8rNP-KMWubSuIff+PckgQvJ6eIuM4fp2M1EKjR7QhOJcwmgOAlhqUBuvZwL52bRNP2BLSQEIjJazURG26fJupihwGIRkRLdsnxRukmy0WtjUlCQyDKFy6UWCNZpiFP4Mt2hYqGyoa1Sgmt0-cVResgDdaVMdEH-hugzA1bYtdWwtOqFEBepXKd8AxtTz1W2b7NRUeErqhm1gA5tYwhuu5p2rbaFtSIR9XusxDz46aH6fMflEOgTboA4KwOaFt4Dxi+NSCXgB0DSAQRAwvAUTd3AmyhaxN3vPtpov+j-xRo8YTsBNkvg5p92VkNPIQHuSdbC0xMnxoxHOA3boWU24cE5mqBoQkg-C84J4G5S1b1tLAPig4BUDowKA+O2AITsm3E6dsftVAJhsp33Qadt2jHSTr-JhwIGOChRlTtZ3o7idSgDEK0TygTlHsDayDKZQL6FhXt72z7aJoR0Sbhd+4PKGYr7oS7+tUDZALAX9VXRxoI0GLAADZhOEERdZ8RGjbCs0emEXFulrxo72dSipqKgEuavYJy8iwVROg6Arx2AYatbVpt1Qu7NyHgS4F7vqiKzAdRWu0tExww5TIK0Wb+gXTR6L5081BBwD4MQDqBpAo3NOPbuJ3aw3dLAUPT7pa3LaIw3u5uB1uJ2rR1oBesAEXuZAFbfqQOqPSohj0trd4MWZbsXQzxbpU96ezPbIHwwxIWN-Qonf7pFJa169MstLZ7vL2+7FdlwCpnXrn2N6w28zJhq3vjCx7CMCe7vQCN71PgbGl6JAAPuz3D7xW-OhgXjl8A7RwwfOtumxqtbq184pOhavfphRsaE5Cs8BvAGoSArF8LOh-bFrNyxwfUf+u-YAY-2xa3JgECppjHf14LoDN+wCCtT0YjdmdBOoA7dpgPxVZhi2hA6xti1DRWEg4fcagFISnaMD1OrA3FvoiPa64GIJYXbngOQHEDt2wOHRA6ASSuAvAVcChXQOYACDo+2nePoeJ2qqD-OvTP2nFgKAwyIJfKhIZoPs7qAcOFoGLs86KGoDt2x4KID9BeAsFfjAA5ga0M58JYdPeQFNFfKaG2D7G8TSwHoNG9Q05Yfg9XCEONU2NOhjoMnyMPUGTD7OyovGAGLsAHYTonw5IeJ2zFYADgLKM9CsOCHWDoIlcGakv7mHg9rh+6IXFAX0EkFrqngOClk3MB466Qdwv3KPaYcWIMBM3voq3xWzDwMGtIGaIiLJinwm4DjSjSzDoaz6aRb9T5DWxqlBkCsfIxAvo47Js4pAZZLAsMgQZug9WaSjQ0az0z2A+2FhEpsga4L4gXRWXqFoVC0Z1Ae4Fql6kQhoEpk0U+IN0a2LPF9iFxxykhSWIBAWk0mu4zxXvXDGYgLx-LDNvb7Ekv1HDYiM+VS0UkfjPVfwH8ZMAN1hGYSO2q20gCvJCERdCZG8iVoeddayJm4-GBBMfhnY4xVFFibRMYmWAgYDbjmHxNuiiTCoZSOiaeay54Y2Jy4NSdnR4mnmXdYk3F2ZO0kti7AAI1Qg5OgguTaJ7raGh4BDbSA5JhMN1qygHAhTSyqKJKc9A71oGVCd+gqccrqQYjK4YUGxTJyc7uKpYZ2mqb8h-F04OVXLBlWPh4lMS2JdIOabAAEkiSaJGkcOAXWNBQ0-8q0w6cuBOmzRkm-LC6euClg4W8J6tpdOwYc0WRLbGIKgBYkKhLxhohQDeKp5osJRaS3U3gYkaSCpmtJHtgUp0mIjQR6AtToxw5rOcRKcvDzrmeYDpCi6OXPLuWda5g9dI9Z9uPTxqangGe6Cu7syGf3QAeSdC+nB2e6g9nrjpYUMcdmD2UlDDsndTkcSo5xEviIJ3HogXGILn2AmAOTpcD9Cui2pH7T0KWJFLvHxSAE6fazF3PspZp4e1NgicISVEQ8C9eE7Qly4PGyKtJXc12fTh+gTzr54ku4UTD8KFm7hMWkGpfXKFJAec87rgGDwyBjZKsMxLqTVxmi7Z+Wb6TBZuMrwoLUF09U-igt8jBwHhfrKeFFOoWlieFC5azHVl4XvjVxxbMTshLMRoSWxWEiyir2IkFyUyFoFfRhKolSw9xbpu53fgjRzjPVTsJoAotVhZz0INyFWx93DBdsuE1XXC3Yv0XuFVoUBbF0lOQLPdd3VNN4u2OgKAWJkMyDMlyMWQ3S1kcgKAsNSGXZUbtKJYSH3TZ1oAoW9OOenss+Zb0JpQeHQEcuNxPIcNCRBaENANBQtvWnMMFfRqRY-LmZ9NO4D0VDHYFxjKK7oofCxXaGMJ4BmQGgZvn36J9KK3vUZJ9gHyttMgP2g6AIYgKoddPKyt3RGCUaiWfpC2GyBAA"));
+        return JSON.parse(__webpack_require__(/*! global-compression */ "./src/js/core/lzstring.js").decompressX64("N4KABGBEDmA2D2AjAhrSAuMoIUg5AJgJYB20GUAMvIaeQDTg6QCmATm-GxZAKIddIjHFAAuAC3gBXAM7ISBGQBEiANyIF2PekKa4ZUgGaGiADwrYRYybPmKeAa11WoAWyKxYReCRk8Ass5WkIgeXj5+mJAAQkEikKJsYd6+PAAqkHpgAL7CzKQmJESiLDwFcWJErqWYlvE+LADKLADGPgQAgtDwPA1gMq3tYMjdFbimzW0KMl09UQA8pgB8-YPTw6N59SQs-qRSJbO9O2DuJAcsGz1bzKZ75yUzowvLp-uPV2NQDQAS0mxHKJ9GxsT43cZ-KRsJ5zKCLFYgmRgrK4BpKZAAT0B3xOBExyJckFM6IxMJ48LAeNJBOCAymikakjYonJdPaMiWfnBbneLBmCkm7MZXBZCzOFw5rjA8zZ005X0giI6CnuEuFzPJiKW4ml4se8u5RNVj3Jrz1fMyIlyWUgDhYpIsKLEyEQ6Q6sUNU0S8DQUQAwmkAEqUBWoUVQDqUDKGvktZAABxqUF4jT9Cpk4iIhnDkEaPwAkgAxaNOyAyePIFpJ3MABQ6ft4lpw2SY1twmlc8Gi8h20Md8VExVg1aULE7YAAauwZCkKpBSN6eABxFiiMASS4yUR2VB9UTwMBSEgIFoOYaeMCGFjIURQvkAQibbbcyFI-hY537zHjsExPBrv4YnOLTiPI0AsAg5D+qBZAQfADA2lU8Yio0yCqCw0DINUPD5q4yEajckDwImJCNP8VY-Au6SZkimHVGARBIsRH79ORLCPoRxAyG0bAEJQpBOFEADyxhEC0RCoGAKjcVwBBgM0bDodwhGIJwADuAxsAA6sgbBFGQPBkRwGL0GAiAHOu4iXHRlyMWADgkPAakkOuB5sEe-QIGpYA+GAGL-GZ6mafeYArmuG79NuCi7icSkzr5XCUk5x40HJIGcPRhiJRFhhSBeLCmImSQflWAB0c5yOhNmUCw6G+lQtUQdKywVWhGFYSwNV1QAqiQDnJTwvX9c5YBdRBwE+I8oiRFgpZenyogAPoAAwAIwrQAzMtABsABMy37V+hKDqIw48H6k0LWAADEa1fO2sY8FppDSlunBkEsAAku0AKzzAA9G9PjQCsWWghFbQ+ldKADBxTq4AgZCjtx6QHtAaibvA1QSHQZmVme+5+dIpn5pZ0jQOIa7FGAanSLAcmIJckOwK5pzIHaNMsCwDiwBiYDzVuMghfMqlLCLbArDK3ofWkNGc9zSL7vGYnoADQMfWA0RSB4ckQ-AUNbnjsPSqL4srD87AsAA5IrVmUtesCq6L0p5fzv4yDIAC8AA6IRSKeq78VuvtLN7Lk4PMXhLI0UiIO4a7IP0LRsFzviSGu8CGETUJG5chNS+9IMC6IAACGYJiwABepXeGr0sgwDUdhyIkdEEs0Q+LIYDIQuSJZtn-SgSnDEZy5MjwOJknVMQyD3o3bfNxHUek2pYT85I8ADGAP1JynH4ZvA03DAo3ecMhW-U4TEUF8DSxcTxBB14XKxtK4rhHsUfOE6oh8sKV8+h3DhAVuSxZaXFXiQXsYBwJHxvh9b6f1Ab1xWAAChrJiCssBTIdFcMgSuvklxZjXH6XSBBTJqVAiUJSA94wpyvGwAAlAAxewCo6jkIF4HYmBloAHZSo7VKvtfaYBVq7XQMtZaYAOj+DAA2RoaRmEkABnlSWzt8xWylAgeADhcZgzUqQ1mAwWC438jnZAak+RYyZinG8KQhZNitIaA+al8wkCyjwCcRAWBqQcTkVseRIAz0gjNOoUBzKiH3KkWopZtE8CEgAaQVJoYcJQeCjhSaUT08gqz1UgCQkgOSFS-hKNwKIlAbxaENCnLcukcyBgWrUhU1TVw8HqQMFkhoYGNCiniRG1YwryR6TFTJpZkmrhYEuDqOF7KOW8hQm8YBSYEGuKWdQ3jurxjxKkqInjvFgA2VskZhJnEbOgGwQgFoojCm8qc85mguSlmcfE+0oQFB0BmrmSQ3lnkYlecQMgfgsjPlwEhFCbUbL8E4KU2ax0hzVlwvhNckLBCGhKKYHMhZXzDl1geUFzJs6gkqu1ao6BfHAqgHi0QqEqodRji0KsHsjrMBOmdK54KOqLLwiKFgBAFRopzAATQCkSmyYBQJIkZixAw9K+QyFyp4PmlKeXlSBYRaqqVMUeDvEy3ALL+kcrsqpbRH4+UFQxVinlrN8ByVMYS9lJKyWESmCYNgrhqXEpYOk8ZOrKinWrBdNxRBXX2xSbOVFZqeAdGHqY-od4B76JIOFA8YySiWWsh1AA-I6m0IqOpesHD4ZF0LQm6rhTwTV2LWYpqOcEfl5aLU4pDeMtN-R7UsFJaqm01TtzMnqQAR21inXl0TYV+taQ0-FKcB1Bp5aa9FPAhVSDADsS1hNu21JbaKwmCYfxfztu0wcAKVWOJtDy4oPy-l0B9QkMt0EwKXAvaQf5CFCT3JaP+apttLh2j5olTsshLjhMifG+QSbhgeyINAEgplEqxgrqzOMBSILHubIRZpohH1vIBQGl1uCC0kGvXq8d7T7IvKfe8pJj0oiyzsqvC86Hzwsx-ZegFrMNxBvtoYZAeU1yqFQFIPkpUwAAWvFvZ1QbXAoYgOS20ZGsPQBkG01cQlBIwtrbeqAmHn1InQ5RlG1G7bMfI6x0C6EzKpzAAxq+VkOPVMTC0QcZnNBcZ4-Yzt8Qrw3jvG0xIYl8OEY05AUc44pzQjDaMqjUBF3rmKo2ysDKkSJ087eYeKD5jJbvEsBhNNMwgQYkiRyCc+MeBdMOBiLkIodngEJgNM5NDgzRquFtNTop9MvNlO28qWYFSKl4pDj53PMCJQAOUPjWTeM5EDDlccF2EJaoBvoXQFUV4rzNSramQsyFlu1cFxtTOyPhebdwm0QKbtkKv7qGW1uKKQasRA0OwVmMDmtXb6GDFtXWwA9fYH1qsA2T3xGHG1UbohxsQbOzNscc3SxEaiLNsAN2fB6ffVERdoIVvIAlRZolm3wnxrXoV8zwwzusx28PfbF3LhVaEz53bZACWtppdUPuTFjx83PpNsrL0cp5RZojkgQmo2XBjQYFOWbBu4B2GpA5FSAtjqiDL1NaEsWlZrfERbBnLb5ePoeTZFT2vgzlqK5XJWzumUZrG4ehNlnOWtSPf7qGbQNHddVKoxQ5esqoG7koclc3M+R0tpdiGfJs7FW1EPm423DATuuKo52W1VYR9OW7wmgdbxTp2MzEUCqMUPdACPPl0dNYii13pDQHfScIlIPXJQY5v10kBEd6n5dQGG3s6vhy4avsi5AC2w9dJ5ztiBe9SIZxIYHu7NcP5MQ8o7QD5gmZE3I2TkQeM-mm8DkC2kA4u3UAB6iFpKyOxqExpXXJKysB4yF+GMPLc-sHCmRAq0M80hwp2yttcsVC4rZbYib5bndsXkj2w42Yx8ck6iF46MZmrgfMjMhshMF+V+piFeOQVe8YZyFyMgri3oBA-s6+amm+LekAvUJ4Z4tymB++EYF45ciYSIMatC8AuBVY-M8gROAGjaR4pBuuGB9yYAAAtK9MgkoD4FbGuPct6HzLaj5PTJeJWPuMVELE-LfGAGAtwXcnyOuC6CwS5BbllEeHJL5BFErJZpBpTPzFwFApnM1snKnFJqgTaLgh7PmiwDhhJh7v6j4Lhk2qkoaBrlFtIDflThBKuLjInAgBnFnOZDrO8mAGlm0EeKICsITBbgVHIQwiFELgPKLsLgEQmmBsspZIxOLvPrgFNgJrQr3CDiQRPHaMOgQcyoFiDoeClAHDai0r4T3tELAOUUkImkiKZpcITpKi5JwTUZahiKuCFBdHhBkqcFwJcMOHVIrAeKMaeGmpJtmvEEZvJlgYmpwEwfgfNjekQd1AMPKqRr8sZgppQZADRrRByqtmEYfD5FnNsdpjlmJDqLghzNTKJl4g1ltjrGZJBrIQ5rtoJmAH3pcAPsMJeN4ubhZBbtkazHAkXFZGsa-i2m8e8koR9HPKbM7PMG0JoG7Jjl7FbNiWQFbEsAGMGADMSSwCsAANRSTnLQCYDNDDgOaBGJyExtDxh8z-TeF-xmzSgMmkkeyewUlybPrUl5hFgKL-QMlLCYB-AyGEzT7MHvywCDg-iXBWF9BRH0x0D-yEniktDuzkmUnQDUmRiKnKmYCuJKQZzFSJq2IJRZyamWqMw6kyCmkSybHMA2EVL+C6R2jFow6NF7KhlsDhk3GEJmbUyJzVDyB0DnEkBTJAr+JMDzhkBTIb5QDWkyBCRKSATXqZ67AJgBDwDoTpjBEOZazREAqGT1kJw2LphKwASVhjgfg5jdLETdy-hVjVCJpNKHwVKNnGkGRRCBjjmppGnPoKhen+A8ar6e6QBdlamrl6lNKNTQgsBCSunbj4GQD1JxT6lHnukEa+GMSq4dA76Hl9bHmzhw63kk7caEzglun+aorwRwAsA-BSB1G3F-llY-DdRKBLlDksCTmLlRCbmAbaxTkvrBDBklAxlxn+g2KpoYWVIRYZJpILScBAQS5hJIXPoIUjnhhHEtAYgWkwXkV0ATi6QSR9EfqyrSg-pJEHi0X0UI4sWgZ+kKjpw-rlI+k8B-CiA-qYDzBcUKgFDwBpBmohLwxQDlhczAWNCJizrci4DnKwStL3r3RqXyEjDVj9lslq7BAND5glCuA1jsCCgKA8CrQjxjhgBCmyi8q6UUp2UyAOVsBOXAUUjFBjhIieXGXzh+UBVBXCGxzrkoKmC7QMKRWDjDgfIUhpUWhOgtglFQCLEQTTF6klAg5ZhiRXnXoFWwBpCBZjQsyRyNSwBLAKivzFWzr+hYxtXeWlirEOBKXzoK4tG1HSgpz6K8RLBd7BBAY+Bt7op1U8CzVrjzWkWQCFZlVxj4YqWEhS7kGaCRrLrt7oHqHa4m6-hnaTXxA2TurAVo7QIPGY5rZjwbZ2EyaOEyCcmtDUWlgKX9U5g1ifqcX2gXQCncXmECmmSyX2jOGg0Z41nQknyQ0Yj5I5Kg2IY5IvWEQHzxjuGDRHUUGGjTUkDVGni408FWWlpaDUb-HNTNWor-FiUQQzQADaqlkA+YkV+Y7NPlbNnNHNE4kV-N3NE4XNrNwtItLguAYt4tEtbNAAGpFfLU6AALqGi4KmBVBSCuDzVRD+AdCy35j+DdQyKUC8ATi8CUCxFaUaVgCmBElQgpyJork6lZaBn6DPlbhiRbXN7rndK2Ie0tAPKvo3jIBkRQgMo+pu3zF1HzaEE+3yE6WqUPTcRJBr4vlQDSTT4YihH-qJovGRRR2DwVx9wuRSFVh7GSQLkmm+J5XxAMFMHtX1Gjrrn-WMH+wJ0S3MBvop0nkZ2AShHUGgS0EM4UJQygnyHs77Ft0yCmSkAWlAV7aJrsDTwSSpp114FCWqXkrq4QQYxDoR0NFEHpK73t0d0Laxjd1p1BaMSZ24w0EaEUKfGBEhrH2Nql29nnIsyV1kB2FWg5WGiOSMhF0t313AWjaF1D0DGPWnyt1Vi+4HhcZsDlROKD18gBXGjVgygoMcgeWnCu1qWrh54yDvifgFm4CZ2DjYTwWAQUPk1kVNkKYIXAWwUUYE0QTTSMM8DRBsOB1TUHCRJe2Ehej7AeGJrCORUHoUZXIEMsOs0jlSDjopYVYHhyPV1+J5UJA75JCoCURsWkO+rrlt6WqIFZrINOQ6N9lfJf6jmGiZiaDmPnQIADB4MhDdEsAVGJoIURmCObw5gXRbjOP6IYg9y6ON1QCBPBPTQBBhnTjCWxwSXdQegRbJ2r4nk1TZh8EWliRnjJnRMAkABWmtV+hMxQpkSQFMogGTXgax1uwRqaxQ-pYsos-1HFiNLGIMCG2F0JbMsZj2hgGULaLQ9tvZCOXiakMGoIqJSwZTlMlTWTuJ7TfJnTsJuCPToICyJerZlqJ4V5SDc02FKQdKCWpVJgG1l9uFoIq2wx-MnTBAGNiEi95yDmGM2+8hEk9URxsOUALzu+aANjvc+9kA6060Zqjz8h-40FOukzILchXA8zKwhhA5Vhickz4kbAfFd9cLrM0L3JxQF1wQ60u0i0Uw6E-k0KeSPgOw3J2e6KoLiUq8EgsJKLPgJLiUPpogmLhMUh4gsc+JEsZsNV8YMl6sIMfoVT2TJ8BAbJHLdsbLNMxQOoUh-6sMkV60G0i0PWdg1Edkdkkzw2QkipwrKwrBGgZWNkIUsFcxw82L8hiWJ8bLyxl4pAjEOoEU3Qkk06AciDZs-Lq+qpPockkz8pxYHLB4Xppw25ZW1rXA09YBh4W8kzgYIblmc5g+Y4P9ajzY2Z+gkg8Yu1ly9RIQbD16GZlDUAXDvppk0kvm4SiUAAZCoUeDsLADw9vck6nUjlctpXJLbYMxwL2U7YkWAIAEmENt8wUuA7zVK1ZwlNoTq1+ZyYNLch4W3ebbJ5VtlqPbQzjtPGKwI7tt47O7zjDBCW0bxb87eSfDdApks5z59O9bvtp4V6HRq7l9673bdtfb27ztw7o7B7ztR7r4oj05s7Jb1Yew6td7wmgHeeyOF9HbUAb7o7vbDtogE7P7+73iE7ZKWbdDyFAjYSRbejgSLALmOpALoH50zL9oiU5bHSrNXdKTl9aQ+l5YIofcflpkkgMhdglIbJrMYb2pupw46buVju8Q07XjwQzm3GZHejku57vAi7YJyk9H59jH8HG5ELcNaz4DF55hCAAJ1rI8InnooEpAqu5HCnSn8hsRfoZnJAKV3NDH7bBGVD3ZPk1Cicd91+bQBnWL1nxnsirBFuw+pAyqqjonleNo+h7AZy0gCgi0bL160nPGlnpbtxjb40TnanLnkangTkDrt4kCTU1SbESIMXoIX9Cmsb9rJnkZ7Au0aX1Y2+xXLMNVj2vN2XL7GnHQ+XGkbGmXLMpXYdGhFXgJeHNX3DInK15YXgESM7RxKXsnoT8n6X3Yv4SGKnHdxH3XrnUAA7WYR4TzPgkkAhvA6EoeXE1bEojG5W8YBwrO26F4r+9300dX3jeEchTXAQsXj2KCrVaRkVznJ574bA4EistM5hJALLlX3D5Wn5Ow73qFnVchfBpA5533Otv3oI-3KPDmjnqnu3P3YPGhogkPxL1HsPvp8PB4DQ036jgz83kn29pHX123FH-ofDeF23wPl9foD3unSIfTWMrkRTB4iAh8+4UoPHL3AvEvDLoEsAhgfpghz8+YWcMaAGIeR2fQFYzI5um4caNTQMe6+pG4oIevLpI8cr1B24ngc8SCz8EXhoA6hAmPUA-PTPsRAAilIIQATzzzlyeZ76PlgzT+1jnJbyr5M+rwPFr4dr+icJbwb5bnnMmkRfAKbz5Ob93BuolNTHRizDUvb3CxFytZwMeQtxFqz+76eSm0D0H5fTexUqH0XW7DUavFvIgHzAAJySKaBnJcwb0uBb1QD0o+JydQAc9QDN+pooJ+h+haQB8y288aez8aF31IjxEPPt+nid+Aa9-98YR7zD9WCRf2HxA1KevJckcyds8y3T+5jbjX9dcr65dXLP8OASqHw6ihWuAq+x8NwfMYPEMUuDVASem2CKNMyph2VtcXpOSC6DhotoQCMAtNmX3UbuBTAVfbvDX0n5zt0uF0PzuB254r9G+GnYgRDx4o+ho2cbUIgQGICOZAMw4eTPTzE7fhoO2AqTrf1S54DH+6CBcCQJXZv9g+1A6EC2hHplZvOhhQAiRypgkBXucrBlnrD87C8pQUA0wnINe5I91c0gM7LX34E78UEcVM7MvyEFwc9u5LAzl+jMg-9BeIeZAbILu4WR6WLrIfKIMvD9N1B5TJwaIG0HMBXe0dVmnwI4E49fe-vBvkTyiC9cvIDrXzrBkrA6gAh+lCIs1hQaKCdQicYgMYEti504hiDdAWwN1TnIMwN-XAStyn7ntmOmOcQBEOEGX0OgMqNfMXVe5C9+mqAIvg9ltZyRxCxFL9JJjACFh5iSkPwZHUsq18LKZlWoeYMMjx0kQBUBLG5X-6mRq8rMROFARYhxgKw4kUQBiBqzBdLg7BcDDrm06GAvId1EoKwKi6X9uUzPTutwOW4x0Kh6XIyCUimHqcLBLw9jmFSEz7gDwv4SuF-APA9ZfwpAAoVcOZS6QukKDOzs-k4Es87+tfNIJCNXCANEwMIl-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-7sB9+3+6tU9MylfI7OR4BwB3F4gxMUdgWcA0KU-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-BqfpBwdBisZ1Axs8S60k4vx9sTsChhbDZAgAA"));
     })()
 
 /***/ }),
@@ -13669,8 +13677,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGELOG", function() { return CHANGELOG; });
 const CHANGELOG = [
     {
+        version: "1.1.7",
+        date: "04.06.2020",
+        entries: ["HOTFIX: Fix savegames not showing up on the standalone version"],
+    },
+    {
+        version: "1.1.6",
+        date: "04.06.2020",
+        entries: [
+            "The steam release will happen on the <strong>7th of June</strong> - Be sure to add it to your wishlist! <a href='https://steam.shapez.io' target='blank'>View on steam</a>",
+            "Fixed level complete dialog being blurred when the shop was opened before",
+            "Standalone: Increased icon visibility for windows builds",
+            "Web version: Fixed firefox not loading the game when browsing in private mode",
+        ],
+    },
+
+    {
+        version: "1.1.5",
+        date: "03.06.2020",
+        entries: ["Added weekly contests!"],
+    },
+    {
+        version: "1.1.4",
+        date: "01.06.2020",
+        entries: ["Add 'interactive' tutorial for the first level to improve onboarding experience"],
+    },
+    {
         version: "1.1.3",
-        date: "unreleased",
+        date: "01.06.2020",
         entries: [
             "Added setting to configure zoom / mouse wheel / touchpad sensitivity",
             "Fix belts being too slow when copied via blueprint (by Dimava)",
@@ -14091,7 +14125,10 @@ __webpack_require__.r(__webpack_exports__);
 
 const logger = Object(_logging__WEBPACK_IMPORTED_MODULE_1__["createLogger"])("background_loader");
 
-const essentialMainMenuSprites = ["logo.png", ...["logo.png"].filter(src => src.startsWith("ui/"))];
+const essentialMainMenuSprites = [
+    "logo.png",
+    ...["logo.png"].filter(src => src.startsWith("ui/") && src.indexOf(".gif") < 0),
+];
 const essentialMainMenuSounds = [
     _platform_sound__WEBPACK_IMPORTED_MODULE_3__["SOUNDS"].uiClick,
     _platform_sound__WEBPACK_IMPORTED_MODULE_3__["SOUNDS"].uiError,
@@ -14102,7 +14139,7 @@ const essentialMainMenuSounds = [
 ];
 
 const essentialBareGameAtlases = _atlas_definitions__WEBPACK_IMPORTED_MODULE_4__["atlasFiles"];
-const essentialBareGameSprites = ["logo.png"];
+const essentialBareGameSprites = ["logo.png"].filter(src => src.indexOf(".gif") < 0);
 const essentialBareGameSounds = [_platform_sound__WEBPACK_IMPORTED_MODULE_3__["MUSIC"].theme];
 
 const additionalGameSprites = [];
@@ -14801,7 +14838,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const logger = Object(_core_logging__WEBPACK_IMPORTED_MODULE_1__["createLogger"])("click_detector");
 
-const MAX_MOVE_DISTANCE_PX = _config__WEBPACK_IMPORTED_MODULE_5__["IS_MOBILE"] ? 20 : 40;
+const MAX_MOVE_DISTANCE_PX = _config__WEBPACK_IMPORTED_MODULE_5__["IS_MOBILE"] ? 20 : 80;
 
 // For debugging
 const registerClickDetectors =  true && true;
@@ -15196,11 +15233,11 @@ class ClickDetector {
         if (this.clickDownPosition) {
             const pos = /** @type {typeof ClickDetector} */ (this.constructor).extractPointerPosition(event);
             const distance = pos.distance(this.clickDownPosition);
-            if (distance <= this.maxDistance) {
+            if (!_config__WEBPACK_IMPORTED_MODULE_5__["IS_MOBILE"] || distance <= this.maxDistance) {
                 dispatchClick = true;
                 dispatchClickPos = pos;
             } else {
-                // console.warn("[ClickDetector] Touch does not count as click: ms=", timeSinceStart, "-> tolerance:", tolerance, "(was", distance, ")");
+                console.warn("[ClickDetector] Touch does not count as click:", "(was", distance, ")");
             }
         }
 
@@ -15315,7 +15352,7 @@ const globalConfig = {
 
     // Belt speeds
     // NOTICE: Update webpack.production.config too!
-    beltSpeedItemsPerSecond: 2,
+    beltSpeedItemsPerSecond: 1,
     itemSpacingOnBelts: 0.63,
     minerSpeedItemsPerSecond: 0, // COMPUTED
 
@@ -15329,6 +15366,7 @@ const globalConfig = {
         painter: 1 / 6,
         painterDouble: 1 / 8,
         sorter: 1 / 1,
+        targetShapeChecker: 1 / 1,
         painterQuad: 1 / 8,
         mixer: 1 / 5,
         stacker: 1 / 6,
@@ -15367,12 +15405,13 @@ const globalConfig = {
         disableShortNumbers: false,
 
         // FEATURE
-        fastGameEnter: false,
         disableSavegameWrite: false,
         disableUnlockDialog: false,
         disableTutorialHints: false,
         disableUpgradeNotification: false,
         disableDynamicTickrate: false,
+        fastGameEnter: false,
+        pauseGameOnFastEnter: false,
 
         // ASSERT
         disableInternalCheckTile: false,
@@ -20798,7 +20837,7 @@ function getBuildId() {
     if ( true && _config__WEBPACK_IMPORTED_MODULE_0__["IS_DEBUG"]) {
         return "local-dev";
     } else if (true) {
-        return "dev-" + getPlatformName() + "-" + "edca32d";
+        return "dev-" + getPlatformName() + "-" + "7ee3d05";
     } else {}
 }
 
@@ -24042,6 +24081,113 @@ class MetaStackerBuilding extends _meta_building__WEBPACK_IMPORTED_MODULE_6__["M
 
 /***/ }),
 
+/***/ "./src/js/game/buildings/targetShapeChecker.js":
+/*!*****************************************************!*\
+  !*** ./src/js/game/buildings/targetShapeChecker.js ***!
+  \*****************************************************/
+/*! exports provided: MetaTargetShapeCheckerBuilding */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MetaTargetShapeCheckerBuilding", function() { return MetaTargetShapeCheckerBuilding; });
+/* harmony import */ var _core_config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core/config */ "./src/js/core/config.js");
+/* harmony import */ var _core_vector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/vector */ "./src/js/core/vector.js");
+/* harmony import */ var _components_item_acceptor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/item_acceptor */ "./src/js/game/components/item_acceptor.js");
+/* harmony import */ var _components_item_ejector__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/item_ejector */ "./src/js/game/components/item_ejector.js");
+/* harmony import */ var _components_item_processor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/item_processor */ "./src/js/game/components/item_processor.js");
+/* harmony import */ var _components_targetShapeChecker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/targetShapeChecker */ "./src/js/game/components/targetShapeChecker.js");
+/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../entity */ "./src/js/game/entity.js");
+/* harmony import */ var _meta_building__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../meta_building */ "./src/js/game/meta_building.js");
+/* harmony import */ var _root__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../root */ "./src/js/game/root.js");
+/* harmony import */ var _tutorial_goals__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../tutorial_goals */ "./src/js/game/tutorial_goals.js");
+/* harmony import */ var _translations__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../translations */ "./src/js/translations.js");
+/* harmony import */ var _core_utils__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../core/utils */ "./src/js/core/utils.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+class MetaTargetShapeCheckerBuilding extends _meta_building__WEBPACK_IMPORTED_MODULE_7__["MetaBuilding"] {
+    constructor() {
+        super("targetShapeChecker");
+    }
+
+    getDimensions() {
+        return new _core_vector__WEBPACK_IMPORTED_MODULE_1__["Vector"](1, 1);
+    }
+
+    getSilhouetteColor() {
+        return "#ff6000";
+    }
+
+    /**
+     * @param {GameRoot} root
+     */
+    getIsUnlocked(root) {
+        return true;// root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_sorter);
+    }
+
+    /**
+     * @param {GameRoot} root
+     * @param {string} variant
+     * @returns {Array<[string, string]>}
+     */
+    getAdditionalStatistics(root, variant) {
+        const speed = root.hubGoals.getProcessorBaseSpeed(_components_item_processor__WEBPACK_IMPORTED_MODULE_4__["enumItemProcessorTypes"].targetShapeChecker);
+        return [[_translations__WEBPACK_IMPORTED_MODULE_10__["T"].ingame.buildingPlacement.infoTexts.speed, Object(_core_utils__WEBPACK_IMPORTED_MODULE_11__["formatItemsPerSecond"])(speed)]];
+    }
+
+    /**
+     * Creates the entity at the given location
+     * @param {Entity} entity
+     */
+    setupEntityComponents(entity) {
+        entity.addComponent(
+            new _components_item_processor__WEBPACK_IMPORTED_MODULE_4__["ItemProcessorComponent"]({
+                inputsPerCharge: 1,
+                processorType: _components_item_processor__WEBPACK_IMPORTED_MODULE_4__["enumItemProcessorTypes"].targetShapeChecker,
+            })
+        );
+        entity.addComponent(new _components_targetShapeChecker__WEBPACK_IMPORTED_MODULE_5__["TargetShapeCheckerComponent"]({}));
+        entity.addComponent(
+            new _components_item_ejector__WEBPACK_IMPORTED_MODULE_3__["ItemEjectorComponent"]({
+                slots: [
+                    {
+                        pos: new _core_vector__WEBPACK_IMPORTED_MODULE_1__["Vector"](0, 0),
+                        direction: _core_vector__WEBPACK_IMPORTED_MODULE_1__["enumDirection"].top,
+                    },
+                    {
+                        pos: new _core_vector__WEBPACK_IMPORTED_MODULE_1__["Vector"](0, 0),
+                        direction: _core_vector__WEBPACK_IMPORTED_MODULE_1__["enumDirection"].right,
+                    },
+                ],
+            })
+        );
+        entity.addComponent(
+            new _components_item_acceptor__WEBPACK_IMPORTED_MODULE_2__["ItemAcceptorComponent"]({
+                slots: [
+                    {
+                        pos: new _core_vector__WEBPACK_IMPORTED_MODULE_1__["Vector"](0, 0),
+                        directions: [_core_vector__WEBPACK_IMPORTED_MODULE_1__["enumDirection"].bottom],
+                    },
+                ],
+            })
+        );
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/js/game/buildings/trash.js":
 /*!****************************************!*\
   !*** ./src/js/game/buildings/trash.js ***!
@@ -25825,15 +25971,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_static_map_entity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/static_map_entity */ "./src/js/game/components/static_map_entity.js");
 /* harmony import */ var _components_belt__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/belt */ "./src/js/game/components/belt.js");
 /* harmony import */ var _components_sorter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/sorter */ "./src/js/game/components/sorter.js");
-/* harmony import */ var _components_item_ejector__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/item_ejector */ "./src/js/game/components/item_ejector.js");
-/* harmony import */ var _components_item_acceptor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/item_acceptor */ "./src/js/game/components/item_acceptor.js");
-/* harmony import */ var _components_miner__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/miner */ "./src/js/game/components/miner.js");
-/* harmony import */ var _components_item_processor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/item_processor */ "./src/js/game/components/item_processor.js");
-/* harmony import */ var _components_replaceable_map_entity__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/replaceable_map_entity */ "./src/js/game/components/replaceable_map_entity.js");
-/* harmony import */ var _components_underground_belt__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/underground_belt */ "./src/js/game/components/underground_belt.js");
-/* harmony import */ var _components_unremovable__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/unremovable */ "./src/js/game/components/unremovable.js");
-/* harmony import */ var _components_hub__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/hub */ "./src/js/game/components/hub.js");
-/* harmony import */ var _components_storage__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/storage */ "./src/js/game/components/storage.js");
+/* harmony import */ var _components_targetShapeChecker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/targetShapeChecker */ "./src/js/game/components/targetShapeChecker.js");
+/* harmony import */ var _components_item_ejector__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/item_ejector */ "./src/js/game/components/item_ejector.js");
+/* harmony import */ var _components_item_acceptor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/item_acceptor */ "./src/js/game/components/item_acceptor.js");
+/* harmony import */ var _components_miner__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/miner */ "./src/js/game/components/miner.js");
+/* harmony import */ var _components_item_processor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/item_processor */ "./src/js/game/components/item_processor.js");
+/* harmony import */ var _components_replaceable_map_entity__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/replaceable_map_entity */ "./src/js/game/components/replaceable_map_entity.js");
+/* harmony import */ var _components_underground_belt__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/underground_belt */ "./src/js/game/components/underground_belt.js");
+/* harmony import */ var _components_unremovable__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/unremovable */ "./src/js/game/components/unremovable.js");
+/* harmony import */ var _components_hub__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/hub */ "./src/js/game/components/hub.js");
+/* harmony import */ var _components_storage__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/storage */ "./src/js/game/components/storage.js");
+
 
 
 
@@ -25852,15 +26000,16 @@ function initComponentRegistry() {
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_static_map_entity__WEBPACK_IMPORTED_MODULE_1__["StaticMapEntityComponent"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_belt__WEBPACK_IMPORTED_MODULE_2__["BeltComponent"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_sorter__WEBPACK_IMPORTED_MODULE_3__["SorterComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_item_ejector__WEBPACK_IMPORTED_MODULE_4__["ItemEjectorComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_item_acceptor__WEBPACK_IMPORTED_MODULE_5__["ItemAcceptorComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_miner__WEBPACK_IMPORTED_MODULE_6__["MinerComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_item_processor__WEBPACK_IMPORTED_MODULE_7__["ItemProcessorComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_replaceable_map_entity__WEBPACK_IMPORTED_MODULE_8__["ReplaceableMapEntityComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_underground_belt__WEBPACK_IMPORTED_MODULE_9__["UndergroundBeltComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_unremovable__WEBPACK_IMPORTED_MODULE_10__["UnremovableComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_hub__WEBPACK_IMPORTED_MODULE_11__["HubComponent"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_storage__WEBPACK_IMPORTED_MODULE_12__["StorageComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_targetShapeChecker__WEBPACK_IMPORTED_MODULE_4__["TargetShapeCheckerComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_item_ejector__WEBPACK_IMPORTED_MODULE_5__["ItemEjectorComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_item_acceptor__WEBPACK_IMPORTED_MODULE_6__["ItemAcceptorComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_miner__WEBPACK_IMPORTED_MODULE_7__["MinerComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_item_processor__WEBPACK_IMPORTED_MODULE_8__["ItemProcessorComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_replaceable_map_entity__WEBPACK_IMPORTED_MODULE_9__["ReplaceableMapEntityComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_underground_belt__WEBPACK_IMPORTED_MODULE_10__["UndergroundBeltComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_unremovable__WEBPACK_IMPORTED_MODULE_11__["UnremovableComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_hub__WEBPACK_IMPORTED_MODULE_12__["HubComponent"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gComponentRegistry"].register(_components_storage__WEBPACK_IMPORTED_MODULE_13__["StorageComponent"]);
 
     // IMPORTANT ^^^^^ UPDATE ENTITY COMPONENT STORAGE AFTERWARDS
 
@@ -25897,6 +26046,7 @@ var map = {
 	"./sorter.js": "./src/js/game/components/sorter.js",
 	"./static_map_entity.js": "./src/js/game/components/static_map_entity.js",
 	"./storage.js": "./src/js/game/components/storage.js",
+	"./targetShapeChecker.js": "./src/js/game/components/targetShapeChecker.js",
 	"./underground_belt.js": "./src/js/game/components/underground_belt.js",
 	"./unremovable.js": "./src/js/game/components/unremovable.js"
 };
@@ -26554,6 +26704,7 @@ __webpack_require__.r(__webpack_exports__);
 const enumItemProcessorTypes = {
     splitter: "splitter",
     sorter: "sorter",
+    targetShapeChecker: "targetShapeChecker",
     cutter: "cutter",
     cutterQuad: "cutterQuad",
     rotater: "rotater",
@@ -27214,6 +27365,67 @@ class StorageComponent extends _component__WEBPACK_IMPORTED_MODULE_0__["Componen
 
 /***/ }),
 
+/***/ "./src/js/game/components/targetShapeChecker.js":
+/*!******************************************************!*\
+  !*** ./src/js/game/components/targetShapeChecker.js ***!
+  \******************************************************/
+/*! exports provided: TargetShapeCheckerComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TargetShapeCheckerComponent", function() { return TargetShapeCheckerComponent; });
+/* harmony import */ var _component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../component */ "./src/js/game/component.js");
+/* harmony import */ var _savegame_serialization__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../savegame/serialization */ "./src/js/savegame/serialization.js");
+/* harmony import */ var _core_global_registries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../core/global_registries */ "./src/js/core/global_registries.js");
+/* harmony import */ var _base_item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../base_item */ "./src/js/game/base_item.js");
+/* harmony import */ var _core_vector__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../core/vector */ "./src/js/core/vector.js");
+/* harmony import */ var _core_builtins__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../core/builtins */ "./src/js/core/builtins.js");
+/* harmony import */ var _core_config__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../core/config */ "./src/js/core/config.js");
+
+
+
+
+
+
+
+
+class TargetShapeCheckerComponent extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+    static getId() {
+        return "TargetShapeChecker";
+    }
+
+    static getSchema() {
+        return {
+            filter: _savegame_serialization__WEBPACK_IMPORTED_MODULE_1__["types"].string,
+            filterIndex: _savegame_serialization__WEBPACK_IMPORTED_MODULE_1__["types"].int,
+            filterType: _savegame_serialization__WEBPACK_IMPORTED_MODULE_1__["types"].string,
+            isfil: _savegame_serialization__WEBPACK_IMPORTED_MODULE_1__["types"].bool,
+            storedItem: _savegame_serialization__WEBPACK_IMPORTED_MODULE_1__["types"].nullable(_savegame_serialization__WEBPACK_IMPORTED_MODULE_1__["types"].obj(_core_global_registries__WEBPACK_IMPORTED_MODULE_2__["gItemRegistry"])),
+        };
+    }
+    constructor({ filter = "unset", filterIndex = 0, filterType = "unset", isfil = false, storedItem = null }) {
+        super();
+
+        this.filter = filter;
+        this.filterIndex = filterIndex;
+        this.filterType = filterType;
+        this.isfil = isfil;
+        /**
+         * Currently stored item
+         * @type {BaseItem}
+         */
+        this.storedItem = storedItem;
+    }
+
+    duplicateWithoutContents() {
+        return new TargetShapeCheckerComponent(this);
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/js/game/components/underground_belt.js":
 /*!****************************************************!*\
   !*** ./src/js/game/components/underground_belt.js ***!
@@ -27818,6 +28030,7 @@ class GameCore {
         if (!this.root.camera.getIsMapOverlayActive()) {
             systems.hub.draw(params);
             systems.storage.draw(params);
+            systems.targetShapeChecker.draw(params);
         }
 
         if (true) {
@@ -27932,11 +28145,12 @@ class DynamicTickrate {
      * Increases the tick rate marginally
      */
     increaseTickRate() {
+        const desiredFps = this.root.app.settings.getDesiredFps();
         if (( true && _core_config__WEBPACK_IMPORTED_MODULE_2__["globalConfig"].debug.renderForTrailer) || _core_config__WEBPACK_IMPORTED_MODULE_2__["globalConfig"].debug.disableDynamicTickrate) {
+            this.setTickRate(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_round"])(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_min"])(desiredFps, this.currentTickRate * 1.2)));
             return;
         }
 
-        const desiredFps = this.root.app.settings.getDesiredFps();
         this.setTickRate(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_round"])(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_min"])(desiredFps, this.currentTickRate * 1.2)));
     }
 
@@ -27944,11 +28158,12 @@ class DynamicTickrate {
      * Decreases the tick rate marginally
      */
     decreaseTickRate() {
+        const desiredFps = this.root.app.settings.getDesiredFps();
         if (( true && _core_config__WEBPACK_IMPORTED_MODULE_2__["globalConfig"].debug.renderForTrailer) || _core_config__WEBPACK_IMPORTED_MODULE_2__["globalConfig"].debug.disableDynamicTickrate) {
+        this.setTickRate(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_round"])(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_max"])(desiredFps, this.currentTickRate * 0.8)));
             return;
         }
 
-        const desiredFps = this.root.app.settings.getDesiredFps();
         this.setTickRate(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_round"])(Object(_core_builtins__WEBPACK_IMPORTED_MODULE_3__["Math_max"])(desiredFps / 2, this.currentTickRate * 0.8)));
     }
 
@@ -28692,6 +28907,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _systems_static_map_entity__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./systems/static_map_entity */ "./src/js/game/systems/static_map_entity.js");
 /* harmony import */ var _systems_item_acceptor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./systems/item_acceptor */ "./src/js/game/systems/item_acceptor.js");
 /* harmony import */ var _systems_storage__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./systems/storage */ "./src/js/game/systems/storage.js");
+/* harmony import */ var _systems_targetShapeChecker__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./systems/targetShapeChecker */ "./src/js/game/systems/targetShapeChecker.js");
+
 
 
 
@@ -28740,6 +28957,8 @@ class GameSystemManager {
         add("undergroundBelt", _systems_underground_belt__WEBPACK_IMPORTED_MODULE_6__["UndergroundBeltSystem"]);
 
         add("miner", _systems_miner__WEBPACK_IMPORTED_MODULE_4__["MinerSystem"]);
+
+        add("targetShapeChecker", _systems_targetShapeChecker__WEBPACK_IMPORTED_MODULE_11__["TargetShapeCheckerSystem"]);
 
         add("storage", _systems_storage__WEBPACK_IMPORTED_MODULE_10__["StorageSystem"]);
 
@@ -29118,14 +29337,15 @@ class HubGoals extends _savegame_serialization__WEBPACK_IMPORTED_MODULE_4__["Bas
 
         this.createNextGoal();
 
-        // Allow quickly switching goals in dev mode with key "C"
+        // Allow quickly switching goals in dev mode
         if (true) {
-            this.root.gameState.inputReciever.keydown.add(key => {
-                if (key.keyCode === 66) {
-                    // Key: b
-                    this.onGoalCompleted();
-                }
-            });
+            if (true) {
+                window.addEventListener("keydown", ev => {
+                    if (ev.key === "b") {
+                        this.onGoalCompleted();
+                    }
+                });
+            }
         }
     }
 
@@ -29437,6 +29657,7 @@ class HubGoals extends _savegame_serialization__WEBPACK_IMPORTED_MODULE_4__["Bas
             case _components_item_processor__WEBPACK_IMPORTED_MODULE_6__["enumItemProcessorTypes"].rotater:
             case _components_item_processor__WEBPACK_IMPORTED_MODULE_6__["enumItemProcessorTypes"].rotaterCCW:
             case _components_item_processor__WEBPACK_IMPORTED_MODULE_6__["enumItemProcessorTypes"].sorter:
+            case _components_item_processor__WEBPACK_IMPORTED_MODULE_6__["enumItemProcessorTypes"].targetShapeChecker:
             case _components_item_processor__WEBPACK_IMPORTED_MODULE_6__["enumItemProcessorTypes"].stacker: {
                 window.assert(
                     _core_config__WEBPACK_IMPORTED_MODULE_1__["globalConfig"].buildingSpeeds[processorType],
@@ -29769,7 +29990,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _parts_modal_dialogs__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./parts/modal_dialogs */ "./src/js/game/hud/parts/modal_dialogs.js");
 /* harmony import */ var _parts_tutorial_hints__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./parts/tutorial_hints */ "./src/js/game/hud/parts/tutorial_hints.js");
 /* harmony import */ var _parts_waypoints__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./parts/waypoints */ "./src/js/game/hud/parts/waypoints.js");
-/* harmony import */ var _trailer_maker__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./trailer_maker */ "./src/js/game/hud/trailer_maker.js");
+/* harmony import */ var _parts_interactive_tutorial__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./parts/interactive_tutorial */ "./src/js/game/hud/parts/interactive_tutorial.js");
+/* harmony import */ var _trailer_maker__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./trailer_maker */ "./src/js/game/hud/trailer_maker.js");
+
 
 
 
@@ -29857,6 +30080,7 @@ class GameHUD {
         }
         if (this.root.app.settings.getAllSettings().offerHints) {
             this.parts.tutorialHints = new _parts_tutorial_hints__WEBPACK_IMPORTED_MODULE_24__["HUDPartTutorialHints"](this.root);
+            this.parts.interactiveTutorial = new _parts_interactive_tutorial__WEBPACK_IMPORTED_MODULE_26__["HUDInteractiveTutorial"](this.root);
         }
 
         const frag = document.createDocumentFragment();
@@ -29875,7 +30099,7 @@ class GameHUD {
 
         /* dev:start */
         if ( true && _core_config__WEBPACK_IMPORTED_MODULE_10__["globalConfig"].debug.renderForTrailer) {
-            this.trailerMaker = new _trailer_maker__WEBPACK_IMPORTED_MODULE_26__["TrailerMaker"](this.root);
+            this.trailerMaker = new _trailer_maker__WEBPACK_IMPORTED_MODULE_27__["TrailerMaker"](this.root);
         }
         /* dev:end*/
     }
@@ -31288,10 +31512,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _buildings_stacker__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../buildings/stacker */ "./src/js/game/buildings/stacker.js");
 /* harmony import */ var _buildings_trash__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../buildings/trash */ "./src/js/game/buildings/trash.js");
 /* harmony import */ var _buildings_sorter__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../buildings/sorter */ "./src/js/game/buildings/sorter.js");
-/* harmony import */ var _buildings_underground_belt__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../buildings/underground_belt */ "./src/js/game/buildings/underground_belt.js");
-/* harmony import */ var _meta_building__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../meta_building */ "./src/js/game/meta_building.js");
-/* harmony import */ var _base_hud_part__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../base_hud_part */ "./src/js/game/hud/base_hud_part.js");
-/* harmony import */ var _key_action_mapper__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../key_action_mapper */ "./src/js/game/key_action_mapper.js");
+/* harmony import */ var _buildings_targetShapeChecker__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../buildings/targetShapeChecker */ "./src/js/game/buildings/targetShapeChecker.js");
+/* harmony import */ var _buildings_underground_belt__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../buildings/underground_belt */ "./src/js/game/buildings/underground_belt.js");
+/* harmony import */ var _meta_building__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../meta_building */ "./src/js/game/meta_building.js");
+/* harmony import */ var _base_hud_part__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../base_hud_part */ "./src/js/game/hud/base_hud_part.js");
+/* harmony import */ var _key_action_mapper__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../key_action_mapper */ "./src/js/game/key_action_mapper.js");
+
 
 
 
@@ -31314,7 +31540,7 @@ __webpack_require__.r(__webpack_exports__);
 const toolbarBuildings = [
     _buildings_belt_base__WEBPACK_IMPORTED_MODULE_4__["MetaBeltBaseBuilding"],
     _buildings_splitter__WEBPACK_IMPORTED_MODULE_10__["MetaSplitterBuilding"],
-    _buildings_underground_belt__WEBPACK_IMPORTED_MODULE_14__["MetaUndergroundBeltBuilding"],
+    _buildings_underground_belt__WEBPACK_IMPORTED_MODULE_15__["MetaUndergroundBeltBuilding"],
     _buildings_miner__WEBPACK_IMPORTED_MODULE_6__["MetaMinerBuilding"],
     _buildings_cutter__WEBPACK_IMPORTED_MODULE_5__["MetaCutterBuilding"],
     _buildings_rotater__WEBPACK_IMPORTED_MODULE_9__["MetaRotaterBuilding"],
@@ -31323,9 +31549,10 @@ const toolbarBuildings = [
     _buildings_painter__WEBPACK_IMPORTED_MODULE_8__["MetaPainterBuilding"],
     _buildings_trash__WEBPACK_IMPORTED_MODULE_12__["MetaTrashBuilding"],
     _buildings_sorter__WEBPACK_IMPORTED_MODULE_13__["MetaSorterBuilding"],
+    _buildings_targetShapeChecker__WEBPACK_IMPORTED_MODULE_14__["MetaTargetShapeCheckerBuilding"],
 ];
 
-class HUDBuildingsToolbar extends _base_hud_part__WEBPACK_IMPORTED_MODULE_16__["BaseHUDPart"] {
+class HUDBuildingsToolbar extends _base_hud_part__WEBPACK_IMPORTED_MODULE_17__["BaseHUDPart"] {
     constructor(root) {
         super(root);
 
@@ -31362,7 +31589,7 @@ class HUDBuildingsToolbar extends _base_hud_part__WEBPACK_IMPORTED_MODULE_16__["
 
         for (let i = 0; i < toolbarBuildings.length; ++i) {
             const metaBuilding = _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].findByClass(toolbarBuildings[i]);
-            const binding = actionMapper.getBinding(_key_action_mapper__WEBPACK_IMPORTED_MODULE_17__["KEYMAPPINGS"].buildings[metaBuilding.getId()]);
+            const binding = actionMapper.getBinding(_key_action_mapper__WEBPACK_IMPORTED_MODULE_18__["KEYMAPPINGS"].buildings[metaBuilding.getId()]);
 
             const itemContainer = Object(_core_utils__WEBPACK_IMPORTED_MODULE_3__["makeDiv"])(items, null, ["building"]);
             itemContainer.setAttribute("data-icon", "building_icons/" + metaBuilding.getId() + ".png");
@@ -31388,7 +31615,7 @@ class HUDBuildingsToolbar extends _base_hud_part__WEBPACK_IMPORTED_MODULE_16__["
         );
 
         this.lastSelectedIndex = 0;
-        actionMapper.getBinding(_key_action_mapper__WEBPACK_IMPORTED_MODULE_17__["KEYMAPPINGS"].placement.cycleBuildings).add(this.cycleBuildings, this);
+        actionMapper.getBinding(_key_action_mapper__WEBPACK_IMPORTED_MODULE_18__["KEYMAPPINGS"].placement.cycleBuildings).add(this.cycleBuildings, this);
     }
 
     update() {
@@ -31634,6 +31861,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _translations__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../translations */ "./src/js/translations.js");
 /* harmony import */ var _key_action_mapper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../key_action_mapper */ "./src/js/game/key_action_mapper.js");
 /* harmony import */ var _core_config__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../core/config */ "./src/js/core/config.js");
+/* harmony import */ var _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../dynamic_dom_attach */ "./src/js/game/hud/dynamic_dom_attach.js");
+
 
 
 
@@ -31643,7 +31872,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPart"] {
-    initialize() {}
     createElements(parent) {
         this.element = Object(_core_utils__WEBPACK_IMPORTED_MODULE_1__["makeDiv"])(parent, "ingame_HUD_GameMenu");
 
@@ -31658,12 +31886,16 @@ class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPa
                     _translations__WEBPACK_IMPORTED_MODULE_4__["T"].ingame.notifications.newUpgrade,
                     _notifications__WEBPACK_IMPORTED_MODULE_3__["enumNotificationType"].upgrade,
                 ]),
+                visible: () =>
+                    !this.root.app.settings.getAllSettings().offerHints || this.root.hubGoals.level >= 3,
             },
             {
                 id: "stats",
                 label: "Stats",
                 handler: () => this.root.hud.parts.statistics.show(),
                 keybinding: _key_action_mapper__WEBPACK_IMPORTED_MODULE_5__["KEYMAPPINGS"].ingame.menuOpenStats,
+                visible: () =>
+                    !this.root.app.settings.getAllSettings().offerHints || this.root.hubGoals.level >= 3,
             },
         ];
 
@@ -31672,20 +31904,38 @@ class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPa
          * button: HTMLElement,
          * badgeElement: HTMLElement,
          * lastRenderAmount: number,
+         * condition?: function,
          * notification: [string, enumNotificationType]
          * }>} */
         this.badgesToUpdate = [];
 
-        buttons.forEach(({ id, label, handler, keybinding, badge, notification }) => {
+        /** @type {Array<{
+         * button: HTMLElement,
+         * condition: function,
+         * domAttach: DynamicDomAttach
+         * }>} */
+        this.visibilityToUpdate = [];
+
+        this.buttonsElement = Object(_core_utils__WEBPACK_IMPORTED_MODULE_1__["makeDiv"])(this.element, null, ["buttonContainer"]);
+
+        buttons.forEach(({ id, label, handler, keybinding, badge, notification, visible }) => {
             const button = document.createElement("button");
             button.setAttribute("data-button-id", id);
-            this.element.appendChild(button);
+            this.buttonsElement.appendChild(button);
             this.trackClicks(button, handler);
 
             if (keybinding) {
                 const binding = this.root.keyMapper.getBinding(keybinding);
                 binding.add(handler);
                 binding.appendLabelToElement(button);
+            }
+
+            if (visible) {
+                this.visibilityToUpdate.push({
+                    button,
+                    condition: visible,
+                    domAttach: new _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_7__["DynamicDomAttach"](this.root, button),
+                });
             }
 
             if (badge) {
@@ -31696,6 +31946,7 @@ class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPa
                     button,
                     badgeElement,
                     notification,
+                    condition: visible,
                 });
             }
         });
@@ -31714,27 +31965,52 @@ class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPa
 
         this.musicButton.classList.toggle("muted", this.root.app.settings.getAllSettings().musicMuted);
         this.sfxButton.classList.toggle("muted", this.root.app.settings.getAllSettings().soundsMuted);
-
+    }
+    initialize() {
         this.root.signals.gameSaved.add(this.onGameSaved, this);
     }
 
     update() {
         let playSound = false;
         let notifications = new Set();
+
+        // Update visibility of buttons
+        for (let i = 0; i < this.visibilityToUpdate.length; ++i) {
+            const { button, condition, domAttach } = this.visibilityToUpdate[i];
+            domAttach.update(condition());
+        }
+
+        // Check for notifications and badges
         for (let i = 0; i < this.badgesToUpdate.length; ++i) {
-            const { badge, button, badgeElement, lastRenderAmount, notification } = this.badgesToUpdate[i];
+            const {
+                badge,
+                button,
+                badgeElement,
+                lastRenderAmount,
+                notification,
+                condition,
+            } = this.badgesToUpdate[i];
+
+            if (condition && !condition()) {
+                // Do not show notifications for invisible buttons
+                continue;
+            }
+
+            // Check if the amount shown differs from the one shown last frame
             const amount = badge();
             if (lastRenderAmount !== amount) {
                 if (amount > 0) {
                     badgeElement.innerText = amount;
                 }
-                // Check if the badge increased
+                // Check if the badge increased, if so play a notification
                 if (amount > lastRenderAmount) {
                     playSound = true;
                     if (notification) {
                         notifications.add(notification);
                     }
                 }
+
+                // Rerender notifications
                 this.badgesToUpdate[i].lastRenderAmount = amount;
                 button.classList.toggle("hasBadge", amount > 0);
             }
@@ -31743,6 +32019,7 @@ class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPa
         if (playSound) {
             this.root.soundProxy.playUi(_platform_sound__WEBPACK_IMPORTED_MODULE_2__["SOUNDS"].badgeNotification);
         }
+
         notifications.forEach(([notification, type]) => {
             this.root.hud.signals.notification.dispatch(notification, type);
         });
@@ -31754,13 +32031,6 @@ class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPa
     }
 
     startSave() {
-        // if (IS_DEMO) {
-        //     this.root.hud.parts.dialogs.showFeatureRestrictionInfo(
-        //         null,
-        //         T.dialogs.saveNotPossibleInDemo.desc
-        //     );
-        // }
-
         this.root.gameState.doSave();
     }
 
@@ -31779,6 +32049,109 @@ class HUDGameMenu extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPa
         const newValue = !this.root.app.settings.getAllSettings().soundsMuted;
         this.root.app.settings.updateSetting("soundsMuted", newValue);
         this.sfxButton.classList.toggle("muted", newValue);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/game/hud/parts/interactive_tutorial.js":
+/*!*******************************************************!*\
+  !*** ./src/js/game/hud/parts/interactive_tutorial.js ***!
+  \*******************************************************/
+/*! exports provided: HUDInteractiveTutorial */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HUDInteractiveTutorial", function() { return HUDInteractiveTutorial; });
+/* harmony import */ var _base_hud_part__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../base_hud_part */ "./src/js/game/hud/base_hud_part.js");
+/* harmony import */ var _core_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/utils */ "./src/js/core/utils.js");
+/* harmony import */ var _root__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../root */ "./src/js/game/root.js");
+/* harmony import */ var _components_miner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/miner */ "./src/js/game/components/miner.js");
+/* harmony import */ var _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../dynamic_dom_attach */ "./src/js/game/hud/dynamic_dom_attach.js");
+/* harmony import */ var _core_tracked_state__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../core/tracked_state */ "./src/js/core/tracked_state.js");
+/* harmony import */ var _core_cachebust__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../core/cachebust */ "./src/js/core/cachebust.js");
+/* harmony import */ var _translations__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../translations */ "./src/js/translations.js");
+
+
+
+
+
+
+
+
+
+const tutorialsByLevel = [
+    // Level 1
+    [
+        // 1.1. place an extractor
+        {
+            id: "1_1_extractor",
+            condition: /** @param {GameRoot} root */ root => {
+                return root.entityMgr.getAllWithComponent(_components_miner__WEBPACK_IMPORTED_MODULE_3__["MinerComponent"]).length === 0;
+            },
+        },
+        // 1.2. connect to hub
+        {
+            id: "1_2_conveyor",
+            condition: /** @param {GameRoot} root */ root => {
+                return root.hubGoals.getCurrentGoalDelivered() === 0;
+            },
+        },
+        // 1.3 wait for completion
+        {
+            id: "1_3_expand",
+            condition: () => true,
+        },
+    ],
+];
+
+class HUDInteractiveTutorial extends _base_hud_part__WEBPACK_IMPORTED_MODULE_0__["BaseHUDPart"] {
+    createElements(parent) {
+        this.element = Object(_core_utils__WEBPACK_IMPORTED_MODULE_1__["makeDiv"])(
+            parent,
+            "ingame_HUD_InteractiveTutorial",
+            ["animEven"],
+            `
+            <strong class="title">Tutorial</strong>
+            `
+        );
+
+        this.elementDescription = Object(_core_utils__WEBPACK_IMPORTED_MODULE_1__["makeDiv"])(this.element, null, ["desc"]);
+        this.elementGif = Object(_core_utils__WEBPACK_IMPORTED_MODULE_1__["makeDiv"])(this.element, null, ["helperGif"]);
+    }
+
+    initialize() {
+        this.domAttach = new _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_4__["DynamicDomAttach"](this.root, this.element);
+        this.currentHintId = new _core_tracked_state__WEBPACK_IMPORTED_MODULE_5__["TrackedState"](this.onHintChanged, this);
+    }
+
+    onHintChanged(hintId) {
+        this.elementDescription.innerHTML = _translations__WEBPACK_IMPORTED_MODULE_7__["T"].ingame.interactiveTutorial.hints[hintId];
+        this.elementGif.style.backgroundImage =
+            "url('" + Object(_core_cachebust__WEBPACK_IMPORTED_MODULE_6__["cachebust"])("res/ui/interactive_tutorial.noinline/" + hintId + ".gif") + "')";
+        this.element.classList.toggle("animEven");
+        this.element.classList.toggle("animOdd");
+    }
+
+    update() {
+        // Compute current hint
+        const thisLevelHints = tutorialsByLevel[this.root.hubGoals.level - 1];
+        let targetHintId = null;
+
+        if (thisLevelHints) {
+            for (let i = 0; i < thisLevelHints.length; ++i) {
+                const hint = thisLevelHints[i];
+                if (hint.condition(this.root)) {
+                    targetHintId = hint.id;
+                    break;
+                }
+            }
+        }
+
+        this.currentHintId.set(targetHintId);
+        this.domAttach.update(!!targetHintId);
     }
 }
 
@@ -31824,10 +32197,6 @@ class HUDKeybindingOverlay extends _base_hud_part__WEBPACK_IMPORTED_MODULE_3__["
             "ingame_HUD_KeybindingOverlay",
             [],
             `
-            <div class="binding">
-                <code class="keybinding">${getKeycode(_key_action_mapper__WEBPACK_IMPORTED_MODULE_2__["KEYMAPPINGS"].navigation.createMarker)}</code>
-                <label>${_translations__WEBPACK_IMPORTED_MODULE_1__["T"].ingame.keybindingsOverlay.createMarker}</label>
-            </div>
 
             <div class="binding">
                 <code class="keybinding leftMouse noPlacementOnly"></code><i class="noPlacementOnly"></i>
@@ -31836,8 +32205,15 @@ class HUDKeybindingOverlay extends _base_hud_part__WEBPACK_IMPORTED_MODULE_3__["
                 <code class="keybinding">${getKeycode(_key_action_mapper__WEBPACK_IMPORTED_MODULE_2__["KEYMAPPINGS"].navigation.mapMoveDown)}</code>
                 <code class="keybinding">${getKeycode(_key_action_mapper__WEBPACK_IMPORTED_MODULE_2__["KEYMAPPINGS"].navigation.mapMoveRight)}</code>
                 <label>${_translations__WEBPACK_IMPORTED_MODULE_1__["T"].ingame.keybindingsOverlay.moveMap}</label>
-            </div>               
-            
+                </div>               
+                
+                
+                
+            <div class="binding noPlacementOnly">
+                <code class="keybinding rightMouse"></code>
+                <label>${_translations__WEBPACK_IMPORTED_MODULE_1__["T"].ingame.keybindingsOverlay.delete}</label>
+            </div>
+
             <div class="binding noPlacementOnly">
                 <code class="keybinding builtinKey">${getKeycode(
                     _key_action_mapper__WEBPACK_IMPORTED_MODULE_2__["KEYMAPPINGS"].massSelect.massSelectStart
@@ -33728,15 +34104,13 @@ class HUDShapeStatisticsHandle {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HUDPartTutorialHints", function() { return HUDPartTutorialHints; });
-/* harmony import */ var _core_cachebust__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../core/cachebust */ "./src/js/core/cachebust.js");
-/* harmony import */ var _core_input_receiver__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/input_receiver */ "./src/js/core/input_receiver.js");
-/* harmony import */ var _core_tracked_state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../core/tracked_state */ "./src/js/core/tracked_state.js");
-/* harmony import */ var _core_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../core/utils */ "./src/js/core/utils.js");
-/* harmony import */ var _key_action_mapper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../key_action_mapper */ "./src/js/game/key_action_mapper.js");
-/* harmony import */ var _base_hud_part__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../base_hud_part */ "./src/js/game/hud/base_hud_part.js");
-/* harmony import */ var _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../dynamic_dom_attach */ "./src/js/game/hud/dynamic_dom_attach.js");
-/* harmony import */ var _translations__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../translations */ "./src/js/translations.js");
-/* harmony import */ var _core_config__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../core/config */ "./src/js/core/config.js");
+/* harmony import */ var _core_input_receiver__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../core/input_receiver */ "./src/js/core/input_receiver.js");
+/* harmony import */ var _core_tracked_state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/tracked_state */ "./src/js/core/tracked_state.js");
+/* harmony import */ var _core_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../core/utils */ "./src/js/core/utils.js");
+/* harmony import */ var _key_action_mapper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../key_action_mapper */ "./src/js/game/key_action_mapper.js");
+/* harmony import */ var _base_hud_part__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../base_hud_part */ "./src/js/game/hud/base_hud_part.js");
+/* harmony import */ var _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../dynamic_dom_attach */ "./src/js/game/hud/dynamic_dom_attach.js");
+/* harmony import */ var _translations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../translations */ "./src/js/translations.js");
 
 
 
@@ -33745,22 +34119,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const tutorialVideos = [2, 3, 4, 5, 6, 7, 9, 10, 11];
 
-
-const tutorialVideos = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11];
-
-class HUDPartTutorialHints extends _base_hud_part__WEBPACK_IMPORTED_MODULE_5__["BaseHUDPart"] {
+class HUDPartTutorialHints extends _base_hud_part__WEBPACK_IMPORTED_MODULE_4__["BaseHUDPart"] {
     createElements(parent) {
-        this.element = Object(_core_utils__WEBPACK_IMPORTED_MODULE_3__["makeDiv"])(
+        this.element = Object(_core_utils__WEBPACK_IMPORTED_MODULE_2__["makeDiv"])(
             parent,
             "ingame_HUD_TutorialHints",
             [],
             `
         <div class="header">
-            <span>${_translations__WEBPACK_IMPORTED_MODULE_7__["T"].ingame.tutorialHints.title}</span>
+            <span>${_translations__WEBPACK_IMPORTED_MODULE_6__["T"].ingame.tutorialHints.title}</span>
             <button class="styledButton toggleHint">
-                <span class="show">${_translations__WEBPACK_IMPORTED_MODULE_7__["T"].ingame.tutorialHints.showHint}</span>
-                <span class="hide">${_translations__WEBPACK_IMPORTED_MODULE_7__["T"].ingame.tutorialHints.hideHint}</span>
+                <span class="show">${_translations__WEBPACK_IMPORTED_MODULE_6__["T"].ingame.tutorialHints.showHint}</span>
+                <span class="hide">${_translations__WEBPACK_IMPORTED_MODULE_6__["T"].ingame.tutorialHints.hideHint}</span>
             </button>
         </div>
 
@@ -33780,29 +34152,20 @@ class HUDPartTutorialHints extends _base_hud_part__WEBPACK_IMPORTED_MODULE_5__["
     initialize() {
         this.trackClicks(this.element.querySelector(".toggleHint"), this.toggleHintEnlarged);
 
-        this.videoAttach = new _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_6__["DynamicDomAttach"](this.root, this.videoElement, {
+        this.videoAttach = new _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_5__["DynamicDomAttach"](this.root, this.videoElement, {
             timeToKeepSeconds: 0.3,
         });
 
         this.videoAttach.update(false);
         this.enlarged = false;
 
-        this.inputReciever = new _core_input_receiver__WEBPACK_IMPORTED_MODULE_1__["InputReceiver"]("tutorial_hints");
-        this.keyActionMapper = new _key_action_mapper__WEBPACK_IMPORTED_MODULE_4__["KeyActionMapper"](this.root, this.inputReciever);
-        this.keyActionMapper.getBinding(_key_action_mapper__WEBPACK_IMPORTED_MODULE_4__["KEYMAPPINGS"].general.back).add(this.close, this);
+        this.inputReciever = new _core_input_receiver__WEBPACK_IMPORTED_MODULE_0__["InputReceiver"]("tutorial_hints");
+        this.keyActionMapper = new _key_action_mapper__WEBPACK_IMPORTED_MODULE_3__["KeyActionMapper"](this.root, this.inputReciever);
+        this.keyActionMapper.getBinding(_key_action_mapper__WEBPACK_IMPORTED_MODULE_3__["KEYMAPPINGS"].general.back).add(this.close, this);
 
-        this.domAttach = new _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_6__["DynamicDomAttach"](this.root, this.element);
+        this.domAttach = new _dynamic_dom_attach__WEBPACK_IMPORTED_MODULE_5__["DynamicDomAttach"](this.root, this.element);
 
-        this.currentShownLevel = new _core_tracked_state__WEBPACK_IMPORTED_MODULE_2__["TrackedState"](this.updateVideoUrl, this);
-
-        this.root.signals.postLoadHook.add(() => {
-            if (this.root.hubGoals.level === 1 && !( true && _core_config__WEBPACK_IMPORTED_MODULE_8__["globalConfig"].debug.disableTutorialHints)) {
-                this.root.hud.parts.dialogs.showInfo(
-                    _translations__WEBPACK_IMPORTED_MODULE_7__["T"].dialogs.hintDescription.title,
-                    _translations__WEBPACK_IMPORTED_MODULE_7__["T"].dialogs.hintDescription.desc
-                );
-            }
-        });
+        this.currentShownLevel = new _core_tracked_state__WEBPACK_IMPORTED_MODULE_1__["TrackedState"](this.updateVideoUrl, this);
     }
 
     updateVideoUrl(level) {
@@ -33912,7 +34275,7 @@ class HUDUnlockNotification extends _base_hud_part__WEBPACK_IMPORTED_MODULE_7__[
     createElements(parent) {
         this.inputReciever = new _core_input_receiver__WEBPACK_IMPORTED_MODULE_10__["InputReceiver"]("unlock-notification");
 
-        this.element = Object(_core_utils__WEBPACK_IMPORTED_MODULE_2__["makeDiv"])(parent, "ingame_HUD_UnlockNotification", []);
+        this.element = Object(_core_utils__WEBPACK_IMPORTED_MODULE_2__["makeDiv"])(parent, "ingame_HUD_UnlockNotification", ["noBlur"]);
 
         const dialog = Object(_core_utils__WEBPACK_IMPORTED_MODULE_2__["makeDiv"])(this.element, null, ["dialog"]);
 
@@ -34974,6 +35337,7 @@ const KEYMAPPINGS = {
         painter: { keyCode: key("9") },
         trash: { keyCode: key("0") },
         sorter: { keyCode: key("-") },
+        targetShapeChecker: { keyCode: key("=") },
     },
 
     placement: {
@@ -37118,8 +37482,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _buildings_stacker__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./buildings/stacker */ "./src/js/game/buildings/stacker.js");
 /* harmony import */ var _buildings_trash__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./buildings/trash */ "./src/js/game/buildings/trash.js");
 /* harmony import */ var _buildings_sorter__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./buildings/sorter */ "./src/js/game/buildings/sorter.js");
-/* harmony import */ var _buildings_underground_belt__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./buildings/underground_belt */ "./src/js/game/buildings/underground_belt.js");
-/* harmony import */ var _buildings_hub__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./buildings/hub */ "./src/js/game/buildings/hub.js");
+/* harmony import */ var _buildings_targetShapeChecker__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./buildings/targetShapeChecker */ "./src/js/game/buildings/targetShapeChecker.js");
+/* harmony import */ var _buildings_underground_belt__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./buildings/underground_belt */ "./src/js/game/buildings/underground_belt.js");
+/* harmony import */ var _buildings_hub__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./buildings/hub */ "./src/js/game/buildings/hub.js");
+
 
 
 
@@ -37137,6 +37503,7 @@ __webpack_require__.r(__webpack_exports__);
 function initMetaBuildingRegistry() {
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_splitter__WEBPACK_IMPORTED_MODULE_7__["MetaSplitterBuilding"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_sorter__WEBPACK_IMPORTED_MODULE_10__["MetaSorterBuilding"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_targetShapeChecker__WEBPACK_IMPORTED_MODULE_11__["MetaTargetShapeCheckerBuilding"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_miner__WEBPACK_IMPORTED_MODULE_3__["MetaMinerBuilding"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_cutter__WEBPACK_IMPORTED_MODULE_2__["MetaCutterBuilding"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_rotater__WEBPACK_IMPORTED_MODULE_6__["MetaRotaterBuilding"]);
@@ -37145,8 +37512,8 @@ function initMetaBuildingRegistry() {
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_painter__WEBPACK_IMPORTED_MODULE_5__["MetaPainterBuilding"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_trash__WEBPACK_IMPORTED_MODULE_9__["MetaTrashBuilding"]);
     _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_belt_base__WEBPACK_IMPORTED_MODULE_1__["MetaBeltBaseBuilding"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_underground_belt__WEBPACK_IMPORTED_MODULE_11__["MetaUndergroundBeltBuilding"]);
-    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_hub__WEBPACK_IMPORTED_MODULE_12__["MetaHubBuilding"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_underground_belt__WEBPACK_IMPORTED_MODULE_12__["MetaUndergroundBeltBuilding"]);
+    _core_global_registries__WEBPACK_IMPORTED_MODULE_0__["gMetaBuildingRegistry"].register(_buildings_hub__WEBPACK_IMPORTED_MODULE_13__["MetaHubBuilding"]);
 }
 
 
@@ -39457,6 +39824,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _game_system_with_filter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../game_system_with_filter */ "./src/js/game/game_system_with_filter.js");
 /* harmony import */ var _items_color_item__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../items/color_item */ "./src/js/game/items/color_item.js");
 /* harmony import */ var _items_shape_item__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../items/shape_item */ "./src/js/game/items/shape_item.js");
+/* harmony import */ var _shape_definition__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../shape_definition */ "./src/js/game/shape_definition.js");
+
 
 
 
@@ -39595,6 +39964,120 @@ class ItemProcessorSystem extends _game_system_with_filter__WEBPACK_IMPORTED_MOD
                         item: inputItem,
                         requiredSlot: 1,
                     });
+                } else if (!entity.components.Sorter.isfil) {
+                    entity.components.Sorter.isfil = true;
+                    entity.components.Sorter.filter = inputItem.serialize();
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: 1,
+                    });
+                } else {
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: 0,
+                    });
+                }
+                break;
+            }
+
+            // TARGET SHAPE CHECKER
+            case _components_item_processor__WEBPACK_IMPORTED_MODULE_4__["enumItemProcessorTypes"].targetShapeChecker: {
+                const inputItem = /** @type {ShapeItem} */ (items[0].item);
+                trackProduction = false;
+
+                const tscComponent = entity.components.TargetShapeChecker;
+                if (!tscComponent.isfil) {
+                    // setting filter type:
+                    let item = inputItem.definition.getHash();
+                    //shape:
+                    if (item.match(/([^-][^-]------|--[^-][^-]----|----[^-][^-]--|------[^-][^-])$/)) {
+                        let m = item.match(/([^-][^-])(--)*$/);
+                        tscComponent.filterType = 'shape';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9) / 2;
+                        let topKey = `${'--'.repeat(index)}${tscComponent.filter}u${'--'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new _items_shape_item__WEBPACK_IMPORTED_MODULE_8__["ShapeItem"](_shape_definition__WEBPACK_IMPORTED_MODULE_9__["ShapeDefinition"].fromShortKey(key));
+                    } else 
+                    // hole:
+                    if (item.match(/(--[^-][^-][^-][^-][^-][^-]|[^-][^-]--[^-][^-][^-][^-]|[^-][^-][^-][^-]--[^-][^-]|[^-][^-][^-][^-][^-][^-]--)$/)) {
+                        let m = item.match(/(--)([^-][^-])*$/);
+                        tscComponent.filterType = 'hole';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9) / 2;
+                        let topKey = `${'Cu'.repeat(index)}--${'Cu'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new _items_shape_item__WEBPACK_IMPORTED_MODULE_8__["ShapeItem"](_shape_definition__WEBPACK_IMPORTED_MODULE_9__["ShapeDefinition"].fromShortKey(key));
+                    } else 
+                    // color:
+                    if (item.match(/(.[^u].u.u.u|.u.[^u].u.u|.u.u.[^u].u|.u.u.u.[^u])$/)) {
+                        let m = item.match(/([^u])(.u)*$/);
+                        tscComponent.filterType = 'color';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9 - 1) / 2;
+                        let topKey = `${'--'.repeat(index)}C${tscComponent.filter}${'--'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new _items_shape_item__WEBPACK_IMPORTED_MODULE_8__["ShapeItem"](_shape_definition__WEBPACK_IMPORTED_MODULE_9__["ShapeDefinition"].fromShortKey(key));
+                    } else
+                    // uncolored:
+                    if (item.match(/(.u.[^u\-].[^u\-].[^u\-]|.[^u\-].u.[^u\-].[^u\-]|.[^u\-].[^u\-].u.[^u\-]|.[^u\-].[^u\-].[^u\-].u)$/)) {
+                        let m = item.match(/(u)(.[^u])*$/);
+                        tscComponent.filterType = 'uncolored';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9 - 1) / 2;
+                        let topKey = `${'--'.repeat(index)}C${tscComponent.filter}${'--'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new _items_shape_item__WEBPACK_IMPORTED_MODULE_8__["ShapeItem"](_shape_definition__WEBPACK_IMPORTED_MODULE_9__["ShapeDefinition"].fromShortKey(key));
+                    }
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: 0,
+                    });
+                    break;
+                }
+
+                if (tscComponent.isfil) {
+                    let goal = this.root.hubGoals.currentGoal.definition.getHash();
+
+                    let matches = true;
+
+                    if (tscComponent.filterType == 'color') {
+                        matches = goal[tscComponent.filterIndex] == tscComponent.filter;
+                    } else if (tscComponent.filterType == 'uncolored') {
+                        matches = !goal[tscComponent.filterIndex] || goal[tscComponent.filterIndex] == tscComponent.filter;
+                    } else if (tscComponent.filterType == 'shape') {
+                        matches = goal[tscComponent.filterIndex] == tscComponent.filter;
+                    } else if (tscComponent.filterType == 'hole') {
+                        matches = !goal[tscComponent.filterIndex] || goal[tscComponent.filterIndex] == tscComponent.filter;
+                    }
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: matches ? 0 : 1,
+                    });
+                    break;
+                }
+
+
+
+                break;
+                const availableSlots = entity.components.ItemEjector.slots.length - 1;
+                window.assert(inputItem instanceof _items_shape_item__WEBPACK_IMPORTED_MODULE_8__["ShapeItem"], "Input for sorting is not a shape");
+                if (
+                    inputItem.serialize() == entity.components.Sorter.filter &&
+                    entity.components.Sorter.isfil
+                ) {
                 } else if (!entity.components.Sorter.isfil) {
                     entity.components.Sorter.isfil = true;
                     entity.components.Sorter.filter = inputItem.serialize();
@@ -40281,6 +40764,75 @@ class StorageSystem extends _game_system_with_filter__WEBPACK_IMPORTED_MODULE_0_
 
 /***/ }),
 
+/***/ "./src/js/game/systems/targetShapeChecker.js":
+/*!***************************************************!*\
+  !*** ./src/js/game/systems/targetShapeChecker.js ***!
+  \***************************************************/
+/*! exports provided: TargetShapeCheckerSystem */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TargetShapeCheckerSystem", function() { return TargetShapeCheckerSystem; });
+/* harmony import */ var _game_system_with_filter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../game_system_with_filter */ "./src/js/game/game_system_with_filter.js");
+/* harmony import */ var _components_targetShapeChecker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/targetShapeChecker */ "./src/js/game/components/targetShapeChecker.js");
+/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../entity */ "./src/js/game/entity.js");
+/* harmony import */ var _core_draw_parameters__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core/draw_parameters */ "./src/js/core/draw_parameters.js");
+/* harmony import */ var _core_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../core/utils */ "./src/js/core/utils.js");
+/* harmony import */ var _core_loader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../core/loader */ "./src/js/core/loader.js");
+
+
+
+
+
+
+
+class TargetShapeCheckerSystem extends _game_system_with_filter__WEBPACK_IMPORTED_MODULE_0__["GameSystemWithFilter"] {
+    constructor(root) {
+        super(root, [_components_targetShapeChecker__WEBPACK_IMPORTED_MODULE_1__["TargetShapeCheckerComponent"]]);
+
+        this.storageOverlaySprite = _core_loader__WEBPACK_IMPORTED_MODULE_5__["Loader"].getSprite("sprites/misc/storage_overlay.png");
+    }
+
+    update() {
+    }
+
+    draw(parameters) {
+        this.forEachMatchingEntityOnScreen(parameters, this.drawEntity.bind(this));
+    }
+
+    /**
+     * @param {DrawParameters} parameters
+     * @param {Entity} entity
+     */
+    drawEntity(parameters, entity) {
+        const context = parameters.context;
+        const staticComp = entity.components.StaticMapEntity;
+
+        if (!staticComp.shouldBeDrawn(parameters)) {
+            return;
+        }
+
+        const tscComp = entity.components.TargetShapeChecker;
+        const storedItem = tscComp.storedItem;
+        const center = staticComp.getTileSpaceBounds().getCenter().toWorldSpace();
+        if (storedItem !== null) {
+            storedItem.draw(center.x, center.y, parameters, 30);
+        }
+        this.storageOverlaySprite.drawCached(parameters, center.x - 15, center.y + 15, 30, 15);
+
+        context.font = "bold 10px GameFont";
+        context.textAlign = "center";
+        context.fillStyle = "#64666e";
+        context.fillText(tscComp.filterType, center.x, center.y + 25.5);
+
+        context.textAlign = "left";
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/js/game/systems/underground_belt.js":
 /*!*************************************************!*\
   !*** ./src/js/game/systems/underground_belt.js ***!
@@ -40941,7 +41493,7 @@ const tutorialGoals = [
     // Circle
     {
         shape: "CuCuCuCu", // belts t1
-        required: 20,
+        required: 40,
         reward: enumHubGoalRewards.reward_cutter_and_trash,
     },
 
@@ -41395,9 +41947,11 @@ if (window.coreThreadLoadedCb) {
     window.coreThreadLoadedCb();
 }
 
+if (false) {}
+
 console.log(
-    `%cshapez.io ️%c\n© 2020 Tobias Springer IT Solutions\nCommit %c${"edca32d"}%c on %c${new Date(
-        1591124031117
+    `%cshapez.io ️%c\n© 2020 Tobias Springer IT Solutions\nCommit %c${"7ee3d05"}%c on %c${new Date(
+        1591342417838
     ).toLocaleString()}\n`,
     "font-size: 35px; font-family: Arial;font-weight: bold; padding: 10px 0;",
     "color: #aaa",
@@ -41875,7 +42429,7 @@ class ShapezGameAnalytics extends _game_analytics__WEBPACK_IMPORTED_MODULE_0__["
             ingameTime: root.time.now(),
             category,
             value,
-            version: "1.1.3",
+            version: "1.1.7",
             gameDump: this.generateGameDump(root, category === "sync"),
         });
     }
@@ -42608,9 +43162,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_logging__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../core/logging */ "./src/js/core/logging.js");
 /* harmony import */ var _core_query_parameters__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core/query_parameters */ "./src/js/core/query_parameters.js");
 /* harmony import */ var _core_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../core/utils */ "./src/js/core/utils.js");
-/* harmony import */ var _ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../ad_providers/no_ad_provider */ "./src/js/platform/ad_providers/no_ad_provider.js");
-/* harmony import */ var _wrapper__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../wrapper */ "./src/js/platform/wrapper.js");
-/* harmony import */ var _ad_providers_gamedistribution__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../ad_providers/gamedistribution */ "./src/js/platform/ad_providers/gamedistribution.js");
+/* harmony import */ var _ad_providers_gamedistribution__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../ad_providers/gamedistribution */ "./src/js/platform/ad_providers/gamedistribution.js");
+/* harmony import */ var _ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../ad_providers/no_ad_provider */ "./src/js/platform/ad_providers/no_ad_provider.js");
+/* harmony import */ var _wrapper__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../wrapper */ "./src/js/platform/wrapper.js");
+/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./storage */ "./src/js/platform/browser/storage.js");
+/* harmony import */ var _storage_indexed_db__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./storage_indexed_db */ "./src/js/platform/browser/storage_indexed_db.js");
+
+
 
 
 
@@ -42622,13 +43180,13 @@ __webpack_require__.r(__webpack_exports__);
 
 const logger = Object(_core_logging__WEBPACK_IMPORTED_MODULE_2__["createLogger"])("platform/browser");
 
-class PlatformWrapperImplBrowser extends _wrapper__WEBPACK_IMPORTED_MODULE_6__["PlatformWrapperInterface"] {
+class PlatformWrapperImplBrowser extends _wrapper__WEBPACK_IMPORTED_MODULE_7__["PlatformWrapperInterface"] {
     initialize() {
         this.recaptchaTokenCallback = null;
 
         this.embedProvider = {
             id: "shapezio-website",
-            adProvider: _ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_5__["NoAdProvider"],
+            adProvider: _ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_6__["NoAdProvider"],
             iframed: false,
             externalLinks: true,
             iogLink: true,
@@ -42663,7 +43221,7 @@ class PlatformWrapperImplBrowser extends _wrapper__WEBPACK_IMPORTED_MODULE_6__["
                 case "gamedistribution": {
                     this.embedProvider.id = "gamedistribution";
                     this.embedProvider.externalLinks = false;
-                    this.embedProvider.adProvider = _ad_providers_gamedistribution__WEBPACK_IMPORTED_MODULE_7__["GamedistributionAdProvider"];
+                    this.embedProvider.adProvider = _ad_providers_gamedistribution__WEBPACK_IMPORTED_MODULE_5__["GamedistributionAdProvider"];
                     break;
                 }
 
@@ -42685,7 +43243,36 @@ class PlatformWrapperImplBrowser extends _wrapper__WEBPACK_IMPORTED_MODULE_6__["
 
         logger.log("Embed provider:", this.embedProvider.id);
 
-        return super.initialize().then(() => this.initializeAdProvider());
+        return this.detectStorageImplementation()
+            .then(() => this.initializeAdProvider())
+            .then(() => super.initialize());
+    }
+
+    detectStorageImplementation() {
+        return new Promise(resolve => {
+            logger.log("Detecting storage");
+
+            if (!window.indexedDB) {
+                logger.log("Indexed DB not supported");
+                this.app.storage = new _storage__WEBPACK_IMPORTED_MODULE_8__["StorageImplBrowser"](this.app);
+                resolve();
+                return;
+            }
+
+            // Try accessing the indexedb
+            const request = window.indexedDB.open("indexeddb_feature_detection", 1);
+            request.onerror = err => {
+                logger.log("Indexed DB can *not* be accessed: ", err);
+                logger.log("Using fallback to local storage");
+                this.app.storage = new _storage__WEBPACK_IMPORTED_MODULE_8__["StorageImplBrowser"](this.app);
+                resolve();
+            };
+            request.onsuccess = () => {
+                logger.log("Indexed DB *can* be accessed");
+                this.app.storage = new _storage_indexed_db__WEBPACK_IMPORTED_MODULE_9__["StorageImplBrowserIndexedDB"](this.app);
+                resolve();
+            };
+        });
     }
 
     getHasUnlimitedSavegames() {
@@ -42694,71 +43281,6 @@ class PlatformWrapperImplBrowser extends _wrapper__WEBPACK_IMPORTED_MODULE_6__["
 
     getShowDemoBadges() {
         return this.embedProvider.showDemoBadge;
-    }
-
-    onSentryLoaded() {
-        logger.log("Initializing sentry");
-        window.Sentry.init({
-            dsn: "TODO SENTRY DSN",
-            release: "dev" + "-" + "1.1.3" + "@" + "edca32d",
-            // Will cause a deprecation warning, but the demise of `ignoreErrors` is still under discussion.
-            // See: https://github.com/getsentry/raven-js/issues/73
-            ignoreErrors: [
-                // Random plugins/extensions
-                "top.GLOBALS",
-                // See: http://blog.errorception.com/2012/03/tale-of-unfindable-js-error.html
-                "originalCreateNotification",
-                "canvas.contentDocument",
-                "MyApp_RemoveAllHighlights",
-                "http://tt.epicplay.com",
-                "Can't find variable: ZiteReader",
-                "jigsaw is not defined",
-                "ComboSearch is not defined",
-                "http://loading.retry.widdit.com/",
-                "atomicFindClose",
-                // Facebook borked
-                "fb_xd_fragment",
-                // ISP "optimizing" proxy - `Cache-Control: no-transform` seems to reduce this. (thanks @acdha)
-                // See http://stackoverflow.com/questions/4113268/how-to-stop-javascript-injection-from-vodafone-proxy
-                "bmi_SafeAddOnload",
-                "EBCallBackMessageReceived",
-                // See http://toolbar.conduit.com/Developer/HtmlAndGadget/Methods/JSInjection.aspx
-                "conduitPage",
-                // Generic error code from errors outside the security sandbox
-                // You can delete this if using raven.js > 1.0, which ignores these automatically.
-                "Script error.",
-
-                // Errors from ads
-                "Cannot read property 'postMessage' of null",
-
-                // Firefox only
-                "AbortError: The operation was aborted.",
-
-                "<unknown>",
-            ],
-            ignoreUrls: [
-                // Facebook flakiness
-                /graph\.facebook\.com/i,
-                // Facebook blocked
-                /connect\.facebook\.net\/en_US\/all\.js/i,
-                // Woopra flakiness
-                /eatdifferent\.com\.woopra-ns\.com/i,
-                /static\.woopra\.com\/js\/woopra\.js/i,
-                // Chrome extensions
-                /extensions\//i,
-                /^chrome:\/\//i,
-                // Other plugins
-                /127\.0\.0\.1:4001\/isrunning/i, // Cacaoweb
-                /webappstoolbarba\.texthelp\.com\//i,
-                /metrics\.itunes\.apple\.com\.edgesuite\.net\//i,
-            ],
-            beforeSend(event, hint) {
-                if (window.anyModLoaded) {
-                    return null;
-                }
-                return event;
-            },
-        });
     }
 
     getId() {
@@ -42843,7 +43365,7 @@ class PlatformWrapperImplBrowser extends _wrapper__WEBPACK_IMPORTED_MODULE_6__["
             this.app.adProvider = new adProvider(this.app);
             return this.app.adProvider.initialize().catch(err => {
                 logger.error("Failed to initialize ad provider, disabling ads:", err);
-                this.app.adProvider = new _ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_5__["NoAdProvider"](this.app);
+                this.app.adProvider = new _ad_providers_no_ad_provider__WEBPACK_IMPORTED_MODULE_6__["NoAdProvider"](this.app);
             });
         });
     }
@@ -42969,6 +43491,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _browser_wrapper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../browser/wrapper */ "./src/js/platform/browser/wrapper.js");
 /* harmony import */ var _core_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/utils */ "./src/js/core/utils.js");
 /* harmony import */ var _core_logging__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../core/logging */ "./src/js/core/logging.js");
+/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./storage */ "./src/js/platform/electron/storage.js");
+/* harmony import */ var _wrapper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../wrapper */ "./src/js/platform/wrapper.js");
+
+
 
 
 
@@ -42976,6 +43502,11 @@ __webpack_require__.r(__webpack_exports__);
 const logger = Object(_core_logging__WEBPACK_IMPORTED_MODULE_2__["createLogger"])("electron-wrapper");
 
 class PlatformWrapperImplElectron extends _browser_wrapper__WEBPACK_IMPORTED_MODULE_0__["PlatformWrapperImplBrowser"] {
+    initialize() {
+        this.app.storage = new _storage__WEBPACK_IMPORTED_MODULE_3__["StorageImplElectron"](this);
+        return _wrapper__WEBPACK_IMPORTED_MODULE_4__["PlatformWrapperInterface"].prototype.initialize.call(this);
+    }
+
     getId() {
         return "electron";
     }
@@ -42990,6 +43521,14 @@ class PlatformWrapperImplElectron extends _browser_wrapper__WEBPACK_IMPORTED_MOD
     }
 
     getSupportsAds() {
+        return false;
+    }
+
+    getHasUnlimitedSavegames() {
+        return true;
+    }
+
+    getShowDemoBadges() {
         return false;
     }
 
@@ -48112,10 +48651,6 @@ class MainMenuState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameS
             
             <p>${_translations__WEBPACK_IMPORTED_MODULE_6__["T"].demoBanners.intro}</p>
 
-            <ul>
-                ${_translations__WEBPACK_IMPORTED_MODULE_6__["T"].demoBanners.advantages.map(advantage => `<li>${advantage}</li>`).join("")}
-            </ul>
-
             <a href="#" class="steamLink" target="_blank">Get the shapez.io standalone!</a>
         `;
 
@@ -48140,18 +48675,22 @@ class MainMenuState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameS
 
             <div class="logo">
                 <img src="${Object(_core_cachebust__WEBPACK_IMPORTED_MODULE_1__["cachebust"])("res/logo.png")}" alt="shapez.io Logo">
-                ${
-                    _core_config__WEBPACK_IMPORTED_MODULE_2__["IS_DEMO"] && this.app.platformWrapper.getShowDemoBadges()
-                        ? `<div class="demoBadge"></div>`
-                        : ""
-                }
             </div>
 
 
             <div class="mainWrapper ${_core_config__WEBPACK_IMPORTED_MODULE_2__["IS_DEMO"] ? "demo" : "noDemo"}">
-            
-                ${_core_config__WEBPACK_IMPORTED_MODULE_2__["IS_DEMO"] ? `<div class="standaloneBanner">${bannerHtml}</div>` : ""}    
                 
+                <div class="sideContainer">
+                    ${_core_config__WEBPACK_IMPORTED_MODULE_2__["IS_DEMO"] ? `<div class="standaloneBanner">${bannerHtml}</div>` : ""}    
+                    <div class="contest">
+                        <h3>${_translations__WEBPACK_IMPORTED_MODULE_6__["T"].mainMenu.contests.contest_01_03062020.title}</h3>
+                        <p>${_translations__WEBPACK_IMPORTED_MODULE_6__["T"].mainMenu.contests.contest_01_03062020.desc}</p>
+                        <button class="styledButton participateContest">${
+                            _translations__WEBPACK_IMPORTED_MODULE_6__["T"].mainMenu.contests.showInfo
+                        }</button>
+                    </div>
+                </div>
+
                 <div class="mainContainer">
                     ${
                         Object(_core_utils__WEBPACK_IMPORTED_MODULE_3__["isSupportedBrowser"])()
@@ -48285,7 +48824,7 @@ class MainMenuState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameS
 
         if ( true && _core_config__WEBPACK_IMPORTED_MODULE_2__["globalConfig"].debug.fastGameEnter) {
             const games = this.app.savegameMgr.getSavegamesMetaData();
-            if (games.length > 0) {
+            if (games.length > 0 && _core_config__WEBPACK_IMPORTED_MODULE_2__["globalConfig"].debug.resumeGameOnFastEnter) {
                 this.resumeGame(games[0]);
             } else {
                 this.onPlayButtonClicked();
@@ -48305,6 +48844,8 @@ class MainMenuState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameS
 
         this.trackClicks(qs(".settingsButton"), this.onSettingsButtonClicked);
         this.trackClicks(qs(".changelog"), this.onChangelogClicked);
+
+        this.trackClicks(qs(".participateContest"), this.onContestClicked);
 
         if (false) {}
 
@@ -48349,6 +48890,15 @@ class MainMenuState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameS
 
     onChangelogClicked() {
         this.moveToState("ChangelogState");
+    }
+
+    onContestClicked() {
+        this.app.analytics.trackUiClick("contest_click");
+
+        this.dialogs.showInfo(
+            _translations__WEBPACK_IMPORTED_MODULE_6__["T"].mainMenu.contests.contest_01_03062020.title,
+            _translations__WEBPACK_IMPORTED_MODULE_6__["T"].mainMenu.contests.contest_01_03062020.longDesc
+        );
     }
 
     renderSavegames() {
@@ -48462,19 +49012,6 @@ class MainMenuState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameS
         this.moveToState("SettingsState");
     }
 
-    doStartNewGame() {
-        this.app.analytics.trackUiClick("startgame");
-
-        this.app.adProvider.showVideoAd().then(() => {
-            const savegame = this.app.savegameMgr.createNewSavegame();
-
-            this.moveToState("InGameState", {
-                savegame,
-            });
-            this.app.analytics.trackUiClick("startgame_adcomplete");
-        });
-    }
-
     onPlayButtonClicked() {
         if (
             _core_config__WEBPACK_IMPORTED_MODULE_2__["IS_DEMO"] &&
@@ -48486,17 +49023,15 @@ class MainMenuState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameS
             return;
         }
 
-        if (_core_config__WEBPACK_IMPORTED_MODULE_2__["IS_DEMO"]) {
-            this.app.analytics.trackUiClick("startgame_pre_show");
-            const { ok } = this.dialogs.showWarning(
-                _translations__WEBPACK_IMPORTED_MODULE_6__["T"].dialogs.demoExplanation.title,
-                _translations__WEBPACK_IMPORTED_MODULE_6__["T"].dialogs.demoExplanation.desc
-            );
-            ok.add(() => this.doStartNewGame());
-            return;
-        }
+        this.app.analytics.trackUiClick("startgame");
+        this.app.adProvider.showVideoAd().then(() => {
+            const savegame = this.app.savegameMgr.createNewSavegame();
 
-        this.doStartNewGame();
+            this.moveToState("InGameState", {
+                savegame,
+            });
+            this.app.analytics.trackUiClick("startgame_adcomplete");
+        });
     }
 
     onLeave() {
@@ -48754,11 +49289,11 @@ class PreloadState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameSt
                     .readFileAsync("lastversion.bin")
                     .catch(err => {
                         logger.warn("Failed to read lastversion:", err);
-                        return "1.1.3";
+                        return "1.1.7";
                     })
                     .then(version => {
-                        logger.log("Last version:", version, "App version:", "1.1.3");
-                        this.app.storage.writeFileAsync("lastversion.bin", "1.1.3");
+                        logger.log("Last version:", version, "App version:", "1.1.7");
+                        this.app.storage.writeFileAsync("lastversion.bin", "1.1.7");
                         return version;
                     })
                     .then(version => {
@@ -48853,7 +49388,7 @@ class PreloadState extends _core_game_state__WEBPACK_IMPORTED_MODULE_0__["GameSt
                         
                     <div class="lower">
                         <button class="resetApp styledButton">Reset App</button>
-                        <i>Build ${"1.1.3"} @ ${"edca32d"}</i>
+                        <i>Build ${"1.1.7"} @ ${"7ee3d05"}</i>
                     </div>
                 </div>
         `;
@@ -48979,14 +49514,14 @@ class SettingsState extends _core_textual_game_state__WEBPACK_IMPORTED_MODULE_1_
 
     renderBuildText() {
         const labelVersion = this.htmlElement.querySelector(".buildVersion");
-        const lastBuildMs = new Date().getTime() - 1591124031117;
+        const lastBuildMs = new Date().getTime() - 1591342417838;
         const lastBuildText = Object(_core_utils__WEBPACK_IMPORTED_MODULE_2__["formatSecondsToTimeAgo"])(lastBuildMs / 1000.0);
 
         const version = _translations__WEBPACK_IMPORTED_MODULE_4__["T"].settings.versionBadges["dev"];
 
         labelVersion.innerHTML = `
             <span class='version'>
-                ${"1.1.3"} @ ${version} @ ${"edca32d"}
+                ${"1.1.7"} @ ${version} @ ${"7ee3d05"}
             </span>
             <span class='buildTime'>
                 ${_translations__WEBPACK_IMPORTED_MODULE_4__["T"].settings.buildDate.replace("<at-date>", lastBuildText)}<br />
@@ -49092,7 +49627,7 @@ module.exports = function() {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = function() {
-  return __webpack_require__(/*! !./node_modules/worker-loader/dist/workers/InlineWorker.js */ "./node_modules/worker-loader/dist/workers/InlineWorker.js")("/******/ (function(modules) { // webpackBootstrap\n/******/ \t// The module cache\n/******/ \tvar installedModules = {};\n/******/\n/******/ \t// The require function\n/******/ \tfunction __webpack_require__(moduleId) {\n/******/\n/******/ \t\t// Check if module is in cache\n/******/ \t\tif(installedModules[moduleId]) {\n/******/ \t\t\treturn installedModules[moduleId].exports;\n/******/ \t\t}\n/******/ \t\t// Create a new module (and put it into the cache)\n/******/ \t\tvar module = installedModules[moduleId] = {\n/******/ \t\t\ti: moduleId,\n/******/ \t\t\tl: false,\n/******/ \t\t\texports: {}\n/******/ \t\t};\n/******/\n/******/ \t\t// Execute the module function\n/******/ \t\tmodules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n/******/\n/******/ \t\t// Flag the module as loaded\n/******/ \t\tmodule.l = true;\n/******/\n/******/ \t\t// Return the exports of the module\n/******/ \t\treturn module.exports;\n/******/ \t}\n/******/\n/******/\n/******/ \t// expose the modules object (__webpack_modules__)\n/******/ \t__webpack_require__.m = modules;\n/******/\n/******/ \t// expose the module cache\n/******/ \t__webpack_require__.c = installedModules;\n/******/\n/******/ \t// define getter function for harmony exports\n/******/ \t__webpack_require__.d = function(exports, name, getter) {\n/******/ \t\tif(!__webpack_require__.o(exports, name)) {\n/******/ \t\t\tObject.defineProperty(exports, name, { enumerable: true, get: getter });\n/******/ \t\t}\n/******/ \t};\n/******/\n/******/ \t// define __esModule on exports\n/******/ \t__webpack_require__.r = function(exports) {\n/******/ \t\tif(typeof Symbol !== 'undefined' && Symbol.toStringTag) {\n/******/ \t\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });\n/******/ \t\t}\n/******/ \t\tObject.defineProperty(exports, '__esModule', { value: true });\n/******/ \t};\n/******/\n/******/ \t// create a fake namespace object\n/******/ \t// mode & 1: value is a module id, require it\n/******/ \t// mode & 2: merge all properties of value into the ns\n/******/ \t// mode & 4: return value when already ns object\n/******/ \t// mode & 8|1: behave like require\n/******/ \t__webpack_require__.t = function(value, mode) {\n/******/ \t\tif(mode & 1) value = __webpack_require__(value);\n/******/ \t\tif(mode & 8) return value;\n/******/ \t\tif((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;\n/******/ \t\tvar ns = Object.create(null);\n/******/ \t\t__webpack_require__.r(ns);\n/******/ \t\tObject.defineProperty(ns, 'default', { enumerable: true, value: value });\n/******/ \t\tif(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));\n/******/ \t\treturn ns;\n/******/ \t};\n/******/\n/******/ \t// getDefaultExport function for compatibility with non-harmony modules\n/******/ \t__webpack_require__.n = function(module) {\n/******/ \t\tvar getter = module && module.__esModule ?\n/******/ \t\t\tfunction getDefault() { return module['default']; } :\n/******/ \t\t\tfunction getModuleExports() { return module; };\n/******/ \t\t__webpack_require__.d(getter, 'a', getter);\n/******/ \t\treturn getter;\n/******/ \t};\n/******/\n/******/ \t// Object.prototype.hasOwnProperty.call\n/******/ \t__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n/******/\n/******/ \t// __webpack_public_path__\n/******/ \t__webpack_require__.p = \"\";\n/******/\n/******/\n/******/ \t// Load entry module and return exports\n/******/ \treturn __webpack_require__(__webpack_require__.s = \"./node_modules/webpack-strip-block/index.js?!./src/js/webworkers/compression.worker.js\");\n/******/ })\n/************************************************************************/\n/******/ ({\n\n/***/ \"./node_modules/rusha/dist/rusha.js\":\n/*!******************************************!*\\\n  !*** ./node_modules/rusha/dist/rusha.js ***!\n  \\******************************************/\n/*! no static exports found */\n/***/ (function(module, exports, __webpack_require__) {\n\n(function webpackUniversalModuleDefinition(root, factory) {\n\tif(true)\n\t\tmodule.exports = factory();\n\telse {}\n})(typeof self !== 'undefined' ? self : this, function() {\nreturn /******/ (function(modules) { // webpackBootstrap\n/******/ \t// The module cache\n/******/ \tvar installedModules = {};\n/******/\n/******/ \t// The require function\n/******/ \tfunction __webpack_require__(moduleId) {\n/******/\n/******/ \t\t// Check if module is in cache\n/******/ \t\tif(installedModules[moduleId]) {\n/******/ \t\t\treturn installedModules[moduleId].exports;\n/******/ \t\t}\n/******/ \t\t// Create a new module (and put it into the cache)\n/******/ \t\tvar module = installedModules[moduleId] = {\n/******/ \t\t\ti: moduleId,\n/******/ \t\t\tl: false,\n/******/ \t\t\texports: {}\n/******/ \t\t};\n/******/\n/******/ \t\t// Execute the module function\n/******/ \t\tmodules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n/******/\n/******/ \t\t// Flag the module as loaded\n/******/ \t\tmodule.l = true;\n/******/\n/******/ \t\t// Return the exports of the module\n/******/ \t\treturn module.exports;\n/******/ \t}\n/******/\n/******/\n/******/ \t// expose the modules object (__webpack_modules__)\n/******/ \t__webpack_require__.m = modules;\n/******/\n/******/ \t// expose the module cache\n/******/ \t__webpack_require__.c = installedModules;\n/******/\n/******/ \t// define getter function for harmony exports\n/******/ \t__webpack_require__.d = function(exports, name, getter) {\n/******/ \t\tif(!__webpack_require__.o(exports, name)) {\n/******/ \t\t\tObject.defineProperty(exports, name, {\n/******/ \t\t\t\tconfigurable: false,\n/******/ \t\t\t\tenumerable: true,\n/******/ \t\t\t\tget: getter\n/******/ \t\t\t});\n/******/ \t\t}\n/******/ \t};\n/******/\n/******/ \t// getDefaultExport function for compatibility with non-harmony modules\n/******/ \t__webpack_require__.n = function(module) {\n/******/ \t\tvar getter = module && module.__esModule ?\n/******/ \t\t\tfunction getDefault() { return module['default']; } :\n/******/ \t\t\tfunction getModuleExports() { return module; };\n/******/ \t\t__webpack_require__.d(getter, 'a', getter);\n/******/ \t\treturn getter;\n/******/ \t};\n/******/\n/******/ \t// Object.prototype.hasOwnProperty.call\n/******/ \t__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n/******/\n/******/ \t// __webpack_public_path__\n/******/ \t__webpack_require__.p = \"\";\n/******/\n/******/ \t// Load entry module and return exports\n/******/ \treturn __webpack_require__(__webpack_require__.s = 3);\n/******/ })\n/************************************************************************/\n/******/ ([\n/* 0 */\n/***/ (function(module, exports, __webpack_require__) {\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\n/* eslint-env commonjs, browser */\n\nvar RushaCore = __webpack_require__(5);\n\nvar _require = __webpack_require__(1),\n    toHex = _require.toHex,\n    ceilHeapSize = _require.ceilHeapSize;\n\nvar conv = __webpack_require__(6);\n\n// Calculate the length of buffer that the sha1 routine uses\n// including the padding.\nvar padlen = function (len) {\n  for (len += 9; len % 64 > 0; len += 1) {}\n  return len;\n};\n\nvar padZeroes = function (bin, len) {\n  var h8 = new Uint8Array(bin.buffer);\n  var om = len % 4,\n      align = len - om;\n  switch (om) {\n    case 0:\n      h8[align + 3] = 0;\n    case 1:\n      h8[align + 2] = 0;\n    case 2:\n      h8[align + 1] = 0;\n    case 3:\n      h8[align + 0] = 0;\n  }\n  for (var i = (len >> 2) + 1; i < bin.length; i++) {\n    bin[i] = 0;\n  }\n};\n\nvar padData = function (bin, chunkLen, msgLen) {\n  bin[chunkLen >> 2] |= 0x80 << 24 - (chunkLen % 4 << 3);\n  // To support msgLen >= 2 GiB, use a float division when computing the\n  // high 32-bits of the big-endian message length in bits.\n  bin[((chunkLen >> 2) + 2 & ~0x0f) + 14] = msgLen / (1 << 29) | 0;\n  bin[((chunkLen >> 2) + 2 & ~0x0f) + 15] = msgLen << 3;\n};\n\nvar getRawDigest = function (heap, padMaxChunkLen) {\n  var io = new Int32Array(heap, padMaxChunkLen + 320, 5);\n  var out = new Int32Array(5);\n  var arr = new DataView(out.buffer);\n  arr.setInt32(0, io[0], false);\n  arr.setInt32(4, io[1], false);\n  arr.setInt32(8, io[2], false);\n  arr.setInt32(12, io[3], false);\n  arr.setInt32(16, io[4], false);\n  return out;\n};\n\nvar Rusha = function () {\n  function Rusha(chunkSize) {\n    _classCallCheck(this, Rusha);\n\n    chunkSize = chunkSize || 64 * 1024;\n    if (chunkSize % 64 > 0) {\n      throw new Error('Chunk size must be a multiple of 128 bit');\n    }\n    this._offset = 0;\n    this._maxChunkLen = chunkSize;\n    this._padMaxChunkLen = padlen(chunkSize);\n    // The size of the heap is the sum of:\n    // 1. The padded input message size\n    // 2. The extended space the algorithm needs (320 byte)\n    // 3. The 160 bit state the algoritm uses\n    this._heap = new ArrayBuffer(ceilHeapSize(this._padMaxChunkLen + 320 + 20));\n    this._h32 = new Int32Array(this._heap);\n    this._h8 = new Int8Array(this._heap);\n    this._core = new RushaCore({ Int32Array: Int32Array }, {}, this._heap);\n  }\n\n  Rusha.prototype._initState = function _initState(heap, padMsgLen) {\n    this._offset = 0;\n    var io = new Int32Array(heap, padMsgLen + 320, 5);\n    io[0] = 1732584193;\n    io[1] = -271733879;\n    io[2] = -1732584194;\n    io[3] = 271733878;\n    io[4] = -1009589776;\n  };\n\n  Rusha.prototype._padChunk = function _padChunk(chunkLen, msgLen) {\n    var padChunkLen = padlen(chunkLen);\n    var view = new Int32Array(this._heap, 0, padChunkLen >> 2);\n    padZeroes(view, chunkLen);\n    padData(view, chunkLen, msgLen);\n    return padChunkLen;\n  };\n\n  Rusha.prototype._write = function _write(data, chunkOffset, chunkLen, off) {\n    conv(data, this._h8, this._h32, chunkOffset, chunkLen, off || 0);\n  };\n\n  Rusha.prototype._coreCall = function _coreCall(data, chunkOffset, chunkLen, msgLen, finalize) {\n    var padChunkLen = chunkLen;\n    this._write(data, chunkOffset, chunkLen);\n    if (finalize) {\n      padChunkLen = this._padChunk(chunkLen, msgLen);\n    }\n    this._core.hash(padChunkLen, this._padMaxChunkLen);\n  };\n\n  Rusha.prototype.rawDigest = function rawDigest(str) {\n    var msgLen = str.byteLength || str.length || str.size || 0;\n    this._initState(this._heap, this._padMaxChunkLen);\n    var chunkOffset = 0,\n        chunkLen = this._maxChunkLen;\n    for (chunkOffset = 0; msgLen > chunkOffset + chunkLen; chunkOffset += chunkLen) {\n      this._coreCall(str, chunkOffset, chunkLen, msgLen, false);\n    }\n    this._coreCall(str, chunkOffset, msgLen - chunkOffset, msgLen, true);\n    return getRawDigest(this._heap, this._padMaxChunkLen);\n  };\n\n  Rusha.prototype.digest = function digest(str) {\n    return toHex(this.rawDigest(str).buffer);\n  };\n\n  Rusha.prototype.digestFromString = function digestFromString(str) {\n    return this.digest(str);\n  };\n\n  Rusha.prototype.digestFromBuffer = function digestFromBuffer(str) {\n    return this.digest(str);\n  };\n\n  Rusha.prototype.digestFromArrayBuffer = function digestFromArrayBuffer(str) {\n    return this.digest(str);\n  };\n\n  Rusha.prototype.resetState = function resetState() {\n    this._initState(this._heap, this._padMaxChunkLen);\n    return this;\n  };\n\n  Rusha.prototype.append = function append(chunk) {\n    var chunkOffset = 0;\n    var chunkLen = chunk.byteLength || chunk.length || chunk.size || 0;\n    var turnOffset = this._offset % this._maxChunkLen;\n    var inputLen = void 0;\n\n    this._offset += chunkLen;\n    while (chunkOffset < chunkLen) {\n      inputLen = Math.min(chunkLen - chunkOffset, this._maxChunkLen - turnOffset);\n      this._write(chunk, chunkOffset, inputLen, turnOffset);\n      turnOffset += inputLen;\n      chunkOffset += inputLen;\n      if (turnOffset === this._maxChunkLen) {\n        this._core.hash(this._maxChunkLen, this._padMaxChunkLen);\n        turnOffset = 0;\n      }\n    }\n    return this;\n  };\n\n  Rusha.prototype.getState = function getState() {\n    var turnOffset = this._offset % this._maxChunkLen;\n    var heap = void 0;\n    if (!turnOffset) {\n      var io = new Int32Array(this._heap, this._padMaxChunkLen + 320, 5);\n      heap = io.buffer.slice(io.byteOffset, io.byteOffset + io.byteLength);\n    } else {\n      heap = this._heap.slice(0);\n    }\n    return {\n      offset: this._offset,\n      heap: heap\n    };\n  };\n\n  Rusha.prototype.setState = function setState(state) {\n    this._offset = state.offset;\n    if (state.heap.byteLength === 20) {\n      var io = new Int32Array(this._heap, this._padMaxChunkLen + 320, 5);\n      io.set(new Int32Array(state.heap));\n    } else {\n      this._h32.set(new Int32Array(state.heap));\n    }\n    return this;\n  };\n\n  Rusha.prototype.rawEnd = function rawEnd() {\n    var msgLen = this._offset;\n    var chunkLen = msgLen % this._maxChunkLen;\n    var padChunkLen = this._padChunk(chunkLen, msgLen);\n    this._core.hash(padChunkLen, this._padMaxChunkLen);\n    var result = getRawDigest(this._heap, this._padMaxChunkLen);\n    this._initState(this._heap, this._padMaxChunkLen);\n    return result;\n  };\n\n  Rusha.prototype.end = function end() {\n    return toHex(this.rawEnd().buffer);\n  };\n\n  return Rusha;\n}();\n\nmodule.exports = Rusha;\nmodule.exports._core = RushaCore;\n\n/***/ }),\n/* 1 */\n/***/ (function(module, exports) {\n\n/* eslint-env commonjs, browser */\n\n//\n// toHex\n//\n\nvar precomputedHex = new Array(256);\nfor (var i = 0; i < 256; i++) {\n  precomputedHex[i] = (i < 0x10 ? '0' : '') + i.toString(16);\n}\n\nmodule.exports.toHex = function (arrayBuffer) {\n  var binarray = new Uint8Array(arrayBuffer);\n  var res = new Array(arrayBuffer.byteLength);\n  for (var _i = 0; _i < res.length; _i++) {\n    res[_i] = precomputedHex[binarray[_i]];\n  }\n  return res.join('');\n};\n\n//\n// ceilHeapSize\n//\n\nmodule.exports.ceilHeapSize = function (v) {\n  // The asm.js spec says:\n  // The heap object's byteLength must be either\n  // 2^n for n in [12, 24) or 2^24 * n for n ≥ 1.\n  // Also, byteLengths smaller than 2^16 are deprecated.\n  var p = 0;\n  // If v is smaller than 2^16, the smallest possible solution\n  // is 2^16.\n  if (v <= 65536) return 65536;\n  // If v < 2^24, we round up to 2^n,\n  // otherwise we round up to 2^24 * n.\n  if (v < 16777216) {\n    for (p = 1; p < v; p = p << 1) {}\n  } else {\n    for (p = 16777216; p < v; p += 16777216) {}\n  }\n  return p;\n};\n\n//\n// isDedicatedWorkerScope\n//\n\nmodule.exports.isDedicatedWorkerScope = function (self) {\n  var isRunningInWorker = 'WorkerGlobalScope' in self && self instanceof self.WorkerGlobalScope;\n  var isRunningInSharedWorker = 'SharedWorkerGlobalScope' in self && self instanceof self.SharedWorkerGlobalScope;\n  var isRunningInServiceWorker = 'ServiceWorkerGlobalScope' in self && self instanceof self.ServiceWorkerGlobalScope;\n\n  // Detects whether we run inside a dedicated worker or not.\n  //\n  // We can't just check for `DedicatedWorkerGlobalScope`, since IE11\n  // has a bug where it only supports `WorkerGlobalScope`.\n  //\n  // Therefore, we consider us as running inside a dedicated worker\n  // when we are running inside a worker, but not in a shared or service worker.\n  //\n  // When new types of workers are introduced, we will need to adjust this code.\n  return isRunningInWorker && !isRunningInSharedWorker && !isRunningInServiceWorker;\n};\n\n/***/ }),\n/* 2 */\n/***/ (function(module, exports, __webpack_require__) {\n\n/* eslint-env commonjs, worker */\n\nmodule.exports = function () {\n  var Rusha = __webpack_require__(0);\n\n  var hashData = function (hasher, data, cb) {\n    try {\n      return cb(null, hasher.digest(data));\n    } catch (e) {\n      return cb(e);\n    }\n  };\n\n  var hashFile = function (hasher, readTotal, blockSize, file, cb) {\n    var reader = new self.FileReader();\n    reader.onloadend = function onloadend() {\n      if (reader.error) {\n        return cb(reader.error);\n      }\n      var buffer = reader.result;\n      readTotal += reader.result.byteLength;\n      try {\n        hasher.append(buffer);\n      } catch (e) {\n        cb(e);\n        return;\n      }\n      if (readTotal < file.size) {\n        hashFile(hasher, readTotal, blockSize, file, cb);\n      } else {\n        cb(null, hasher.end());\n      }\n    };\n    reader.readAsArrayBuffer(file.slice(readTotal, readTotal + blockSize));\n  };\n\n  var workerBehaviourEnabled = true;\n\n  self.onmessage = function (event) {\n    if (!workerBehaviourEnabled) {\n      return;\n    }\n\n    var data = event.data.data,\n        file = event.data.file,\n        id = event.data.id;\n    if (typeof id === 'undefined') return;\n    if (!file && !data) return;\n    var blockSize = event.data.blockSize || 4 * 1024 * 1024;\n    var hasher = new Rusha(blockSize);\n    hasher.resetState();\n    var done = function (err, hash) {\n      if (!err) {\n        self.postMessage({ id: id, hash: hash });\n      } else {\n        self.postMessage({ id: id, error: err.name });\n      }\n    };\n    if (data) hashData(hasher, data, done);\n    if (file) hashFile(hasher, 0, blockSize, file, done);\n  };\n\n  return function () {\n    workerBehaviourEnabled = false;\n  };\n};\n\n/***/ }),\n/* 3 */\n/***/ (function(module, exports, __webpack_require__) {\n\n/* eslint-env commonjs, browser */\n\nvar work = __webpack_require__(4);\nvar Rusha = __webpack_require__(0);\nvar createHash = __webpack_require__(7);\nvar runWorker = __webpack_require__(2);\n\nvar _require = __webpack_require__(1),\n    isDedicatedWorkerScope = _require.isDedicatedWorkerScope;\n\nvar isRunningInDedicatedWorker = typeof self !== 'undefined' && isDedicatedWorkerScope(self);\n\nRusha.disableWorkerBehaviour = isRunningInDedicatedWorker ? runWorker() : function () {};\n\nRusha.createWorker = function () {\n  var worker = work(/*require.resolve*/(2));\n  var terminate = worker.terminate;\n  worker.terminate = function () {\n    URL.revokeObjectURL(worker.objectURL);\n    terminate.call(worker);\n  };\n  return worker;\n};\n\nRusha.createHash = createHash;\n\nmodule.exports = Rusha;\n\n/***/ }),\n/* 4 */\n/***/ (function(module, exports, __webpack_require__) {\n\nfunction webpackBootstrapFunc (modules) {\n/******/  // The module cache\n/******/  var installedModules = {};\n\n/******/  // The require function\n/******/  function __webpack_require__(moduleId) {\n\n/******/    // Check if module is in cache\n/******/    if(installedModules[moduleId])\n/******/      return installedModules[moduleId].exports;\n\n/******/    // Create a new module (and put it into the cache)\n/******/    var module = installedModules[moduleId] = {\n/******/      i: moduleId,\n/******/      l: false,\n/******/      exports: {}\n/******/    };\n\n/******/    // Execute the module function\n/******/    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n\n/******/    // Flag the module as loaded\n/******/    module.l = true;\n\n/******/    // Return the exports of the module\n/******/    return module.exports;\n/******/  }\n\n/******/  // expose the modules object (__webpack_modules__)\n/******/  __webpack_require__.m = modules;\n\n/******/  // expose the module cache\n/******/  __webpack_require__.c = installedModules;\n\n/******/  // identity function for calling harmony imports with the correct context\n/******/  __webpack_require__.i = function(value) { return value; };\n\n/******/  // define getter function for harmony exports\n/******/  __webpack_require__.d = function(exports, name, getter) {\n/******/    if(!__webpack_require__.o(exports, name)) {\n/******/      Object.defineProperty(exports, name, {\n/******/        configurable: false,\n/******/        enumerable: true,\n/******/        get: getter\n/******/      });\n/******/    }\n/******/  };\n\n/******/  // define __esModule on exports\n/******/  __webpack_require__.r = function(exports) {\n/******/    Object.defineProperty(exports, '__esModule', { value: true });\n/******/  };\n\n/******/  // getDefaultExport function for compatibility with non-harmony modules\n/******/  __webpack_require__.n = function(module) {\n/******/    var getter = module && module.__esModule ?\n/******/      function getDefault() { return module['default']; } :\n/******/      function getModuleExports() { return module; };\n/******/    __webpack_require__.d(getter, 'a', getter);\n/******/    return getter;\n/******/  };\n\n/******/  // Object.prototype.hasOwnProperty.call\n/******/  __webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n\n/******/  // __webpack_public_path__\n/******/  __webpack_require__.p = \"/\";\n\n/******/  // on error function for async loading\n/******/  __webpack_require__.oe = function(err) { console.error(err); throw err; };\n\n  var f = __webpack_require__(__webpack_require__.s = ENTRY_MODULE)\n  return f.default || f // try to call default if defined to also support babel esmodule exports\n}\n\nvar moduleNameReqExp = '[\\\\.|\\\\-|\\\\+|\\\\w|\\/|@]+'\nvar dependencyRegExp = '\\\\((\\/\\\\*.*?\\\\*\\/)?\\s?.*?(' + moduleNameReqExp + ').*?\\\\)' // additional chars when output.pathinfo is true\n\n// http://stackoverflow.com/a/2593661/130442\nfunction quoteRegExp (str) {\n  return (str + '').replace(/[.?*+^$[\\]\\\\(){}|-]/g, '\\\\$&')\n}\n\nfunction getModuleDependencies (sources, module, queueName) {\n  var retval = {}\n  retval[queueName] = []\n\n  var fnString = module.toString()\n  var wrapperSignature = fnString.match(/^function\\s?\\(\\w+,\\s*\\w+,\\s*(\\w+)\\)/)\n  if (!wrapperSignature) return retval\n  var webpackRequireName = wrapperSignature[1]\n\n  // main bundle deps\n  var re = new RegExp('(\\\\\\\\n|\\\\W)' + quoteRegExp(webpackRequireName) + dependencyRegExp, 'g')\n  var match\n  while ((match = re.exec(fnString))) {\n    if (match[3] === 'dll-reference') continue\n    retval[queueName].push(match[3])\n  }\n\n  // dll deps\n  re = new RegExp('\\\\(' + quoteRegExp(webpackRequireName) + '\\\\(\"(dll-reference\\\\s(' + moduleNameReqExp + '))\"\\\\)\\\\)' + dependencyRegExp, 'g')\n  while ((match = re.exec(fnString))) {\n    if (!sources[match[2]]) {\n      retval[queueName].push(match[1])\n      sources[match[2]] = __webpack_require__(match[1]).m\n    }\n    retval[match[2]] = retval[match[2]] || []\n    retval[match[2]].push(match[4])\n  }\n\n  return retval\n}\n\nfunction hasValuesInQueues (queues) {\n  var keys = Object.keys(queues)\n  return keys.reduce(function (hasValues, key) {\n    return hasValues || queues[key].length > 0\n  }, false)\n}\n\nfunction getRequiredModules (sources, moduleId) {\n  var modulesQueue = {\n    main: [moduleId]\n  }\n  var requiredModules = {\n    main: []\n  }\n  var seenModules = {\n    main: {}\n  }\n\n  while (hasValuesInQueues(modulesQueue)) {\n    var queues = Object.keys(modulesQueue)\n    for (var i = 0; i < queues.length; i++) {\n      var queueName = queues[i]\n      var queue = modulesQueue[queueName]\n      var moduleToCheck = queue.pop()\n      seenModules[queueName] = seenModules[queueName] || {}\n      if (seenModules[queueName][moduleToCheck] || !sources[queueName][moduleToCheck]) continue\n      seenModules[queueName][moduleToCheck] = true\n      requiredModules[queueName] = requiredModules[queueName] || []\n      requiredModules[queueName].push(moduleToCheck)\n      var newModules = getModuleDependencies(sources, sources[queueName][moduleToCheck], queueName)\n      var newModulesKeys = Object.keys(newModules)\n      for (var j = 0; j < newModulesKeys.length; j++) {\n        modulesQueue[newModulesKeys[j]] = modulesQueue[newModulesKeys[j]] || []\n        modulesQueue[newModulesKeys[j]] = modulesQueue[newModulesKeys[j]].concat(newModules[newModulesKeys[j]])\n      }\n    }\n  }\n\n  return requiredModules\n}\n\nmodule.exports = function (moduleId, options) {\n  options = options || {}\n  var sources = {\n    main: __webpack_require__.m\n  }\n\n  var requiredModules = options.all ? { main: Object.keys(sources) } : getRequiredModules(sources, moduleId)\n\n  var src = ''\n\n  Object.keys(requiredModules).filter(function (m) { return m !== 'main' }).forEach(function (module) {\n    var entryModule = 0\n    while (requiredModules[module][entryModule]) {\n      entryModule++\n    }\n    requiredModules[module].push(entryModule)\n    sources[module][entryModule] = '(function(module, exports, __webpack_require__) { module.exports = __webpack_require__; })'\n    src = src + 'var ' + module + ' = (' + webpackBootstrapFunc.toString().replace('ENTRY_MODULE', JSON.stringify(entryModule)) + ')({' + requiredModules[module].map(function (id) { return '' + JSON.stringify(id) + ': ' + sources[module][id].toString() }).join(',') + '});\\n'\n  })\n\n  src = src + '(' + webpackBootstrapFunc.toString().replace('ENTRY_MODULE', JSON.stringify(moduleId)) + ')({' + requiredModules.main.map(function (id) { return '' + JSON.stringify(id) + ': ' + sources.main[id].toString() }).join(',') + '})(self);'\n\n  var blob = new window.Blob([src], { type: 'text/javascript' })\n  if (options.bare) { return blob }\n\n  var URL = window.URL || window.webkitURL || window.mozURL || window.msURL\n\n  var workerUrl = URL.createObjectURL(blob)\n  var worker = new window.Worker(workerUrl)\n  worker.objectURL = workerUrl\n\n  return worker\n}\n\n\n/***/ }),\n/* 5 */\n/***/ (function(module, exports) {\n\n// The low-level RushCore module provides the heart of Rusha,\n// a high-speed sha1 implementation working on an Int32Array heap.\n// At first glance, the implementation seems complicated, however\n// with the SHA1 spec at hand, it is obvious this almost a textbook\n// implementation that has a few functions hand-inlined and a few loops\n// hand-unrolled.\nmodule.exports = function RushaCore(stdlib$846, foreign$847, heap$848) {\n    'use asm';\n    var H$849 = new stdlib$846.Int32Array(heap$848);\n    function hash$850(k$851, x$852) {\n        // k in bytes\n        k$851 = k$851 | 0;\n        x$852 = x$852 | 0;\n        var i$853 = 0, j$854 = 0, y0$855 = 0, z0$856 = 0, y1$857 = 0, z1$858 = 0, y2$859 = 0, z2$860 = 0, y3$861 = 0, z3$862 = 0, y4$863 = 0, z4$864 = 0, t0$865 = 0, t1$866 = 0;\n        y0$855 = H$849[x$852 + 320 >> 2] | 0;\n        y1$857 = H$849[x$852 + 324 >> 2] | 0;\n        y2$859 = H$849[x$852 + 328 >> 2] | 0;\n        y3$861 = H$849[x$852 + 332 >> 2] | 0;\n        y4$863 = H$849[x$852 + 336 >> 2] | 0;\n        for (i$853 = 0; (i$853 | 0) < (k$851 | 0); i$853 = i$853 + 64 | 0) {\n            z0$856 = y0$855;\n            z1$858 = y1$857;\n            z2$860 = y2$859;\n            z3$862 = y3$861;\n            z4$864 = y4$863;\n            for (j$854 = 0; (j$854 | 0) < 64; j$854 = j$854 + 4 | 0) {\n                t1$866 = H$849[i$853 + j$854 >> 2] | 0;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | ~y1$857 & y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1518500249 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[k$851 + j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 64 | 0; (j$854 | 0) < (k$851 + 80 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | ~y1$857 & y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1518500249 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 80 | 0; (j$854 | 0) < (k$851 + 160 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 ^ y2$859 ^ y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1859775393 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 160 | 0; (j$854 | 0) < (k$851 + 240 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | y1$857 & y3$861 | y2$859 & y3$861) | 0) + ((t1$866 + y4$863 | 0) - 1894007588 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 240 | 0; (j$854 | 0) < (k$851 + 320 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 ^ y2$859 ^ y3$861) | 0) + ((t1$866 + y4$863 | 0) - 899497514 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            y0$855 = y0$855 + z0$856 | 0;\n            y1$857 = y1$857 + z1$858 | 0;\n            y2$859 = y2$859 + z2$860 | 0;\n            y3$861 = y3$861 + z3$862 | 0;\n            y4$863 = y4$863 + z4$864 | 0;\n        }\n        H$849[x$852 + 320 >> 2] = y0$855;\n        H$849[x$852 + 324 >> 2] = y1$857;\n        H$849[x$852 + 328 >> 2] = y2$859;\n        H$849[x$852 + 332 >> 2] = y3$861;\n        H$849[x$852 + 336 >> 2] = y4$863;\n    }\n    return { hash: hash$850 };\n};\n\n/***/ }),\n/* 6 */\n/***/ (function(module, exports) {\n\nvar _this = this;\n\n/* eslint-env commonjs, browser */\n\nvar reader = void 0;\nif (typeof self !== 'undefined' && typeof self.FileReaderSync !== 'undefined') {\n  reader = new self.FileReaderSync();\n}\n\n// Convert a binary string and write it to the heap.\n// A binary string is expected to only contain char codes < 256.\nvar convStr = function (str, H8, H32, start, len, off) {\n  var i = void 0,\n      om = off % 4,\n      lm = (len + om) % 4,\n      j = len - lm;\n  switch (om) {\n    case 0:\n      H8[off] = str.charCodeAt(start + 3);\n    case 1:\n      H8[off + 1 - (om << 1) | 0] = str.charCodeAt(start + 2);\n    case 2:\n      H8[off + 2 - (om << 1) | 0] = str.charCodeAt(start + 1);\n    case 3:\n      H8[off + 3 - (om << 1) | 0] = str.charCodeAt(start);\n  }\n  if (len < lm + (4 - om)) {\n    return;\n  }\n  for (i = 4 - om; i < j; i = i + 4 | 0) {\n    H32[off + i >> 2] = str.charCodeAt(start + i) << 24 | str.charCodeAt(start + i + 1) << 16 | str.charCodeAt(start + i + 2) << 8 | str.charCodeAt(start + i + 3);\n  }\n  switch (lm) {\n    case 3:\n      H8[off + j + 1 | 0] = str.charCodeAt(start + j + 2);\n    case 2:\n      H8[off + j + 2 | 0] = str.charCodeAt(start + j + 1);\n    case 1:\n      H8[off + j + 3 | 0] = str.charCodeAt(start + j);\n  }\n};\n\n// Convert a buffer or array and write it to the heap.\n// The buffer or array is expected to only contain elements < 256.\nvar convBuf = function (buf, H8, H32, start, len, off) {\n  var i = void 0,\n      om = off % 4,\n      lm = (len + om) % 4,\n      j = len - lm;\n  switch (om) {\n    case 0:\n      H8[off] = buf[start + 3];\n    case 1:\n      H8[off + 1 - (om << 1) | 0] = buf[start + 2];\n    case 2:\n      H8[off + 2 - (om << 1) | 0] = buf[start + 1];\n    case 3:\n      H8[off + 3 - (om << 1) | 0] = buf[start];\n  }\n  if (len < lm + (4 - om)) {\n    return;\n  }\n  for (i = 4 - om; i < j; i = i + 4 | 0) {\n    H32[off + i >> 2 | 0] = buf[start + i] << 24 | buf[start + i + 1] << 16 | buf[start + i + 2] << 8 | buf[start + i + 3];\n  }\n  switch (lm) {\n    case 3:\n      H8[off + j + 1 | 0] = buf[start + j + 2];\n    case 2:\n      H8[off + j + 2 | 0] = buf[start + j + 1];\n    case 1:\n      H8[off + j + 3 | 0] = buf[start + j];\n  }\n};\n\nvar convBlob = function (blob, H8, H32, start, len, off) {\n  var i = void 0,\n      om = off % 4,\n      lm = (len + om) % 4,\n      j = len - lm;\n  var buf = new Uint8Array(reader.readAsArrayBuffer(blob.slice(start, start + len)));\n  switch (om) {\n    case 0:\n      H8[off] = buf[3];\n    case 1:\n      H8[off + 1 - (om << 1) | 0] = buf[2];\n    case 2:\n      H8[off + 2 - (om << 1) | 0] = buf[1];\n    case 3:\n      H8[off + 3 - (om << 1) | 0] = buf[0];\n  }\n  if (len < lm + (4 - om)) {\n    return;\n  }\n  for (i = 4 - om; i < j; i = i + 4 | 0) {\n    H32[off + i >> 2 | 0] = buf[i] << 24 | buf[i + 1] << 16 | buf[i + 2] << 8 | buf[i + 3];\n  }\n  switch (lm) {\n    case 3:\n      H8[off + j + 1 | 0] = buf[j + 2];\n    case 2:\n      H8[off + j + 2 | 0] = buf[j + 1];\n    case 1:\n      H8[off + j + 3 | 0] = buf[j];\n  }\n};\n\nmodule.exports = function (data, H8, H32, start, len, off) {\n  if (typeof data === 'string') {\n    return convStr(data, H8, H32, start, len, off);\n  }\n  if (data instanceof Array) {\n    return convBuf(data, H8, H32, start, len, off);\n  }\n  // Safely doing a Buffer check using \"this\" to avoid Buffer polyfill to be included in the dist\n  if (_this && _this.Buffer && _this.Buffer.isBuffer(data)) {\n    return convBuf(data, H8, H32, start, len, off);\n  }\n  if (data instanceof ArrayBuffer) {\n    return convBuf(new Uint8Array(data), H8, H32, start, len, off);\n  }\n  if (data.buffer instanceof ArrayBuffer) {\n    return convBuf(new Uint8Array(data.buffer, data.byteOffset, data.byteLength), H8, H32, start, len, off);\n  }\n  if (data instanceof Blob) {\n    return convBlob(data, H8, H32, start, len, off);\n  }\n  throw new Error('Unsupported data type.');\n};\n\n/***/ }),\n/* 7 */\n/***/ (function(module, exports, __webpack_require__) {\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\n/* eslint-env commonjs, browser */\n\nvar Rusha = __webpack_require__(0);\n\nvar _require = __webpack_require__(1),\n    toHex = _require.toHex;\n\nvar Hash = function () {\n  function Hash() {\n    _classCallCheck(this, Hash);\n\n    this._rusha = new Rusha();\n    this._rusha.resetState();\n  }\n\n  Hash.prototype.update = function update(data) {\n    this._rusha.append(data);\n    return this;\n  };\n\n  Hash.prototype.digest = function digest(encoding) {\n    var digest = this._rusha.rawEnd().buffer;\n    if (!encoding) {\n      return digest;\n    }\n    if (encoding === 'hex') {\n      return toHex(digest);\n    }\n    throw new Error('unsupported digest encoding');\n  };\n\n  return Hash;\n}();\n\nmodule.exports = function () {\n  return new Hash();\n};\n\n/***/ })\n/******/ ]);\n});\n\n/***/ }),\n\n/***/ \"./node_modules/webpack-strip-block/index.js?!./src/js/webworkers/compression.worker.js\":\n/*!**********************************************************************************************!*\\\n  !*** ./node_modules/webpack-strip-block??ref--7-0!./src/js/webworkers/compression.worker.js ***!\n  \\**********************************************************************************************/\n/*! no exports provided */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _core_lzstring__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/lzstring */ \"./src/js/core/lzstring.js\");\n/* harmony import */ var _core_config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/config */ \"./src/js/core/config.js\");\n/* harmony import */ var _core_sensitive_utils_encrypt__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/sensitive_utils.encrypt */ \"./src/js/core/sensitive_utils.encrypt.js\");\n\r\n\r\n\r\n\r\nfunction accessNestedPropertyReverse(obj, keys) {\r\n    let result = obj;\r\n    for (let i = keys.length - 1; i >= 0; --i) {\r\n        result = result[keys[i]];\r\n    }\r\n    return result;\r\n}\r\n\r\nconst salt = accessNestedPropertyReverse(_core_config__WEBPACK_IMPORTED_MODULE_1__[\"globalConfig\"], [\"file\", \"info\"]);\r\n\r\nonmessage = function (event) {\r\n    const { jobId, job, data } = event.data;\r\n    const result = performJob(job, data);\r\n\r\n    // @ts-ignore\r\n    postMessage({\r\n        jobId,\r\n        result,\r\n    });\r\n};\r\n\r\nfunction performJob(job, data) {\r\n    switch (job) {\r\n        case \"compressX64\": {\r\n            return Object(_core_lzstring__WEBPACK_IMPORTED_MODULE_0__[\"compressX64\"])(data);\r\n        }\r\n        case \"compressFile\": {\r\n            const checksum = Object(_core_sensitive_utils_encrypt__WEBPACK_IMPORTED_MODULE_2__[\"sha1\"])(data.text + salt);\r\n            return data.compressionPrefix + Object(_core_lzstring__WEBPACK_IMPORTED_MODULE_0__[\"compressX64\"])(checksum + data.text);\r\n        }\r\n        default:\r\n            throw new Error(\"Webworker: Unknown job: \" + job);\r\n    }\r\n}\r\n\n\n/***/ }),\n\n/***/ \"./src/js/core/config.js\":\n/*!*******************************!*\\\n  !*** ./src/js/core/config.js ***!\n  \\*******************************/\n/*! exports provided: IS_DEBUG, IS_DEMO, THIRDPARTY_URLS, globalConfig, IS_MOBILE */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"IS_DEBUG\", function() { return IS_DEBUG; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"IS_DEMO\", function() { return IS_DEMO; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"THIRDPARTY_URLS\", function() { return THIRDPARTY_URLS; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"globalConfig\", function() { return globalConfig; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"IS_MOBILE\", function() { return IS_MOBILE; });\nconst IS_DEBUG =\r\n    (typeof window !== \"undefined\" && window.location.search.indexOf(\"isdebug\") >= 0) ||\r\n    ( true &&\r\n        typeof window !== \"undefined\" &&\r\n        window.location.port === \"3005\" &&\r\n        (window.location.host.indexOf(\"localhost:\") >= 0 ||\r\n            window.location.host.indexOf(\"192.168.0.\") >= 0) &&\r\n        window.location.search.indexOf(\"nodebug\") < 0);\r\n\r\nconst IS_DEMO =\r\n    ( false) ||\r\n    (typeof window !== \"undefined\" && window.location.search.indexOf(\"isdemo\") >= 0);\r\n\r\nconst smoothCanvas = true;\r\n\r\nconst THIRDPARTY_URLS = {\r\n    discord: \"https://discord.gg/HN7EVzV\",\r\n    github: \"https://github.com/tobspr/shapez.io\",\r\n\r\n    // standaloneStorePage: \"https://steam.shapez.io\",\r\n    standaloneStorePage: \"https://tobspr.itch.io/shapez.io\",\r\n};\r\n\r\nconst globalConfig = {\r\n    // Size of a single tile in Pixels.\r\n    // NOTICE: Update webpack.production.config too!\r\n    tileSize: 32,\r\n    halfTileSize: 16,\r\n\r\n    // Which dpi the assets have\r\n    assetsDpi: 192 / 32,\r\n    assetsSharpness: 1.2,\r\n    shapesSharpness: 1.4,\r\n\r\n    // Production analytics\r\n    statisticsGraphDpi: 2.5,\r\n    statisticsGraphSlices: 100,\r\n    analyticsSliceDurationSeconds: 10,\r\n\r\n    minimumTickRate: 25,\r\n    maximumTickRate: 500,\r\n\r\n    // Map\r\n    mapChunkSize: 16,\r\n    mapChunkPrerenderMinZoom: 1.15,\r\n    mapChunkOverviewMinZoom: 0.7,\r\n\r\n    // Belt speeds\r\n    // NOTICE: Update webpack.production.config too!\r\n    beltSpeedItemsPerSecond: 2,\r\n    itemSpacingOnBelts: 0.63,\r\n    minerSpeedItemsPerSecond: 0, // COMPUTED\r\n\r\n    undergroundBeltMaxTilesByTier: [5, 8],\r\n\r\n    buildingSpeeds: {\r\n        cutter: 1 / 4,\r\n        cutterQuad: 1 / 4,\r\n        rotater: 1 / 1,\r\n        rotaterCCW: 1 / 1,\r\n        painter: 1 / 6,\r\n        painterDouble: 1 / 8,\r\n        sorter: 1 / 1,\r\n        painterQuad: 1 / 8,\r\n        mixer: 1 / 5,\r\n        stacker: 1 / 6,\r\n    },\r\n\r\n    // Zooming\r\n    initialZoom: 2,\r\n    minZoomLevel: 0.125,\r\n    maxZoomLevel: 4,\r\n\r\n    // Global game speed\r\n    gameSpeed: 1,\r\n\r\n    warmupTimeSecondsFast: 0.1,\r\n    warmupTimeSecondsRegular: 1,\r\n\r\n    smoothing: {\r\n        smoothMainCanvas: smoothCanvas && true,\r\n        quality: \"low\", // Low is CRUCIAL for mobile performance!\r\n    },\r\n\r\n    rendering: {},\r\n\r\n    debug: {\r\n        /* dev:start */\r\n\r\n        // Settings menu is generated *automatically*,\r\n        // but does not changes globalConfig.debug if enableDebugSettings is off\r\n        // DEFAULT VALUES:\r\n        enableDebugSettings: true,\r\n        \r\n        // UI\r\n        waitForImages: true,\r\n        showChunkBorders: false,\r\n        disableZoomLimits: false,\r\n        disableShortNumbers: false,\r\n\r\n        // FEATURE\r\n        fastGameEnter: false,\r\n        disableSavegameWrite: false,\r\n        disableUnlockDialog: false,\r\n        disableTutorialHints: false,\r\n        disableUpgradeNotification: false,\r\n        disableDynamicTickrate: false,\r\n\r\n        // ASSERT\r\n        disableInternalCheckTile: false,\r\n        disableGetTileAsserts: false,\r\n        disableBeltAsserts: false,\r\n\r\n        // CHEATS\r\n        rewardsInstant: false,\r\n        allBuildingsUnlocked: false,\r\n        blueprintsNoCost: true,\r\n        upgradesNoCost: false,\r\n        instantBelts: false,\r\n        instantProcessors: false,\r\n        instantMiners: false,\r\n\r\n        // TEST\r\n        noArtificialDelays: false,\r\n        showEntityBounds: false,\r\n        showAcceptorEjectors: false,\r\n        disableMusic: false,\r\n        doNotRenderStatics: false,\r\n        disableLogicTicks: false,\r\n        testClipping: false,\r\n        testTranslations: false,\r\n        enableEntityInspector: false,\r\n        testAds: false,\r\n        disableMapOverview: false,\r\n        disableBulkOperations: false,\r\n\r\n        // framePausesBetweenTicks: 40,\r\n\r\n        renderForTrailer: false,\r\n        /* dev:end */\r\n    },\r\n\r\n    // Secret vars\r\n    info: {\r\n        // Binary file salt\r\n        file: \"Ec'])@^+*9zMevK3uMV4432x9%iK'=\",\r\n\r\n        // Savegame salt\r\n        sgSalt: \"}95Q3%8/.837Lqym_BJx%q7)pAHJbF\",\r\n\r\n        // Analytics key\r\n        analyticsApiKey: \"baf6a50f0cc7dfdec5a0e21c88a1c69a4b34bc4a\",\r\n    },\r\n};\r\n\r\nconst IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);\r\n\r\n// Automatic calculations\r\n\r\nglobalConfig.minerSpeedItemsPerSecond = globalConfig.beltSpeedItemsPerSecond / 5;\r\n\r\nif (globalConfig.debug.disableMapOverview) {\r\n    globalConfig.mapChunkOverviewMinZoom = 0;\r\n    globalConfig.mapChunkPrerenderMinZoom = 0;\r\n}\r\n\r\nif ( true && globalConfig.debug.renderForTrailer) {\r\n    globalConfig.debug.framePausesBetweenTicks = 32;\r\n    // globalConfig.mapChunkOverviewMinZoom = 0.0;\r\n    // globalConfig.mapChunkPrerenderMinZoom = globalConfig.mapChunkOverviewMinZoom;\r\n    // globalConfig.debug.instantBelts = true;\r\n    // globalConfig.debug.instantProcessors = true;\r\n    // globalConfig.debug.instantMiners = true;\r\n    globalConfig.debug.disableSavegameWrite = true;\r\n    // globalConfig.beltSpeedItemsPerSecond *= 2;\r\n}\r\n\n\n/***/ }),\n\n/***/ \"./src/js/core/lzstring.js\":\n/*!*********************************!*\\\n  !*** ./src/js/core/lzstring.js ***!\n  \\*********************************/\n/*! exports provided: compressU8, compressU8WHeader, decompressU8WHeader, compressX64, decompressX64 */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"compressU8\", function() { return compressU8; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"compressU8WHeader\", function() { return compressU8WHeader; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"decompressU8WHeader\", function() { return decompressU8WHeader; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"compressX64\", function() { return compressX64; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"decompressX64\", function() { return decompressX64; });\n// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>\r\n// This work is free. You can redistribute it and/or modify it\r\n// under the terms of the WTFPL, Version 2\r\n// For more information see LICENSE.txt or http://www.wtfpl.net/\r\n//\r\n// For more information, the home page:\r\n// http://pieroxy.net/blog/pages/lz-string/testing.html\r\n//\r\n// LZ-based compression algorithm, version 1.4.4\r\n\r\nconst fromCharCode = String.fromCharCode;\r\nconst hasOwnProperty = Object.prototype.hasOwnProperty;\r\n\r\nconst keyStrUriSafe = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$\";\r\nconst baseReverseDic = {};\r\n\r\nfunction getBaseValue(alphabet, character) {\r\n    if (!baseReverseDic[alphabet]) {\r\n        baseReverseDic[alphabet] = {};\r\n        for (let i = 0; i < alphabet.length; i++) {\r\n            baseReverseDic[alphabet][alphabet.charAt(i)] = i;\r\n        }\r\n    }\r\n    return baseReverseDic[alphabet][character];\r\n}\r\n\r\n//compress into uint8array (UCS-2 big endian format)\r\nfunction compressU8(uncompressed) {\r\n    let compressed = compress(uncompressed);\r\n    let buf = new Uint8Array(compressed.length * 2); // 2 bytes per character\r\n\r\n    for (let i = 0, TotalLen = compressed.length; i < TotalLen; i++) {\r\n        let current_value = compressed.charCodeAt(i);\r\n        buf[i * 2] = current_value >>> 8;\r\n        buf[i * 2 + 1] = current_value % 256;\r\n    }\r\n    return buf;\r\n}\r\n\r\n// Compreses with header\r\n/**\r\n * @param {string} uncompressed\r\n * @param {number} header\r\n */\r\nfunction compressU8WHeader(uncompressed, header) {\r\n    let compressed = compress(uncompressed);\r\n    let buf = new Uint8Array(2 + compressed.length * 2); // 2 bytes per character\r\n\r\n    buf[0] = header >>> 8;\r\n    buf[1] = header % 256;\r\n    for (let i = 0, TotalLen = compressed.length; i < TotalLen; i++) {\r\n        let current_value = compressed.charCodeAt(i);\r\n        buf[2 + i * 2] = current_value >>> 8;\r\n        buf[2 + i * 2 + 1] = current_value % 256;\r\n    }\r\n    return buf;\r\n}\r\n\r\n//decompress from uint8array (UCS-2 big endian format)\r\n/**\r\n *\r\n * @param {Uint8Array} compressed\r\n */\r\nfunction decompressU8WHeader(compressed) {\r\n    // let buf = new Array(compressed.length / 2); // 2 bytes per character\r\n    // for (let i = 0, TotalLen = buf.length; i < TotalLen; i++) {\r\n    //     buf[i] = compressed[i * 2] * 256 + compressed[i * 2 + 1];\r\n    // }\r\n\r\n    // let result = [];\r\n    // buf.forEach(function (c) {\r\n    //     result.push(fromCharCode(c));\r\n    // });\r\n    let result = [];\r\n    for (let i = 2, n = compressed.length; i < n; i += 2) {\r\n        const code = compressed[i] * 256 + compressed[i + 1];\r\n        result.push(fromCharCode(code));\r\n    }\r\n    return decompress(result.join(\"\"));\r\n}\r\n\r\n//compress into a string that is already URI encoded\r\nfunction compressX64(input) {\r\n    if (input == null) return \"\";\r\n    return _compress(input, 6, function (a) {\r\n        return keyStrUriSafe.charAt(a);\r\n    });\r\n}\r\n\r\n//decompress from an output of compressToEncodedURIComponent\r\nfunction decompressX64(input) {\r\n    if (input == null) return \"\";\r\n    if (input == \"\") return null;\r\n    input = input.replace(/ /g, \"+\");\r\n    return _decompress(input.length, 32, function (index) {\r\n        return getBaseValue(keyStrUriSafe, input.charAt(index));\r\n    });\r\n}\r\n\r\nfunction compress(uncompressed) {\r\n    return _compress(uncompressed, 16, function (a) {\r\n        return fromCharCode(a);\r\n    });\r\n}\r\n\r\nfunction _compress(uncompressed, bitsPerChar, getCharFromInt) {\r\n    if (uncompressed == null) return \"\";\r\n    let i,\r\n        value,\r\n        context_dictionary = {},\r\n        context_dictionaryToCreate = {},\r\n        context_c = \"\",\r\n        context_wc = \"\",\r\n        context_w = \"\",\r\n        context_enlargeIn = 2, // Compensate for the first entry which should not count\r\n        context_dictSize = 3,\r\n        context_numBits = 2,\r\n        context_data = [],\r\n        context_data_val = 0,\r\n        context_data_position = 0,\r\n        ii;\r\n\r\n    for (ii = 0; ii < uncompressed.length; ii += 1) {\r\n        context_c = uncompressed.charAt(ii);\r\n        if (!hasOwnProperty.call(context_dictionary, context_c)) {\r\n            context_dictionary[context_c] = context_dictSize++;\r\n            context_dictionaryToCreate[context_c] = true;\r\n        }\r\n\r\n        context_wc = context_w + context_c;\r\n        if (hasOwnProperty.call(context_dictionary, context_wc)) {\r\n            context_w = context_wc;\r\n        } else {\r\n            if (hasOwnProperty.call(context_dictionaryToCreate, context_w)) {\r\n                if (context_w.charCodeAt(0) < 256) {\r\n                    for (i = 0; i < context_numBits; i++) {\r\n                        context_data_val = context_data_val << 1;\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                    }\r\n                    value = context_w.charCodeAt(0);\r\n                    for (i = 0; i < 8; i++) {\r\n                        context_data_val = (context_data_val << 1) | (value & 1);\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                        value = value >> 1;\r\n                    }\r\n                } else {\r\n                    value = 1;\r\n                    for (i = 0; i < context_numBits; i++) {\r\n                        context_data_val = (context_data_val << 1) | value;\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                        value = 0;\r\n                    }\r\n                    value = context_w.charCodeAt(0);\r\n                    for (i = 0; i < 16; i++) {\r\n                        context_data_val = (context_data_val << 1) | (value & 1);\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                        value = value >> 1;\r\n                    }\r\n                }\r\n                context_enlargeIn--;\r\n                if (context_enlargeIn == 0) {\r\n                    context_enlargeIn = Math.pow(2, context_numBits);\r\n                    context_numBits++;\r\n                }\r\n                delete context_dictionaryToCreate[context_w];\r\n            } else {\r\n                value = context_dictionary[context_w];\r\n                for (i = 0; i < context_numBits; i++) {\r\n                    context_data_val = (context_data_val << 1) | (value & 1);\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = value >> 1;\r\n                }\r\n            }\r\n            context_enlargeIn--;\r\n            if (context_enlargeIn == 0) {\r\n                context_enlargeIn = Math.pow(2, context_numBits);\r\n                context_numBits++;\r\n            }\r\n            // Add wc to the dictionary.\r\n            context_dictionary[context_wc] = context_dictSize++;\r\n            context_w = String(context_c);\r\n        }\r\n    }\r\n\r\n    // Output the code for w.\r\n    if (context_w !== \"\") {\r\n        if (hasOwnProperty.call(context_dictionaryToCreate, context_w)) {\r\n            if (context_w.charCodeAt(0) < 256) {\r\n                for (i = 0; i < context_numBits; i++) {\r\n                    context_data_val = context_data_val << 1;\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                }\r\n                value = context_w.charCodeAt(0);\r\n                for (i = 0; i < 8; i++) {\r\n                    context_data_val = (context_data_val << 1) | (value & 1);\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = value >> 1;\r\n                }\r\n            } else {\r\n                value = 1;\r\n                for (i = 0; i < context_numBits; i++) {\r\n                    context_data_val = (context_data_val << 1) | value;\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = 0;\r\n                }\r\n                value = context_w.charCodeAt(0);\r\n                for (i = 0; i < 16; i++) {\r\n                    context_data_val = (context_data_val << 1) | (value & 1);\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = value >> 1;\r\n                }\r\n            }\r\n            context_enlargeIn--;\r\n            if (context_enlargeIn == 0) {\r\n                context_enlargeIn = Math.pow(2, context_numBits);\r\n                context_numBits++;\r\n            }\r\n            delete context_dictionaryToCreate[context_w];\r\n        } else {\r\n            value = context_dictionary[context_w];\r\n            for (i = 0; i < context_numBits; i++) {\r\n                context_data_val = (context_data_val << 1) | (value & 1);\r\n                if (context_data_position == bitsPerChar - 1) {\r\n                    context_data_position = 0;\r\n                    context_data.push(getCharFromInt(context_data_val));\r\n                    context_data_val = 0;\r\n                } else {\r\n                    context_data_position++;\r\n                }\r\n                value = value >> 1;\r\n            }\r\n        }\r\n        context_enlargeIn--;\r\n        if (context_enlargeIn == 0) {\r\n            context_enlargeIn = Math.pow(2, context_numBits);\r\n            context_numBits++;\r\n        }\r\n    }\r\n\r\n    // Mark the end of the stream\r\n    value = 2;\r\n    for (i = 0; i < context_numBits; i++) {\r\n        context_data_val = (context_data_val << 1) | (value & 1);\r\n        if (context_data_position == bitsPerChar - 1) {\r\n            context_data_position = 0;\r\n            context_data.push(getCharFromInt(context_data_val));\r\n            context_data_val = 0;\r\n        } else {\r\n            context_data_position++;\r\n        }\r\n        value = value >> 1;\r\n    }\r\n\r\n    // Flush the last char\r\n    // eslint-disable-next-line no-constant-condition\r\n    while (true) {\r\n        context_data_val = context_data_val << 1;\r\n        if (context_data_position == bitsPerChar - 1) {\r\n            context_data.push(getCharFromInt(context_data_val));\r\n            break;\r\n        } else context_data_position++;\r\n    }\r\n    return context_data.join(\"\");\r\n}\r\n\r\nfunction decompress(compressed) {\r\n    if (compressed == null) return \"\";\r\n    if (compressed == \"\") return null;\r\n    return _decompress(compressed.length, 32768, function (index) {\r\n        return compressed.charCodeAt(index);\r\n    });\r\n}\r\n\r\nfunction _decompress(length, resetValue, getNextValue) {\r\n    let dictionary = [],\r\n        next,\r\n        enlargeIn = 4,\r\n        dictSize = 4,\r\n        numBits = 3,\r\n        entry = \"\",\r\n        result = [],\r\n        i,\r\n        w,\r\n        bits,\r\n        resb,\r\n        maxpower,\r\n        power,\r\n        c,\r\n        data = { val: getNextValue(0), position: resetValue, index: 1 };\r\n\r\n    for (i = 0; i < 3; i += 1) {\r\n        dictionary[i] = i;\r\n    }\r\n\r\n    bits = 0;\r\n    maxpower = Math.pow(2, 2);\r\n    power = 1;\r\n    while (power != maxpower) {\r\n        resb = data.val & data.position;\r\n        data.position >>= 1;\r\n        if (data.position == 0) {\r\n            data.position = resetValue;\r\n            data.val = getNextValue(data.index++);\r\n        }\r\n        bits |= (resb > 0 ? 1 : 0) * power;\r\n        power <<= 1;\r\n    }\r\n\r\n    switch ((next = bits)) {\r\n        case 0:\r\n            bits = 0;\r\n            maxpower = Math.pow(2, 8);\r\n            power = 1;\r\n            while (power != maxpower) {\r\n                resb = data.val & data.position;\r\n                data.position >>= 1;\r\n                if (data.position == 0) {\r\n                    data.position = resetValue;\r\n                    data.val = getNextValue(data.index++);\r\n                }\r\n                bits |= (resb > 0 ? 1 : 0) * power;\r\n                power <<= 1;\r\n            }\r\n            c = fromCharCode(bits);\r\n            break;\r\n        case 1:\r\n            bits = 0;\r\n            maxpower = Math.pow(2, 16);\r\n            power = 1;\r\n            while (power != maxpower) {\r\n                resb = data.val & data.position;\r\n                data.position >>= 1;\r\n                if (data.position == 0) {\r\n                    data.position = resetValue;\r\n                    data.val = getNextValue(data.index++);\r\n                }\r\n                bits |= (resb > 0 ? 1 : 0) * power;\r\n                power <<= 1;\r\n            }\r\n            c = fromCharCode(bits);\r\n            break;\r\n        case 2:\r\n            return \"\";\r\n    }\r\n    dictionary[3] = c;\r\n    w = c;\r\n    result.push(c);\r\n\r\n    // eslint-disable-next-line no-constant-condition\r\n    while (true) {\r\n        if (data.index > length) {\r\n            return \"\";\r\n        }\r\n\r\n        bits = 0;\r\n        maxpower = Math.pow(2, numBits);\r\n        power = 1;\r\n        while (power != maxpower) {\r\n            resb = data.val & data.position;\r\n            data.position >>= 1;\r\n            if (data.position == 0) {\r\n                data.position = resetValue;\r\n                data.val = getNextValue(data.index++);\r\n            }\r\n            bits |= (resb > 0 ? 1 : 0) * power;\r\n            power <<= 1;\r\n        }\r\n\r\n        switch ((c = bits)) {\r\n            case 0:\r\n                bits = 0;\r\n                maxpower = Math.pow(2, 8);\r\n                power = 1;\r\n                while (power != maxpower) {\r\n                    resb = data.val & data.position;\r\n                    data.position >>= 1;\r\n                    if (data.position == 0) {\r\n                        data.position = resetValue;\r\n                        data.val = getNextValue(data.index++);\r\n                    }\r\n                    bits |= (resb > 0 ? 1 : 0) * power;\r\n                    power <<= 1;\r\n                }\r\n\r\n                dictionary[dictSize++] = fromCharCode(bits);\r\n                c = dictSize - 1;\r\n                enlargeIn--;\r\n                break;\r\n            case 1:\r\n                bits = 0;\r\n                maxpower = Math.pow(2, 16);\r\n                power = 1;\r\n                while (power != maxpower) {\r\n                    resb = data.val & data.position;\r\n                    data.position >>= 1;\r\n                    if (data.position == 0) {\r\n                        data.position = resetValue;\r\n                        data.val = getNextValue(data.index++);\r\n                    }\r\n                    bits |= (resb > 0 ? 1 : 0) * power;\r\n                    power <<= 1;\r\n                }\r\n                dictionary[dictSize++] = fromCharCode(bits);\r\n                c = dictSize - 1;\r\n                enlargeIn--;\r\n                break;\r\n            case 2:\r\n                return result.join(\"\");\r\n        }\r\n\r\n        if (enlargeIn == 0) {\r\n            enlargeIn = Math.pow(2, numBits);\r\n            numBits++;\r\n        }\r\n\r\n        if (dictionary[c]) {\r\n            // @ts-ignore\r\n            entry = dictionary[c];\r\n        } else {\r\n            if (c === dictSize) {\r\n                entry = w + w.charAt(0);\r\n            } else {\r\n                return null;\r\n            }\r\n        }\r\n        result.push(entry);\r\n\r\n        // Add w+entry[0] to the dictionary.\r\n        dictionary[dictSize++] = w + entry.charAt(0);\r\n        enlargeIn--;\r\n\r\n        w = entry;\r\n\r\n        if (enlargeIn == 0) {\r\n            enlargeIn = Math.pow(2, numBits);\r\n            numBits++;\r\n        }\r\n    }\r\n}\r\n\n\n/***/ }),\n\n/***/ \"./src/js/core/sensitive_utils.encrypt.js\":\n/*!************************************************!*\\\n  !*** ./src/js/core/sensitive_utils.encrypt.js ***!\n  \\************************************************/\n/*! exports provided: decodeHashedString, sha1, getNameOfProvider */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"decodeHashedString\", function() { return decodeHashedString; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"sha1\", function() { return sha1; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"getNameOfProvider\", function() { return getNameOfProvider; });\n/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./config */ \"./src/js/core/config.js\");\n/* harmony import */ var _lzstring__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lzstring */ \"./src/js/core/lzstring.js\");\n\r\n\r\n\r\nconst Rusha = __webpack_require__(/*! rusha */ \"./node_modules/rusha/dist/rusha.js\");\r\n\r\nconst encryptKey = _config__WEBPACK_IMPORTED_MODULE_0__[\"globalConfig\"].info.sgSalt;\r\n\r\nfunction decodeHashedString(s) {\r\n    return Object(_lzstring__WEBPACK_IMPORTED_MODULE_1__[\"decompressX64\"])(s);\r\n}\r\n\r\nfunction sha1(str) {\r\n    return Rusha.createHash().update(str).digest(\"hex\");\r\n}\r\n\r\n// Window.location.host\r\nfunction getNameOfProvider() {\r\n    return window[decodeHashedString(\"DYewxghgLgliB2Q\")][decodeHashedString(\"BYewzgLgdghgtgUyA\")];\r\n}\r\n\n\n/***/ })\n\n/******/ });\n//# sourceMappingURL=12d48f000b34774f8e39.worker.js.map", null);
+  return __webpack_require__(/*! !./node_modules/worker-loader/dist/workers/InlineWorker.js */ "./node_modules/worker-loader/dist/workers/InlineWorker.js")("/******/ (function(modules) { // webpackBootstrap\n/******/ \t// The module cache\n/******/ \tvar installedModules = {};\n/******/\n/******/ \t// The require function\n/******/ \tfunction __webpack_require__(moduleId) {\n/******/\n/******/ \t\t// Check if module is in cache\n/******/ \t\tif(installedModules[moduleId]) {\n/******/ \t\t\treturn installedModules[moduleId].exports;\n/******/ \t\t}\n/******/ \t\t// Create a new module (and put it into the cache)\n/******/ \t\tvar module = installedModules[moduleId] = {\n/******/ \t\t\ti: moduleId,\n/******/ \t\t\tl: false,\n/******/ \t\t\texports: {}\n/******/ \t\t};\n/******/\n/******/ \t\t// Execute the module function\n/******/ \t\tmodules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n/******/\n/******/ \t\t// Flag the module as loaded\n/******/ \t\tmodule.l = true;\n/******/\n/******/ \t\t// Return the exports of the module\n/******/ \t\treturn module.exports;\n/******/ \t}\n/******/\n/******/\n/******/ \t// expose the modules object (__webpack_modules__)\n/******/ \t__webpack_require__.m = modules;\n/******/\n/******/ \t// expose the module cache\n/******/ \t__webpack_require__.c = installedModules;\n/******/\n/******/ \t// define getter function for harmony exports\n/******/ \t__webpack_require__.d = function(exports, name, getter) {\n/******/ \t\tif(!__webpack_require__.o(exports, name)) {\n/******/ \t\t\tObject.defineProperty(exports, name, { enumerable: true, get: getter });\n/******/ \t\t}\n/******/ \t};\n/******/\n/******/ \t// define __esModule on exports\n/******/ \t__webpack_require__.r = function(exports) {\n/******/ \t\tif(typeof Symbol !== 'undefined' && Symbol.toStringTag) {\n/******/ \t\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });\n/******/ \t\t}\n/******/ \t\tObject.defineProperty(exports, '__esModule', { value: true });\n/******/ \t};\n/******/\n/******/ \t// create a fake namespace object\n/******/ \t// mode & 1: value is a module id, require it\n/******/ \t// mode & 2: merge all properties of value into the ns\n/******/ \t// mode & 4: return value when already ns object\n/******/ \t// mode & 8|1: behave like require\n/******/ \t__webpack_require__.t = function(value, mode) {\n/******/ \t\tif(mode & 1) value = __webpack_require__(value);\n/******/ \t\tif(mode & 8) return value;\n/******/ \t\tif((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;\n/******/ \t\tvar ns = Object.create(null);\n/******/ \t\t__webpack_require__.r(ns);\n/******/ \t\tObject.defineProperty(ns, 'default', { enumerable: true, value: value });\n/******/ \t\tif(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));\n/******/ \t\treturn ns;\n/******/ \t};\n/******/\n/******/ \t// getDefaultExport function for compatibility with non-harmony modules\n/******/ \t__webpack_require__.n = function(module) {\n/******/ \t\tvar getter = module && module.__esModule ?\n/******/ \t\t\tfunction getDefault() { return module['default']; } :\n/******/ \t\t\tfunction getModuleExports() { return module; };\n/******/ \t\t__webpack_require__.d(getter, 'a', getter);\n/******/ \t\treturn getter;\n/******/ \t};\n/******/\n/******/ \t// Object.prototype.hasOwnProperty.call\n/******/ \t__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n/******/\n/******/ \t// __webpack_public_path__\n/******/ \t__webpack_require__.p = \"\";\n/******/\n/******/\n/******/ \t// Load entry module and return exports\n/******/ \treturn __webpack_require__(__webpack_require__.s = \"./node_modules/webpack-strip-block/index.js?!./src/js/webworkers/compression.worker.js\");\n/******/ })\n/************************************************************************/\n/******/ ({\n\n/***/ \"./node_modules/rusha/dist/rusha.js\":\n/*!******************************************!*\\\n  !*** ./node_modules/rusha/dist/rusha.js ***!\n  \\******************************************/\n/*! no static exports found */\n/***/ (function(module, exports, __webpack_require__) {\n\n(function webpackUniversalModuleDefinition(root, factory) {\n\tif(true)\n\t\tmodule.exports = factory();\n\telse {}\n})(typeof self !== 'undefined' ? self : this, function() {\nreturn /******/ (function(modules) { // webpackBootstrap\n/******/ \t// The module cache\n/******/ \tvar installedModules = {};\n/******/\n/******/ \t// The require function\n/******/ \tfunction __webpack_require__(moduleId) {\n/******/\n/******/ \t\t// Check if module is in cache\n/******/ \t\tif(installedModules[moduleId]) {\n/******/ \t\t\treturn installedModules[moduleId].exports;\n/******/ \t\t}\n/******/ \t\t// Create a new module (and put it into the cache)\n/******/ \t\tvar module = installedModules[moduleId] = {\n/******/ \t\t\ti: moduleId,\n/******/ \t\t\tl: false,\n/******/ \t\t\texports: {}\n/******/ \t\t};\n/******/\n/******/ \t\t// Execute the module function\n/******/ \t\tmodules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n/******/\n/******/ \t\t// Flag the module as loaded\n/******/ \t\tmodule.l = true;\n/******/\n/******/ \t\t// Return the exports of the module\n/******/ \t\treturn module.exports;\n/******/ \t}\n/******/\n/******/\n/******/ \t// expose the modules object (__webpack_modules__)\n/******/ \t__webpack_require__.m = modules;\n/******/\n/******/ \t// expose the module cache\n/******/ \t__webpack_require__.c = installedModules;\n/******/\n/******/ \t// define getter function for harmony exports\n/******/ \t__webpack_require__.d = function(exports, name, getter) {\n/******/ \t\tif(!__webpack_require__.o(exports, name)) {\n/******/ \t\t\tObject.defineProperty(exports, name, {\n/******/ \t\t\t\tconfigurable: false,\n/******/ \t\t\t\tenumerable: true,\n/******/ \t\t\t\tget: getter\n/******/ \t\t\t});\n/******/ \t\t}\n/******/ \t};\n/******/\n/******/ \t// getDefaultExport function for compatibility with non-harmony modules\n/******/ \t__webpack_require__.n = function(module) {\n/******/ \t\tvar getter = module && module.__esModule ?\n/******/ \t\t\tfunction getDefault() { return module['default']; } :\n/******/ \t\t\tfunction getModuleExports() { return module; };\n/******/ \t\t__webpack_require__.d(getter, 'a', getter);\n/******/ \t\treturn getter;\n/******/ \t};\n/******/\n/******/ \t// Object.prototype.hasOwnProperty.call\n/******/ \t__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n/******/\n/******/ \t// __webpack_public_path__\n/******/ \t__webpack_require__.p = \"\";\n/******/\n/******/ \t// Load entry module and return exports\n/******/ \treturn __webpack_require__(__webpack_require__.s = 3);\n/******/ })\n/************************************************************************/\n/******/ ([\n/* 0 */\n/***/ (function(module, exports, __webpack_require__) {\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\n/* eslint-env commonjs, browser */\n\nvar RushaCore = __webpack_require__(5);\n\nvar _require = __webpack_require__(1),\n    toHex = _require.toHex,\n    ceilHeapSize = _require.ceilHeapSize;\n\nvar conv = __webpack_require__(6);\n\n// Calculate the length of buffer that the sha1 routine uses\n// including the padding.\nvar padlen = function (len) {\n  for (len += 9; len % 64 > 0; len += 1) {}\n  return len;\n};\n\nvar padZeroes = function (bin, len) {\n  var h8 = new Uint8Array(bin.buffer);\n  var om = len % 4,\n      align = len - om;\n  switch (om) {\n    case 0:\n      h8[align + 3] = 0;\n    case 1:\n      h8[align + 2] = 0;\n    case 2:\n      h8[align + 1] = 0;\n    case 3:\n      h8[align + 0] = 0;\n  }\n  for (var i = (len >> 2) + 1; i < bin.length; i++) {\n    bin[i] = 0;\n  }\n};\n\nvar padData = function (bin, chunkLen, msgLen) {\n  bin[chunkLen >> 2] |= 0x80 << 24 - (chunkLen % 4 << 3);\n  // To support msgLen >= 2 GiB, use a float division when computing the\n  // high 32-bits of the big-endian message length in bits.\n  bin[((chunkLen >> 2) + 2 & ~0x0f) + 14] = msgLen / (1 << 29) | 0;\n  bin[((chunkLen >> 2) + 2 & ~0x0f) + 15] = msgLen << 3;\n};\n\nvar getRawDigest = function (heap, padMaxChunkLen) {\n  var io = new Int32Array(heap, padMaxChunkLen + 320, 5);\n  var out = new Int32Array(5);\n  var arr = new DataView(out.buffer);\n  arr.setInt32(0, io[0], false);\n  arr.setInt32(4, io[1], false);\n  arr.setInt32(8, io[2], false);\n  arr.setInt32(12, io[3], false);\n  arr.setInt32(16, io[4], false);\n  return out;\n};\n\nvar Rusha = function () {\n  function Rusha(chunkSize) {\n    _classCallCheck(this, Rusha);\n\n    chunkSize = chunkSize || 64 * 1024;\n    if (chunkSize % 64 > 0) {\n      throw new Error('Chunk size must be a multiple of 128 bit');\n    }\n    this._offset = 0;\n    this._maxChunkLen = chunkSize;\n    this._padMaxChunkLen = padlen(chunkSize);\n    // The size of the heap is the sum of:\n    // 1. The padded input message size\n    // 2. The extended space the algorithm needs (320 byte)\n    // 3. The 160 bit state the algoritm uses\n    this._heap = new ArrayBuffer(ceilHeapSize(this._padMaxChunkLen + 320 + 20));\n    this._h32 = new Int32Array(this._heap);\n    this._h8 = new Int8Array(this._heap);\n    this._core = new RushaCore({ Int32Array: Int32Array }, {}, this._heap);\n  }\n\n  Rusha.prototype._initState = function _initState(heap, padMsgLen) {\n    this._offset = 0;\n    var io = new Int32Array(heap, padMsgLen + 320, 5);\n    io[0] = 1732584193;\n    io[1] = -271733879;\n    io[2] = -1732584194;\n    io[3] = 271733878;\n    io[4] = -1009589776;\n  };\n\n  Rusha.prototype._padChunk = function _padChunk(chunkLen, msgLen) {\n    var padChunkLen = padlen(chunkLen);\n    var view = new Int32Array(this._heap, 0, padChunkLen >> 2);\n    padZeroes(view, chunkLen);\n    padData(view, chunkLen, msgLen);\n    return padChunkLen;\n  };\n\n  Rusha.prototype._write = function _write(data, chunkOffset, chunkLen, off) {\n    conv(data, this._h8, this._h32, chunkOffset, chunkLen, off || 0);\n  };\n\n  Rusha.prototype._coreCall = function _coreCall(data, chunkOffset, chunkLen, msgLen, finalize) {\n    var padChunkLen = chunkLen;\n    this._write(data, chunkOffset, chunkLen);\n    if (finalize) {\n      padChunkLen = this._padChunk(chunkLen, msgLen);\n    }\n    this._core.hash(padChunkLen, this._padMaxChunkLen);\n  };\n\n  Rusha.prototype.rawDigest = function rawDigest(str) {\n    var msgLen = str.byteLength || str.length || str.size || 0;\n    this._initState(this._heap, this._padMaxChunkLen);\n    var chunkOffset = 0,\n        chunkLen = this._maxChunkLen;\n    for (chunkOffset = 0; msgLen > chunkOffset + chunkLen; chunkOffset += chunkLen) {\n      this._coreCall(str, chunkOffset, chunkLen, msgLen, false);\n    }\n    this._coreCall(str, chunkOffset, msgLen - chunkOffset, msgLen, true);\n    return getRawDigest(this._heap, this._padMaxChunkLen);\n  };\n\n  Rusha.prototype.digest = function digest(str) {\n    return toHex(this.rawDigest(str).buffer);\n  };\n\n  Rusha.prototype.digestFromString = function digestFromString(str) {\n    return this.digest(str);\n  };\n\n  Rusha.prototype.digestFromBuffer = function digestFromBuffer(str) {\n    return this.digest(str);\n  };\n\n  Rusha.prototype.digestFromArrayBuffer = function digestFromArrayBuffer(str) {\n    return this.digest(str);\n  };\n\n  Rusha.prototype.resetState = function resetState() {\n    this._initState(this._heap, this._padMaxChunkLen);\n    return this;\n  };\n\n  Rusha.prototype.append = function append(chunk) {\n    var chunkOffset = 0;\n    var chunkLen = chunk.byteLength || chunk.length || chunk.size || 0;\n    var turnOffset = this._offset % this._maxChunkLen;\n    var inputLen = void 0;\n\n    this._offset += chunkLen;\n    while (chunkOffset < chunkLen) {\n      inputLen = Math.min(chunkLen - chunkOffset, this._maxChunkLen - turnOffset);\n      this._write(chunk, chunkOffset, inputLen, turnOffset);\n      turnOffset += inputLen;\n      chunkOffset += inputLen;\n      if (turnOffset === this._maxChunkLen) {\n        this._core.hash(this._maxChunkLen, this._padMaxChunkLen);\n        turnOffset = 0;\n      }\n    }\n    return this;\n  };\n\n  Rusha.prototype.getState = function getState() {\n    var turnOffset = this._offset % this._maxChunkLen;\n    var heap = void 0;\n    if (!turnOffset) {\n      var io = new Int32Array(this._heap, this._padMaxChunkLen + 320, 5);\n      heap = io.buffer.slice(io.byteOffset, io.byteOffset + io.byteLength);\n    } else {\n      heap = this._heap.slice(0);\n    }\n    return {\n      offset: this._offset,\n      heap: heap\n    };\n  };\n\n  Rusha.prototype.setState = function setState(state) {\n    this._offset = state.offset;\n    if (state.heap.byteLength === 20) {\n      var io = new Int32Array(this._heap, this._padMaxChunkLen + 320, 5);\n      io.set(new Int32Array(state.heap));\n    } else {\n      this._h32.set(new Int32Array(state.heap));\n    }\n    return this;\n  };\n\n  Rusha.prototype.rawEnd = function rawEnd() {\n    var msgLen = this._offset;\n    var chunkLen = msgLen % this._maxChunkLen;\n    var padChunkLen = this._padChunk(chunkLen, msgLen);\n    this._core.hash(padChunkLen, this._padMaxChunkLen);\n    var result = getRawDigest(this._heap, this._padMaxChunkLen);\n    this._initState(this._heap, this._padMaxChunkLen);\n    return result;\n  };\n\n  Rusha.prototype.end = function end() {\n    return toHex(this.rawEnd().buffer);\n  };\n\n  return Rusha;\n}();\n\nmodule.exports = Rusha;\nmodule.exports._core = RushaCore;\n\n/***/ }),\n/* 1 */\n/***/ (function(module, exports) {\n\n/* eslint-env commonjs, browser */\n\n//\n// toHex\n//\n\nvar precomputedHex = new Array(256);\nfor (var i = 0; i < 256; i++) {\n  precomputedHex[i] = (i < 0x10 ? '0' : '') + i.toString(16);\n}\n\nmodule.exports.toHex = function (arrayBuffer) {\n  var binarray = new Uint8Array(arrayBuffer);\n  var res = new Array(arrayBuffer.byteLength);\n  for (var _i = 0; _i < res.length; _i++) {\n    res[_i] = precomputedHex[binarray[_i]];\n  }\n  return res.join('');\n};\n\n//\n// ceilHeapSize\n//\n\nmodule.exports.ceilHeapSize = function (v) {\n  // The asm.js spec says:\n  // The heap object's byteLength must be either\n  // 2^n for n in [12, 24) or 2^24 * n for n ≥ 1.\n  // Also, byteLengths smaller than 2^16 are deprecated.\n  var p = 0;\n  // If v is smaller than 2^16, the smallest possible solution\n  // is 2^16.\n  if (v <= 65536) return 65536;\n  // If v < 2^24, we round up to 2^n,\n  // otherwise we round up to 2^24 * n.\n  if (v < 16777216) {\n    for (p = 1; p < v; p = p << 1) {}\n  } else {\n    for (p = 16777216; p < v; p += 16777216) {}\n  }\n  return p;\n};\n\n//\n// isDedicatedWorkerScope\n//\n\nmodule.exports.isDedicatedWorkerScope = function (self) {\n  var isRunningInWorker = 'WorkerGlobalScope' in self && self instanceof self.WorkerGlobalScope;\n  var isRunningInSharedWorker = 'SharedWorkerGlobalScope' in self && self instanceof self.SharedWorkerGlobalScope;\n  var isRunningInServiceWorker = 'ServiceWorkerGlobalScope' in self && self instanceof self.ServiceWorkerGlobalScope;\n\n  // Detects whether we run inside a dedicated worker or not.\n  //\n  // We can't just check for `DedicatedWorkerGlobalScope`, since IE11\n  // has a bug where it only supports `WorkerGlobalScope`.\n  //\n  // Therefore, we consider us as running inside a dedicated worker\n  // when we are running inside a worker, but not in a shared or service worker.\n  //\n  // When new types of workers are introduced, we will need to adjust this code.\n  return isRunningInWorker && !isRunningInSharedWorker && !isRunningInServiceWorker;\n};\n\n/***/ }),\n/* 2 */\n/***/ (function(module, exports, __webpack_require__) {\n\n/* eslint-env commonjs, worker */\n\nmodule.exports = function () {\n  var Rusha = __webpack_require__(0);\n\n  var hashData = function (hasher, data, cb) {\n    try {\n      return cb(null, hasher.digest(data));\n    } catch (e) {\n      return cb(e);\n    }\n  };\n\n  var hashFile = function (hasher, readTotal, blockSize, file, cb) {\n    var reader = new self.FileReader();\n    reader.onloadend = function onloadend() {\n      if (reader.error) {\n        return cb(reader.error);\n      }\n      var buffer = reader.result;\n      readTotal += reader.result.byteLength;\n      try {\n        hasher.append(buffer);\n      } catch (e) {\n        cb(e);\n        return;\n      }\n      if (readTotal < file.size) {\n        hashFile(hasher, readTotal, blockSize, file, cb);\n      } else {\n        cb(null, hasher.end());\n      }\n    };\n    reader.readAsArrayBuffer(file.slice(readTotal, readTotal + blockSize));\n  };\n\n  var workerBehaviourEnabled = true;\n\n  self.onmessage = function (event) {\n    if (!workerBehaviourEnabled) {\n      return;\n    }\n\n    var data = event.data.data,\n        file = event.data.file,\n        id = event.data.id;\n    if (typeof id === 'undefined') return;\n    if (!file && !data) return;\n    var blockSize = event.data.blockSize || 4 * 1024 * 1024;\n    var hasher = new Rusha(blockSize);\n    hasher.resetState();\n    var done = function (err, hash) {\n      if (!err) {\n        self.postMessage({ id: id, hash: hash });\n      } else {\n        self.postMessage({ id: id, error: err.name });\n      }\n    };\n    if (data) hashData(hasher, data, done);\n    if (file) hashFile(hasher, 0, blockSize, file, done);\n  };\n\n  return function () {\n    workerBehaviourEnabled = false;\n  };\n};\n\n/***/ }),\n/* 3 */\n/***/ (function(module, exports, __webpack_require__) {\n\n/* eslint-env commonjs, browser */\n\nvar work = __webpack_require__(4);\nvar Rusha = __webpack_require__(0);\nvar createHash = __webpack_require__(7);\nvar runWorker = __webpack_require__(2);\n\nvar _require = __webpack_require__(1),\n    isDedicatedWorkerScope = _require.isDedicatedWorkerScope;\n\nvar isRunningInDedicatedWorker = typeof self !== 'undefined' && isDedicatedWorkerScope(self);\n\nRusha.disableWorkerBehaviour = isRunningInDedicatedWorker ? runWorker() : function () {};\n\nRusha.createWorker = function () {\n  var worker = work(/*require.resolve*/(2));\n  var terminate = worker.terminate;\n  worker.terminate = function () {\n    URL.revokeObjectURL(worker.objectURL);\n    terminate.call(worker);\n  };\n  return worker;\n};\n\nRusha.createHash = createHash;\n\nmodule.exports = Rusha;\n\n/***/ }),\n/* 4 */\n/***/ (function(module, exports, __webpack_require__) {\n\nfunction webpackBootstrapFunc (modules) {\n/******/  // The module cache\n/******/  var installedModules = {};\n\n/******/  // The require function\n/******/  function __webpack_require__(moduleId) {\n\n/******/    // Check if module is in cache\n/******/    if(installedModules[moduleId])\n/******/      return installedModules[moduleId].exports;\n\n/******/    // Create a new module (and put it into the cache)\n/******/    var module = installedModules[moduleId] = {\n/******/      i: moduleId,\n/******/      l: false,\n/******/      exports: {}\n/******/    };\n\n/******/    // Execute the module function\n/******/    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n\n/******/    // Flag the module as loaded\n/******/    module.l = true;\n\n/******/    // Return the exports of the module\n/******/    return module.exports;\n/******/  }\n\n/******/  // expose the modules object (__webpack_modules__)\n/******/  __webpack_require__.m = modules;\n\n/******/  // expose the module cache\n/******/  __webpack_require__.c = installedModules;\n\n/******/  // identity function for calling harmony imports with the correct context\n/******/  __webpack_require__.i = function(value) { return value; };\n\n/******/  // define getter function for harmony exports\n/******/  __webpack_require__.d = function(exports, name, getter) {\n/******/    if(!__webpack_require__.o(exports, name)) {\n/******/      Object.defineProperty(exports, name, {\n/******/        configurable: false,\n/******/        enumerable: true,\n/******/        get: getter\n/******/      });\n/******/    }\n/******/  };\n\n/******/  // define __esModule on exports\n/******/  __webpack_require__.r = function(exports) {\n/******/    Object.defineProperty(exports, '__esModule', { value: true });\n/******/  };\n\n/******/  // getDefaultExport function for compatibility with non-harmony modules\n/******/  __webpack_require__.n = function(module) {\n/******/    var getter = module && module.__esModule ?\n/******/      function getDefault() { return module['default']; } :\n/******/      function getModuleExports() { return module; };\n/******/    __webpack_require__.d(getter, 'a', getter);\n/******/    return getter;\n/******/  };\n\n/******/  // Object.prototype.hasOwnProperty.call\n/******/  __webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n\n/******/  // __webpack_public_path__\n/******/  __webpack_require__.p = \"/\";\n\n/******/  // on error function for async loading\n/******/  __webpack_require__.oe = function(err) { console.error(err); throw err; };\n\n  var f = __webpack_require__(__webpack_require__.s = ENTRY_MODULE)\n  return f.default || f // try to call default if defined to also support babel esmodule exports\n}\n\nvar moduleNameReqExp = '[\\\\.|\\\\-|\\\\+|\\\\w|\\/|@]+'\nvar dependencyRegExp = '\\\\((\\/\\\\*.*?\\\\*\\/)?\\s?.*?(' + moduleNameReqExp + ').*?\\\\)' // additional chars when output.pathinfo is true\n\n// http://stackoverflow.com/a/2593661/130442\nfunction quoteRegExp (str) {\n  return (str + '').replace(/[.?*+^$[\\]\\\\(){}|-]/g, '\\\\$&')\n}\n\nfunction getModuleDependencies (sources, module, queueName) {\n  var retval = {}\n  retval[queueName] = []\n\n  var fnString = module.toString()\n  var wrapperSignature = fnString.match(/^function\\s?\\(\\w+,\\s*\\w+,\\s*(\\w+)\\)/)\n  if (!wrapperSignature) return retval\n  var webpackRequireName = wrapperSignature[1]\n\n  // main bundle deps\n  var re = new RegExp('(\\\\\\\\n|\\\\W)' + quoteRegExp(webpackRequireName) + dependencyRegExp, 'g')\n  var match\n  while ((match = re.exec(fnString))) {\n    if (match[3] === 'dll-reference') continue\n    retval[queueName].push(match[3])\n  }\n\n  // dll deps\n  re = new RegExp('\\\\(' + quoteRegExp(webpackRequireName) + '\\\\(\"(dll-reference\\\\s(' + moduleNameReqExp + '))\"\\\\)\\\\)' + dependencyRegExp, 'g')\n  while ((match = re.exec(fnString))) {\n    if (!sources[match[2]]) {\n      retval[queueName].push(match[1])\n      sources[match[2]] = __webpack_require__(match[1]).m\n    }\n    retval[match[2]] = retval[match[2]] || []\n    retval[match[2]].push(match[4])\n  }\n\n  return retval\n}\n\nfunction hasValuesInQueues (queues) {\n  var keys = Object.keys(queues)\n  return keys.reduce(function (hasValues, key) {\n    return hasValues || queues[key].length > 0\n  }, false)\n}\n\nfunction getRequiredModules (sources, moduleId) {\n  var modulesQueue = {\n    main: [moduleId]\n  }\n  var requiredModules = {\n    main: []\n  }\n  var seenModules = {\n    main: {}\n  }\n\n  while (hasValuesInQueues(modulesQueue)) {\n    var queues = Object.keys(modulesQueue)\n    for (var i = 0; i < queues.length; i++) {\n      var queueName = queues[i]\n      var queue = modulesQueue[queueName]\n      var moduleToCheck = queue.pop()\n      seenModules[queueName] = seenModules[queueName] || {}\n      if (seenModules[queueName][moduleToCheck] || !sources[queueName][moduleToCheck]) continue\n      seenModules[queueName][moduleToCheck] = true\n      requiredModules[queueName] = requiredModules[queueName] || []\n      requiredModules[queueName].push(moduleToCheck)\n      var newModules = getModuleDependencies(sources, sources[queueName][moduleToCheck], queueName)\n      var newModulesKeys = Object.keys(newModules)\n      for (var j = 0; j < newModulesKeys.length; j++) {\n        modulesQueue[newModulesKeys[j]] = modulesQueue[newModulesKeys[j]] || []\n        modulesQueue[newModulesKeys[j]] = modulesQueue[newModulesKeys[j]].concat(newModules[newModulesKeys[j]])\n      }\n    }\n  }\n\n  return requiredModules\n}\n\nmodule.exports = function (moduleId, options) {\n  options = options || {}\n  var sources = {\n    main: __webpack_require__.m\n  }\n\n  var requiredModules = options.all ? { main: Object.keys(sources) } : getRequiredModules(sources, moduleId)\n\n  var src = ''\n\n  Object.keys(requiredModules).filter(function (m) { return m !== 'main' }).forEach(function (module) {\n    var entryModule = 0\n    while (requiredModules[module][entryModule]) {\n      entryModule++\n    }\n    requiredModules[module].push(entryModule)\n    sources[module][entryModule] = '(function(module, exports, __webpack_require__) { module.exports = __webpack_require__; })'\n    src = src + 'var ' + module + ' = (' + webpackBootstrapFunc.toString().replace('ENTRY_MODULE', JSON.stringify(entryModule)) + ')({' + requiredModules[module].map(function (id) { return '' + JSON.stringify(id) + ': ' + sources[module][id].toString() }).join(',') + '});\\n'\n  })\n\n  src = src + '(' + webpackBootstrapFunc.toString().replace('ENTRY_MODULE', JSON.stringify(moduleId)) + ')({' + requiredModules.main.map(function (id) { return '' + JSON.stringify(id) + ': ' + sources.main[id].toString() }).join(',') + '})(self);'\n\n  var blob = new window.Blob([src], { type: 'text/javascript' })\n  if (options.bare) { return blob }\n\n  var URL = window.URL || window.webkitURL || window.mozURL || window.msURL\n\n  var workerUrl = URL.createObjectURL(blob)\n  var worker = new window.Worker(workerUrl)\n  worker.objectURL = workerUrl\n\n  return worker\n}\n\n\n/***/ }),\n/* 5 */\n/***/ (function(module, exports) {\n\n// The low-level RushCore module provides the heart of Rusha,\n// a high-speed sha1 implementation working on an Int32Array heap.\n// At first glance, the implementation seems complicated, however\n// with the SHA1 spec at hand, it is obvious this almost a textbook\n// implementation that has a few functions hand-inlined and a few loops\n// hand-unrolled.\nmodule.exports = function RushaCore(stdlib$846, foreign$847, heap$848) {\n    'use asm';\n    var H$849 = new stdlib$846.Int32Array(heap$848);\n    function hash$850(k$851, x$852) {\n        // k in bytes\n        k$851 = k$851 | 0;\n        x$852 = x$852 | 0;\n        var i$853 = 0, j$854 = 0, y0$855 = 0, z0$856 = 0, y1$857 = 0, z1$858 = 0, y2$859 = 0, z2$860 = 0, y3$861 = 0, z3$862 = 0, y4$863 = 0, z4$864 = 0, t0$865 = 0, t1$866 = 0;\n        y0$855 = H$849[x$852 + 320 >> 2] | 0;\n        y1$857 = H$849[x$852 + 324 >> 2] | 0;\n        y2$859 = H$849[x$852 + 328 >> 2] | 0;\n        y3$861 = H$849[x$852 + 332 >> 2] | 0;\n        y4$863 = H$849[x$852 + 336 >> 2] | 0;\n        for (i$853 = 0; (i$853 | 0) < (k$851 | 0); i$853 = i$853 + 64 | 0) {\n            z0$856 = y0$855;\n            z1$858 = y1$857;\n            z2$860 = y2$859;\n            z3$862 = y3$861;\n            z4$864 = y4$863;\n            for (j$854 = 0; (j$854 | 0) < 64; j$854 = j$854 + 4 | 0) {\n                t1$866 = H$849[i$853 + j$854 >> 2] | 0;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | ~y1$857 & y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1518500249 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[k$851 + j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 64 | 0; (j$854 | 0) < (k$851 + 80 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | ~y1$857 & y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1518500249 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 80 | 0; (j$854 | 0) < (k$851 + 160 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 ^ y2$859 ^ y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1859775393 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 160 | 0; (j$854 | 0) < (k$851 + 240 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | y1$857 & y3$861 | y2$859 & y3$861) | 0) + ((t1$866 + y4$863 | 0) - 1894007588 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            for (j$854 = k$851 + 240 | 0; (j$854 | 0) < (k$851 + 320 | 0); j$854 = j$854 + 4 | 0) {\n                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;\n                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 ^ y2$859 ^ y3$861) | 0) + ((t1$866 + y4$863 | 0) - 899497514 | 0) | 0;\n                y4$863 = y3$861;\n                y3$861 = y2$859;\n                y2$859 = y1$857 << 30 | y1$857 >>> 2;\n                y1$857 = y0$855;\n                y0$855 = t0$865;\n                H$849[j$854 >> 2] = t1$866;\n            }\n            y0$855 = y0$855 + z0$856 | 0;\n            y1$857 = y1$857 + z1$858 | 0;\n            y2$859 = y2$859 + z2$860 | 0;\n            y3$861 = y3$861 + z3$862 | 0;\n            y4$863 = y4$863 + z4$864 | 0;\n        }\n        H$849[x$852 + 320 >> 2] = y0$855;\n        H$849[x$852 + 324 >> 2] = y1$857;\n        H$849[x$852 + 328 >> 2] = y2$859;\n        H$849[x$852 + 332 >> 2] = y3$861;\n        H$849[x$852 + 336 >> 2] = y4$863;\n    }\n    return { hash: hash$850 };\n};\n\n/***/ }),\n/* 6 */\n/***/ (function(module, exports) {\n\nvar _this = this;\n\n/* eslint-env commonjs, browser */\n\nvar reader = void 0;\nif (typeof self !== 'undefined' && typeof self.FileReaderSync !== 'undefined') {\n  reader = new self.FileReaderSync();\n}\n\n// Convert a binary string and write it to the heap.\n// A binary string is expected to only contain char codes < 256.\nvar convStr = function (str, H8, H32, start, len, off) {\n  var i = void 0,\n      om = off % 4,\n      lm = (len + om) % 4,\n      j = len - lm;\n  switch (om) {\n    case 0:\n      H8[off] = str.charCodeAt(start + 3);\n    case 1:\n      H8[off + 1 - (om << 1) | 0] = str.charCodeAt(start + 2);\n    case 2:\n      H8[off + 2 - (om << 1) | 0] = str.charCodeAt(start + 1);\n    case 3:\n      H8[off + 3 - (om << 1) | 0] = str.charCodeAt(start);\n  }\n  if (len < lm + (4 - om)) {\n    return;\n  }\n  for (i = 4 - om; i < j; i = i + 4 | 0) {\n    H32[off + i >> 2] = str.charCodeAt(start + i) << 24 | str.charCodeAt(start + i + 1) << 16 | str.charCodeAt(start + i + 2) << 8 | str.charCodeAt(start + i + 3);\n  }\n  switch (lm) {\n    case 3:\n      H8[off + j + 1 | 0] = str.charCodeAt(start + j + 2);\n    case 2:\n      H8[off + j + 2 | 0] = str.charCodeAt(start + j + 1);\n    case 1:\n      H8[off + j + 3 | 0] = str.charCodeAt(start + j);\n  }\n};\n\n// Convert a buffer or array and write it to the heap.\n// The buffer or array is expected to only contain elements < 256.\nvar convBuf = function (buf, H8, H32, start, len, off) {\n  var i = void 0,\n      om = off % 4,\n      lm = (len + om) % 4,\n      j = len - lm;\n  switch (om) {\n    case 0:\n      H8[off] = buf[start + 3];\n    case 1:\n      H8[off + 1 - (om << 1) | 0] = buf[start + 2];\n    case 2:\n      H8[off + 2 - (om << 1) | 0] = buf[start + 1];\n    case 3:\n      H8[off + 3 - (om << 1) | 0] = buf[start];\n  }\n  if (len < lm + (4 - om)) {\n    return;\n  }\n  for (i = 4 - om; i < j; i = i + 4 | 0) {\n    H32[off + i >> 2 | 0] = buf[start + i] << 24 | buf[start + i + 1] << 16 | buf[start + i + 2] << 8 | buf[start + i + 3];\n  }\n  switch (lm) {\n    case 3:\n      H8[off + j + 1 | 0] = buf[start + j + 2];\n    case 2:\n      H8[off + j + 2 | 0] = buf[start + j + 1];\n    case 1:\n      H8[off + j + 3 | 0] = buf[start + j];\n  }\n};\n\nvar convBlob = function (blob, H8, H32, start, len, off) {\n  var i = void 0,\n      om = off % 4,\n      lm = (len + om) % 4,\n      j = len - lm;\n  var buf = new Uint8Array(reader.readAsArrayBuffer(blob.slice(start, start + len)));\n  switch (om) {\n    case 0:\n      H8[off] = buf[3];\n    case 1:\n      H8[off + 1 - (om << 1) | 0] = buf[2];\n    case 2:\n      H8[off + 2 - (om << 1) | 0] = buf[1];\n    case 3:\n      H8[off + 3 - (om << 1) | 0] = buf[0];\n  }\n  if (len < lm + (4 - om)) {\n    return;\n  }\n  for (i = 4 - om; i < j; i = i + 4 | 0) {\n    H32[off + i >> 2 | 0] = buf[i] << 24 | buf[i + 1] << 16 | buf[i + 2] << 8 | buf[i + 3];\n  }\n  switch (lm) {\n    case 3:\n      H8[off + j + 1 | 0] = buf[j + 2];\n    case 2:\n      H8[off + j + 2 | 0] = buf[j + 1];\n    case 1:\n      H8[off + j + 3 | 0] = buf[j];\n  }\n};\n\nmodule.exports = function (data, H8, H32, start, len, off) {\n  if (typeof data === 'string') {\n    return convStr(data, H8, H32, start, len, off);\n  }\n  if (data instanceof Array) {\n    return convBuf(data, H8, H32, start, len, off);\n  }\n  // Safely doing a Buffer check using \"this\" to avoid Buffer polyfill to be included in the dist\n  if (_this && _this.Buffer && _this.Buffer.isBuffer(data)) {\n    return convBuf(data, H8, H32, start, len, off);\n  }\n  if (data instanceof ArrayBuffer) {\n    return convBuf(new Uint8Array(data), H8, H32, start, len, off);\n  }\n  if (data.buffer instanceof ArrayBuffer) {\n    return convBuf(new Uint8Array(data.buffer, data.byteOffset, data.byteLength), H8, H32, start, len, off);\n  }\n  if (data instanceof Blob) {\n    return convBlob(data, H8, H32, start, len, off);\n  }\n  throw new Error('Unsupported data type.');\n};\n\n/***/ }),\n/* 7 */\n/***/ (function(module, exports, __webpack_require__) {\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\n/* eslint-env commonjs, browser */\n\nvar Rusha = __webpack_require__(0);\n\nvar _require = __webpack_require__(1),\n    toHex = _require.toHex;\n\nvar Hash = function () {\n  function Hash() {\n    _classCallCheck(this, Hash);\n\n    this._rusha = new Rusha();\n    this._rusha.resetState();\n  }\n\n  Hash.prototype.update = function update(data) {\n    this._rusha.append(data);\n    return this;\n  };\n\n  Hash.prototype.digest = function digest(encoding) {\n    var digest = this._rusha.rawEnd().buffer;\n    if (!encoding) {\n      return digest;\n    }\n    if (encoding === 'hex') {\n      return toHex(digest);\n    }\n    throw new Error('unsupported digest encoding');\n  };\n\n  return Hash;\n}();\n\nmodule.exports = function () {\n  return new Hash();\n};\n\n/***/ })\n/******/ ]);\n});\n\n/***/ }),\n\n/***/ \"./node_modules/webpack-strip-block/index.js?!./src/js/webworkers/compression.worker.js\":\n/*!**********************************************************************************************!*\\\n  !*** ./node_modules/webpack-strip-block??ref--7-0!./src/js/webworkers/compression.worker.js ***!\n  \\**********************************************************************************************/\n/*! no exports provided */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _core_lzstring__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/lzstring */ \"./src/js/core/lzstring.js\");\n/* harmony import */ var _core_config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/config */ \"./src/js/core/config.js\");\n/* harmony import */ var _core_sensitive_utils_encrypt__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/sensitive_utils.encrypt */ \"./src/js/core/sensitive_utils.encrypt.js\");\n\r\n\r\n\r\n\r\nfunction accessNestedPropertyReverse(obj, keys) {\r\n    let result = obj;\r\n    for (let i = keys.length - 1; i >= 0; --i) {\r\n        result = result[keys[i]];\r\n    }\r\n    return result;\r\n}\r\n\r\nconst salt = accessNestedPropertyReverse(_core_config__WEBPACK_IMPORTED_MODULE_1__[\"globalConfig\"], [\"file\", \"info\"]);\r\n\r\nonmessage = function (event) {\r\n    const { jobId, job, data } = event.data;\r\n    const result = performJob(job, data);\r\n\r\n    // @ts-ignore\r\n    postMessage({\r\n        jobId,\r\n        result,\r\n    });\r\n};\r\n\r\nfunction performJob(job, data) {\r\n    switch (job) {\r\n        case \"compressX64\": {\r\n            return Object(_core_lzstring__WEBPACK_IMPORTED_MODULE_0__[\"compressX64\"])(data);\r\n        }\r\n        case \"compressFile\": {\r\n            const checksum = Object(_core_sensitive_utils_encrypt__WEBPACK_IMPORTED_MODULE_2__[\"sha1\"])(data.text + salt);\r\n            return data.compressionPrefix + Object(_core_lzstring__WEBPACK_IMPORTED_MODULE_0__[\"compressX64\"])(checksum + data.text);\r\n        }\r\n        default:\r\n            throw new Error(\"Webworker: Unknown job: \" + job);\r\n    }\r\n}\r\n\n\n/***/ }),\n\n/***/ \"./src/js/core/config.js\":\n/*!*******************************!*\\\n  !*** ./src/js/core/config.js ***!\n  \\*******************************/\n/*! exports provided: IS_DEBUG, IS_DEMO, THIRDPARTY_URLS, globalConfig, IS_MOBILE */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"IS_DEBUG\", function() { return IS_DEBUG; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"IS_DEMO\", function() { return IS_DEMO; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"THIRDPARTY_URLS\", function() { return THIRDPARTY_URLS; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"globalConfig\", function() { return globalConfig; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"IS_MOBILE\", function() { return IS_MOBILE; });\nconst IS_DEBUG =\r\n    (typeof window !== \"undefined\" && window.location.search.indexOf(\"isdebug\") >= 0) ||\r\n    ( true &&\r\n        typeof window !== \"undefined\" &&\r\n        window.location.port === \"3005\" &&\r\n        (window.location.host.indexOf(\"localhost:\") >= 0 ||\r\n            window.location.host.indexOf(\"192.168.0.\") >= 0) &&\r\n        window.location.search.indexOf(\"nodebug\") < 0);\r\n\r\nconst IS_DEMO =\r\n    ( false) ||\r\n    (typeof window !== \"undefined\" && window.location.search.indexOf(\"isdemo\") >= 0);\r\n\r\nconst smoothCanvas = true;\r\n\r\nconst THIRDPARTY_URLS = {\r\n    discord: \"https://discord.gg/HN7EVzV\",\r\n    github: \"https://github.com/tobspr/shapez.io\",\r\n\r\n    // standaloneStorePage: \"https://steam.shapez.io\",\r\n    standaloneStorePage: \"https://tobspr.itch.io/shapez.io\",\r\n};\r\n\r\nconst globalConfig = {\r\n    // Size of a single tile in Pixels.\r\n    // NOTICE: Update webpack.production.config too!\r\n    tileSize: 32,\r\n    halfTileSize: 16,\r\n\r\n    // Which dpi the assets have\r\n    assetsDpi: 192 / 32,\r\n    assetsSharpness: 1.2,\r\n    shapesSharpness: 1.4,\r\n\r\n    // Production analytics\r\n    statisticsGraphDpi: 2.5,\r\n    statisticsGraphSlices: 100,\r\n    analyticsSliceDurationSeconds: 10,\r\n\r\n    minimumTickRate: 25,\r\n    maximumTickRate: 500,\r\n\r\n    // Map\r\n    mapChunkSize: 16,\r\n    mapChunkPrerenderMinZoom: 1.15,\r\n    mapChunkOverviewMinZoom: 0.7,\r\n\r\n    // Belt speeds\r\n    // NOTICE: Update webpack.production.config too!\r\n    beltSpeedItemsPerSecond: 1,\r\n    itemSpacingOnBelts: 0.63,\r\n    minerSpeedItemsPerSecond: 0, // COMPUTED\r\n\r\n    undergroundBeltMaxTilesByTier: [5, 8],\r\n\r\n    buildingSpeeds: {\r\n        cutter: 1 / 4,\r\n        cutterQuad: 1 / 4,\r\n        rotater: 1 / 1,\r\n        rotaterCCW: 1 / 1,\r\n        painter: 1 / 6,\r\n        painterDouble: 1 / 8,\r\n        sorter: 1 / 1,\r\n        targetShapeChecker: 1 / 1,\r\n        painterQuad: 1 / 8,\r\n        mixer: 1 / 5,\r\n        stacker: 1 / 6,\r\n    },\r\n\r\n    // Zooming\r\n    initialZoom: 2,\r\n    minZoomLevel: 0.125,\r\n    maxZoomLevel: 4,\r\n\r\n    // Global game speed\r\n    gameSpeed: 1,\r\n\r\n    warmupTimeSecondsFast: 0.1,\r\n    warmupTimeSecondsRegular: 1,\r\n\r\n    smoothing: {\r\n        smoothMainCanvas: smoothCanvas && true,\r\n        quality: \"low\", // Low is CRUCIAL for mobile performance!\r\n    },\r\n\r\n    rendering: {},\r\n\r\n    debug: {\r\n        /* dev:start */\r\n\r\n        // Settings menu is generated *automatically*,\r\n        // but does not changes globalConfig.debug if enableDebugSettings is off\r\n        // DEFAULT VALUES:\r\n        enableDebugSettings: true,\r\n        \r\n        // UI\r\n        waitForImages: true,\r\n        showChunkBorders: false,\r\n        disableZoomLimits: false,\r\n        disableShortNumbers: false,\r\n\r\n        // FEATURE\r\n        disableSavegameWrite: false,\r\n        disableUnlockDialog: false,\r\n        disableTutorialHints: false,\r\n        disableUpgradeNotification: false,\r\n        disableDynamicTickrate: false,\r\n        fastGameEnter: false,\r\n        pauseGameOnFastEnter: false,\r\n\r\n        // ASSERT\r\n        disableInternalCheckTile: false,\r\n        disableGetTileAsserts: false,\r\n        disableBeltAsserts: false,\r\n\r\n        // CHEATS\r\n        rewardsInstant: false,\r\n        allBuildingsUnlocked: false,\r\n        blueprintsNoCost: true,\r\n        upgradesNoCost: false,\r\n        instantBelts: false,\r\n        instantProcessors: false,\r\n        instantMiners: false,\r\n\r\n        // TEST\r\n        noArtificialDelays: false,\r\n        showEntityBounds: false,\r\n        showAcceptorEjectors: false,\r\n        disableMusic: false,\r\n        doNotRenderStatics: false,\r\n        disableLogicTicks: false,\r\n        testClipping: false,\r\n        testTranslations: false,\r\n        enableEntityInspector: false,\r\n        testAds: false,\r\n        disableMapOverview: false,\r\n        disableBulkOperations: false,\r\n\r\n        // framePausesBetweenTicks: 40,\r\n\r\n        renderForTrailer: false,\r\n        /* dev:end */\r\n    },\r\n\r\n    // Secret vars\r\n    info: {\r\n        // Binary file salt\r\n        file: \"Ec'])@^+*9zMevK3uMV4432x9%iK'=\",\r\n\r\n        // Savegame salt\r\n        sgSalt: \"}95Q3%8/.837Lqym_BJx%q7)pAHJbF\",\r\n\r\n        // Analytics key\r\n        analyticsApiKey: \"baf6a50f0cc7dfdec5a0e21c88a1c69a4b34bc4a\",\r\n    },\r\n};\r\n\r\nconst IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);\r\n\r\n// Automatic calculations\r\n\r\nglobalConfig.minerSpeedItemsPerSecond = globalConfig.beltSpeedItemsPerSecond / 5;\r\n\r\nif (globalConfig.debug.disableMapOverview) {\r\n    globalConfig.mapChunkOverviewMinZoom = 0;\r\n    globalConfig.mapChunkPrerenderMinZoom = 0;\r\n}\r\n\r\nif ( true && globalConfig.debug.renderForTrailer) {\r\n    globalConfig.debug.framePausesBetweenTicks = 32;\r\n    // globalConfig.mapChunkOverviewMinZoom = 0.0;\r\n    // globalConfig.mapChunkPrerenderMinZoom = globalConfig.mapChunkOverviewMinZoom;\r\n    // globalConfig.debug.instantBelts = true;\r\n    // globalConfig.debug.instantProcessors = true;\r\n    // globalConfig.debug.instantMiners = true;\r\n    globalConfig.debug.disableSavegameWrite = true;\r\n    // globalConfig.beltSpeedItemsPerSecond *= 2;\r\n}\r\n\n\n/***/ }),\n\n/***/ \"./src/js/core/lzstring.js\":\n/*!*********************************!*\\\n  !*** ./src/js/core/lzstring.js ***!\n  \\*********************************/\n/*! exports provided: compressU8, compressU8WHeader, decompressU8WHeader, compressX64, decompressX64 */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"compressU8\", function() { return compressU8; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"compressU8WHeader\", function() { return compressU8WHeader; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"decompressU8WHeader\", function() { return decompressU8WHeader; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"compressX64\", function() { return compressX64; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"decompressX64\", function() { return decompressX64; });\n// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>\r\n// This work is free. You can redistribute it and/or modify it\r\n// under the terms of the WTFPL, Version 2\r\n// For more information see LICENSE.txt or http://www.wtfpl.net/\r\n//\r\n// For more information, the home page:\r\n// http://pieroxy.net/blog/pages/lz-string/testing.html\r\n//\r\n// LZ-based compression algorithm, version 1.4.4\r\n\r\nconst fromCharCode = String.fromCharCode;\r\nconst hasOwnProperty = Object.prototype.hasOwnProperty;\r\n\r\nconst keyStrUriSafe = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$\";\r\nconst baseReverseDic = {};\r\n\r\nfunction getBaseValue(alphabet, character) {\r\n    if (!baseReverseDic[alphabet]) {\r\n        baseReverseDic[alphabet] = {};\r\n        for (let i = 0; i < alphabet.length; i++) {\r\n            baseReverseDic[alphabet][alphabet.charAt(i)] = i;\r\n        }\r\n    }\r\n    return baseReverseDic[alphabet][character];\r\n}\r\n\r\n//compress into uint8array (UCS-2 big endian format)\r\nfunction compressU8(uncompressed) {\r\n    let compressed = compress(uncompressed);\r\n    let buf = new Uint8Array(compressed.length * 2); // 2 bytes per character\r\n\r\n    for (let i = 0, TotalLen = compressed.length; i < TotalLen; i++) {\r\n        let current_value = compressed.charCodeAt(i);\r\n        buf[i * 2] = current_value >>> 8;\r\n        buf[i * 2 + 1] = current_value % 256;\r\n    }\r\n    return buf;\r\n}\r\n\r\n// Compreses with header\r\n/**\r\n * @param {string} uncompressed\r\n * @param {number} header\r\n */\r\nfunction compressU8WHeader(uncompressed, header) {\r\n    let compressed = compress(uncompressed);\r\n    let buf = new Uint8Array(2 + compressed.length * 2); // 2 bytes per character\r\n\r\n    buf[0] = header >>> 8;\r\n    buf[1] = header % 256;\r\n    for (let i = 0, TotalLen = compressed.length; i < TotalLen; i++) {\r\n        let current_value = compressed.charCodeAt(i);\r\n        buf[2 + i * 2] = current_value >>> 8;\r\n        buf[2 + i * 2 + 1] = current_value % 256;\r\n    }\r\n    return buf;\r\n}\r\n\r\n//decompress from uint8array (UCS-2 big endian format)\r\n/**\r\n *\r\n * @param {Uint8Array} compressed\r\n */\r\nfunction decompressU8WHeader(compressed) {\r\n    // let buf = new Array(compressed.length / 2); // 2 bytes per character\r\n    // for (let i = 0, TotalLen = buf.length; i < TotalLen; i++) {\r\n    //     buf[i] = compressed[i * 2] * 256 + compressed[i * 2 + 1];\r\n    // }\r\n\r\n    // let result = [];\r\n    // buf.forEach(function (c) {\r\n    //     result.push(fromCharCode(c));\r\n    // });\r\n    let result = [];\r\n    for (let i = 2, n = compressed.length; i < n; i += 2) {\r\n        const code = compressed[i] * 256 + compressed[i + 1];\r\n        result.push(fromCharCode(code));\r\n    }\r\n    return decompress(result.join(\"\"));\r\n}\r\n\r\n//compress into a string that is already URI encoded\r\nfunction compressX64(input) {\r\n    if (input == null) return \"\";\r\n    return _compress(input, 6, function (a) {\r\n        return keyStrUriSafe.charAt(a);\r\n    });\r\n}\r\n\r\n//decompress from an output of compressToEncodedURIComponent\r\nfunction decompressX64(input) {\r\n    if (input == null) return \"\";\r\n    if (input == \"\") return null;\r\n    input = input.replace(/ /g, \"+\");\r\n    return _decompress(input.length, 32, function (index) {\r\n        return getBaseValue(keyStrUriSafe, input.charAt(index));\r\n    });\r\n}\r\n\r\nfunction compress(uncompressed) {\r\n    return _compress(uncompressed, 16, function (a) {\r\n        return fromCharCode(a);\r\n    });\r\n}\r\n\r\nfunction _compress(uncompressed, bitsPerChar, getCharFromInt) {\r\n    if (uncompressed == null) return \"\";\r\n    let i,\r\n        value,\r\n        context_dictionary = {},\r\n        context_dictionaryToCreate = {},\r\n        context_c = \"\",\r\n        context_wc = \"\",\r\n        context_w = \"\",\r\n        context_enlargeIn = 2, // Compensate for the first entry which should not count\r\n        context_dictSize = 3,\r\n        context_numBits = 2,\r\n        context_data = [],\r\n        context_data_val = 0,\r\n        context_data_position = 0,\r\n        ii;\r\n\r\n    for (ii = 0; ii < uncompressed.length; ii += 1) {\r\n        context_c = uncompressed.charAt(ii);\r\n        if (!hasOwnProperty.call(context_dictionary, context_c)) {\r\n            context_dictionary[context_c] = context_dictSize++;\r\n            context_dictionaryToCreate[context_c] = true;\r\n        }\r\n\r\n        context_wc = context_w + context_c;\r\n        if (hasOwnProperty.call(context_dictionary, context_wc)) {\r\n            context_w = context_wc;\r\n        } else {\r\n            if (hasOwnProperty.call(context_dictionaryToCreate, context_w)) {\r\n                if (context_w.charCodeAt(0) < 256) {\r\n                    for (i = 0; i < context_numBits; i++) {\r\n                        context_data_val = context_data_val << 1;\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                    }\r\n                    value = context_w.charCodeAt(0);\r\n                    for (i = 0; i < 8; i++) {\r\n                        context_data_val = (context_data_val << 1) | (value & 1);\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                        value = value >> 1;\r\n                    }\r\n                } else {\r\n                    value = 1;\r\n                    for (i = 0; i < context_numBits; i++) {\r\n                        context_data_val = (context_data_val << 1) | value;\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                        value = 0;\r\n                    }\r\n                    value = context_w.charCodeAt(0);\r\n                    for (i = 0; i < 16; i++) {\r\n                        context_data_val = (context_data_val << 1) | (value & 1);\r\n                        if (context_data_position == bitsPerChar - 1) {\r\n                            context_data_position = 0;\r\n                            context_data.push(getCharFromInt(context_data_val));\r\n                            context_data_val = 0;\r\n                        } else {\r\n                            context_data_position++;\r\n                        }\r\n                        value = value >> 1;\r\n                    }\r\n                }\r\n                context_enlargeIn--;\r\n                if (context_enlargeIn == 0) {\r\n                    context_enlargeIn = Math.pow(2, context_numBits);\r\n                    context_numBits++;\r\n                }\r\n                delete context_dictionaryToCreate[context_w];\r\n            } else {\r\n                value = context_dictionary[context_w];\r\n                for (i = 0; i < context_numBits; i++) {\r\n                    context_data_val = (context_data_val << 1) | (value & 1);\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = value >> 1;\r\n                }\r\n            }\r\n            context_enlargeIn--;\r\n            if (context_enlargeIn == 0) {\r\n                context_enlargeIn = Math.pow(2, context_numBits);\r\n                context_numBits++;\r\n            }\r\n            // Add wc to the dictionary.\r\n            context_dictionary[context_wc] = context_dictSize++;\r\n            context_w = String(context_c);\r\n        }\r\n    }\r\n\r\n    // Output the code for w.\r\n    if (context_w !== \"\") {\r\n        if (hasOwnProperty.call(context_dictionaryToCreate, context_w)) {\r\n            if (context_w.charCodeAt(0) < 256) {\r\n                for (i = 0; i < context_numBits; i++) {\r\n                    context_data_val = context_data_val << 1;\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                }\r\n                value = context_w.charCodeAt(0);\r\n                for (i = 0; i < 8; i++) {\r\n                    context_data_val = (context_data_val << 1) | (value & 1);\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = value >> 1;\r\n                }\r\n            } else {\r\n                value = 1;\r\n                for (i = 0; i < context_numBits; i++) {\r\n                    context_data_val = (context_data_val << 1) | value;\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = 0;\r\n                }\r\n                value = context_w.charCodeAt(0);\r\n                for (i = 0; i < 16; i++) {\r\n                    context_data_val = (context_data_val << 1) | (value & 1);\r\n                    if (context_data_position == bitsPerChar - 1) {\r\n                        context_data_position = 0;\r\n                        context_data.push(getCharFromInt(context_data_val));\r\n                        context_data_val = 0;\r\n                    } else {\r\n                        context_data_position++;\r\n                    }\r\n                    value = value >> 1;\r\n                }\r\n            }\r\n            context_enlargeIn--;\r\n            if (context_enlargeIn == 0) {\r\n                context_enlargeIn = Math.pow(2, context_numBits);\r\n                context_numBits++;\r\n            }\r\n            delete context_dictionaryToCreate[context_w];\r\n        } else {\r\n            value = context_dictionary[context_w];\r\n            for (i = 0; i < context_numBits; i++) {\r\n                context_data_val = (context_data_val << 1) | (value & 1);\r\n                if (context_data_position == bitsPerChar - 1) {\r\n                    context_data_position = 0;\r\n                    context_data.push(getCharFromInt(context_data_val));\r\n                    context_data_val = 0;\r\n                } else {\r\n                    context_data_position++;\r\n                }\r\n                value = value >> 1;\r\n            }\r\n        }\r\n        context_enlargeIn--;\r\n        if (context_enlargeIn == 0) {\r\n            context_enlargeIn = Math.pow(2, context_numBits);\r\n            context_numBits++;\r\n        }\r\n    }\r\n\r\n    // Mark the end of the stream\r\n    value = 2;\r\n    for (i = 0; i < context_numBits; i++) {\r\n        context_data_val = (context_data_val << 1) | (value & 1);\r\n        if (context_data_position == bitsPerChar - 1) {\r\n            context_data_position = 0;\r\n            context_data.push(getCharFromInt(context_data_val));\r\n            context_data_val = 0;\r\n        } else {\r\n            context_data_position++;\r\n        }\r\n        value = value >> 1;\r\n    }\r\n\r\n    // Flush the last char\r\n    // eslint-disable-next-line no-constant-condition\r\n    while (true) {\r\n        context_data_val = context_data_val << 1;\r\n        if (context_data_position == bitsPerChar - 1) {\r\n            context_data.push(getCharFromInt(context_data_val));\r\n            break;\r\n        } else context_data_position++;\r\n    }\r\n    return context_data.join(\"\");\r\n}\r\n\r\nfunction decompress(compressed) {\r\n    if (compressed == null) return \"\";\r\n    if (compressed == \"\") return null;\r\n    return _decompress(compressed.length, 32768, function (index) {\r\n        return compressed.charCodeAt(index);\r\n    });\r\n}\r\n\r\nfunction _decompress(length, resetValue, getNextValue) {\r\n    let dictionary = [],\r\n        next,\r\n        enlargeIn = 4,\r\n        dictSize = 4,\r\n        numBits = 3,\r\n        entry = \"\",\r\n        result = [],\r\n        i,\r\n        w,\r\n        bits,\r\n        resb,\r\n        maxpower,\r\n        power,\r\n        c,\r\n        data = { val: getNextValue(0), position: resetValue, index: 1 };\r\n\r\n    for (i = 0; i < 3; i += 1) {\r\n        dictionary[i] = i;\r\n    }\r\n\r\n    bits = 0;\r\n    maxpower = Math.pow(2, 2);\r\n    power = 1;\r\n    while (power != maxpower) {\r\n        resb = data.val & data.position;\r\n        data.position >>= 1;\r\n        if (data.position == 0) {\r\n            data.position = resetValue;\r\n            data.val = getNextValue(data.index++);\r\n        }\r\n        bits |= (resb > 0 ? 1 : 0) * power;\r\n        power <<= 1;\r\n    }\r\n\r\n    switch ((next = bits)) {\r\n        case 0:\r\n            bits = 0;\r\n            maxpower = Math.pow(2, 8);\r\n            power = 1;\r\n            while (power != maxpower) {\r\n                resb = data.val & data.position;\r\n                data.position >>= 1;\r\n                if (data.position == 0) {\r\n                    data.position = resetValue;\r\n                    data.val = getNextValue(data.index++);\r\n                }\r\n                bits |= (resb > 0 ? 1 : 0) * power;\r\n                power <<= 1;\r\n            }\r\n            c = fromCharCode(bits);\r\n            break;\r\n        case 1:\r\n            bits = 0;\r\n            maxpower = Math.pow(2, 16);\r\n            power = 1;\r\n            while (power != maxpower) {\r\n                resb = data.val & data.position;\r\n                data.position >>= 1;\r\n                if (data.position == 0) {\r\n                    data.position = resetValue;\r\n                    data.val = getNextValue(data.index++);\r\n                }\r\n                bits |= (resb > 0 ? 1 : 0) * power;\r\n                power <<= 1;\r\n            }\r\n            c = fromCharCode(bits);\r\n            break;\r\n        case 2:\r\n            return \"\";\r\n    }\r\n    dictionary[3] = c;\r\n    w = c;\r\n    result.push(c);\r\n\r\n    // eslint-disable-next-line no-constant-condition\r\n    while (true) {\r\n        if (data.index > length) {\r\n            return \"\";\r\n        }\r\n\r\n        bits = 0;\r\n        maxpower = Math.pow(2, numBits);\r\n        power = 1;\r\n        while (power != maxpower) {\r\n            resb = data.val & data.position;\r\n            data.position >>= 1;\r\n            if (data.position == 0) {\r\n                data.position = resetValue;\r\n                data.val = getNextValue(data.index++);\r\n            }\r\n            bits |= (resb > 0 ? 1 : 0) * power;\r\n            power <<= 1;\r\n        }\r\n\r\n        switch ((c = bits)) {\r\n            case 0:\r\n                bits = 0;\r\n                maxpower = Math.pow(2, 8);\r\n                power = 1;\r\n                while (power != maxpower) {\r\n                    resb = data.val & data.position;\r\n                    data.position >>= 1;\r\n                    if (data.position == 0) {\r\n                        data.position = resetValue;\r\n                        data.val = getNextValue(data.index++);\r\n                    }\r\n                    bits |= (resb > 0 ? 1 : 0) * power;\r\n                    power <<= 1;\r\n                }\r\n\r\n                dictionary[dictSize++] = fromCharCode(bits);\r\n                c = dictSize - 1;\r\n                enlargeIn--;\r\n                break;\r\n            case 1:\r\n                bits = 0;\r\n                maxpower = Math.pow(2, 16);\r\n                power = 1;\r\n                while (power != maxpower) {\r\n                    resb = data.val & data.position;\r\n                    data.position >>= 1;\r\n                    if (data.position == 0) {\r\n                        data.position = resetValue;\r\n                        data.val = getNextValue(data.index++);\r\n                    }\r\n                    bits |= (resb > 0 ? 1 : 0) * power;\r\n                    power <<= 1;\r\n                }\r\n                dictionary[dictSize++] = fromCharCode(bits);\r\n                c = dictSize - 1;\r\n                enlargeIn--;\r\n                break;\r\n            case 2:\r\n                return result.join(\"\");\r\n        }\r\n\r\n        if (enlargeIn == 0) {\r\n            enlargeIn = Math.pow(2, numBits);\r\n            numBits++;\r\n        }\r\n\r\n        if (dictionary[c]) {\r\n            // @ts-ignore\r\n            entry = dictionary[c];\r\n        } else {\r\n            if (c === dictSize) {\r\n                entry = w + w.charAt(0);\r\n            } else {\r\n                return null;\r\n            }\r\n        }\r\n        result.push(entry);\r\n\r\n        // Add w+entry[0] to the dictionary.\r\n        dictionary[dictSize++] = w + entry.charAt(0);\r\n        enlargeIn--;\r\n\r\n        w = entry;\r\n\r\n        if (enlargeIn == 0) {\r\n            enlargeIn = Math.pow(2, numBits);\r\n            numBits++;\r\n        }\r\n    }\r\n}\r\n\n\n/***/ }),\n\n/***/ \"./src/js/core/sensitive_utils.encrypt.js\":\n/*!************************************************!*\\\n  !*** ./src/js/core/sensitive_utils.encrypt.js ***!\n  \\************************************************/\n/*! exports provided: decodeHashedString, sha1, getNameOfProvider */\n/***/ (function(module, __webpack_exports__, __webpack_require__) {\n\n\"use strict\";\n__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"decodeHashedString\", function() { return decodeHashedString; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"sha1\", function() { return sha1; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"getNameOfProvider\", function() { return getNameOfProvider; });\n/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./config */ \"./src/js/core/config.js\");\n/* harmony import */ var _lzstring__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lzstring */ \"./src/js/core/lzstring.js\");\n\r\n\r\n\r\nconst Rusha = __webpack_require__(/*! rusha */ \"./node_modules/rusha/dist/rusha.js\");\r\n\r\nconst encryptKey = _config__WEBPACK_IMPORTED_MODULE_0__[\"globalConfig\"].info.sgSalt;\r\n\r\nfunction decodeHashedString(s) {\r\n    return Object(_lzstring__WEBPACK_IMPORTED_MODULE_1__[\"decompressX64\"])(s);\r\n}\r\n\r\nfunction sha1(str) {\r\n    return Rusha.createHash().update(str).digest(\"hex\");\r\n}\r\n\r\n// Window.location.host\r\nfunction getNameOfProvider() {\r\n    return window[decodeHashedString(\"DYewxghgLgliB2Q\")][decodeHashedString(\"BYewzgLgdghgtgUyA\")];\r\n}\r\n\n\n/***/ })\n\n/******/ });\n//# sourceMappingURL=7b99bf4f830402efe29d.worker.js.map", null);
 };
 
 /***/ }),
