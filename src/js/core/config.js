@@ -49,8 +49,8 @@ export const globalConfig = {
 
     // Belt speeds
     // NOTICE: Update webpack.production.config too!
-    beltSpeedItemsPerSecond: 1,
-    itemSpacingOnBelts: 0.63,
+    beltSpeedItemsPerSecond: 2,
+    itemSpacingOnBelts: 0.8,
     minerSpeedItemsPerSecond: 0, // COMPUTED
 
     undergroundBeltMaxTilesByTier: [5, 8],
