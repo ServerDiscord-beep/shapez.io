@@ -16,6 +16,7 @@ import { StorageSystem } from "./systems/storage";
 import { EnergyGeneratorSystem } from "./systems/energy_generator";
 import { WiredPinsSystem } from "./systems/wired_pins";
 import { EnergyConsumerSystem } from "./systems/energy_consumer";
+import { TargetShapeCheckerSystem } from "./systems/targetShapeChecker";
 
 const logger = createLogger("game_system_manager");
 
@@ -68,6 +69,9 @@ export class GameSystemManager {
             /** @type {EnergyConsumerSystem} */
             energyConsumer: null,
 
+            /** @type {TargetShapeCheckerSystem} */
+            targetShapeChecker: null,
+
             /* typehints:end */
         };
         this.systemUpdateOrder = [];
@@ -91,6 +95,8 @@ export class GameSystemManager {
         add("undergroundBelt", UndergroundBeltSystem);
 
         add("miner", MinerSystem);
+
+        add("targetShapeChecker", TargetShapeCheckerSystem);
 
         add("storage", StorageSystem);
 

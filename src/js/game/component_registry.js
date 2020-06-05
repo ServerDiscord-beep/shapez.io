@@ -1,6 +1,7 @@
 import { gComponentRegistry } from "../core/global_registries";
 import { StaticMapEntityComponent } from "./components/static_map_entity";
 import { BeltComponent } from "./components/belt";
+import { TargetShapeCheckerComponent } from "./components/targetShapeChecker";
 import { ItemEjectorComponent } from "./components/item_ejector";
 import { ItemAcceptorComponent } from "./components/item_acceptor";
 import { MinerComponent } from "./components/miner";
@@ -17,6 +18,7 @@ import { EnergyConsumerComponent } from "./components/energy_consumer";
 export function initComponentRegistry() {
     gComponentRegistry.register(StaticMapEntityComponent);
     gComponentRegistry.register(BeltComponent);
+    gComponentRegistry.register(TargetShapeCheckerComponent);
     gComponentRegistry.register(ItemEjectorComponent);
     gComponentRegistry.register(ItemAcceptorComponent);
     gComponentRegistry.register(MinerComponent);
