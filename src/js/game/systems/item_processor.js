@@ -7,6 +7,7 @@ import { Entity } from "../entity";
 import { GameSystemWithFilter } from "../game_system_with_filter";
 import { ColorItem } from "../items/color_item";
 import { ShapeItem } from "../items/shape_item";
+import { ShapeDefinition } from "../shape_definition";
 
 export class ItemProcessorSystem extends GameSystemWithFilter {
     constructor(root) {
@@ -136,6 +137,120 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
                         item: inputItem,
                         requiredSlot: 1,
                     });
+                } else if (!entity.components.Sorter.isfil) {
+                    entity.components.Sorter.isfil = true;
+                    entity.components.Sorter.filter = inputItem.serialize();
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: 1,
+                    });
+                } else {
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: 0,
+                    });
+                }
+                break;
+            }
+
+            // TARGET SHAPE CHECKER
+            case enumItemProcessorTypes.targetShapeChecker: {
+                const inputItem = /** @type {ShapeItem} */ (items[0].item);
+                trackProduction = false;
+
+                const tscComponent = entity.components.TargetShapeChecker;
+                if (!tscComponent.isfil) {
+                    // setting filter type:
+                    let item = inputItem.definition.getHash();
+                    //shape:
+                    if (item.match(/([^-][^-]------|--[^-][^-]----|----[^-][^-]--|------[^-][^-])$/)) {
+                        let m = item.match(/([^-][^-])(--)*$/);
+                        tscComponent.filterType = 'shape';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9) / 2;
+                        let topKey = `${'--'.repeat(index)}${tscComponent.filter}u${'--'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new ShapeItem(ShapeDefinition.fromShortKey(key));
+                    } else 
+                    // hole:
+                    if (item.match(/(--[^-][^-][^-][^-][^-][^-]|[^-][^-]--[^-][^-][^-][^-]|[^-][^-][^-][^-]--[^-][^-]|[^-][^-][^-][^-][^-][^-]--)$/)) {
+                        let m = item.match(/(--)([^-][^-])*$/);
+                        tscComponent.filterType = 'hole';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9) / 2;
+                        let topKey = `${'Cu'.repeat(index)}--${'Cu'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new ShapeItem(ShapeDefinition.fromShortKey(key));
+                    } else 
+                    // color:
+                    if (item.match(/(.[^u].u.u.u|.u.[^u].u.u|.u.u.[^u].u|.u.u.u.[^u])$/)) {
+                        let m = item.match(/([^u])(.u)*$/);
+                        tscComponent.filterType = 'color';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9 - 1) / 2;
+                        let topKey = `${'--'.repeat(index)}C${tscComponent.filter}${'--'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new ShapeItem(ShapeDefinition.fromShortKey(key));
+                    } else
+                    // uncolored:
+                    if (item.match(/(.u.[^u\-].[^u\-].[^u\-]|.[^u\-].u.[^u\-].[^u\-]|.[^u\-].[^u\-].u.[^u\-]|.[^u\-].[^u\-].[^u\-].u)$/)) {
+                        let m = item.match(/(u)(.[^u])*$/);
+                        tscComponent.filterType = 'uncolored';
+                        tscComponent.filterIndex = m.index;
+                        tscComponent.filter = m[0].slice(0, 1);
+                        tscComponent.isfil = true;
+                        let layer = item.split(':').length;
+                        let index = (m.index % 9 - 1) / 2;
+                        let topKey = `${'--'.repeat(index)}C${tscComponent.filter}${'--'.repeat(3 - index)}`;
+                        let key = (topKey + ':').repeat(layer - 1) + topKey;
+                        tscComponent.storedItem = new ShapeItem(ShapeDefinition.fromShortKey(key));
+                    }
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: 0,
+                    });
+                    break;
+                }
+
+                if (tscComponent.isfil) {
+                    let goal = this.root.hubGoals.currentGoal.definition.getHash();
+
+                    let matches = true;
+
+                    if (tscComponent.filterType == 'color') {
+                        matches = goal[tscComponent.filterIndex] == tscComponent.filter;
+                    } else if (tscComponent.filterType == 'uncolored') {
+                        matches = !goal[tscComponent.filterIndex] || goal[tscComponent.filterIndex] == tscComponent.filter;
+                    } else if (tscComponent.filterType == 'shape') {
+                        matches = goal[tscComponent.filterIndex] == tscComponent.filter;
+                    } else if (tscComponent.filterType == 'hole') {
+                        matches = !goal[tscComponent.filterIndex] || goal[tscComponent.filterIndex] == tscComponent.filter;
+                    }
+                    outItems.push({
+                        item: inputItem,
+                        requiredSlot: matches ? 0 : 1,
+                    });
+                    break;
+                }
+
+
+
+                break;
+                const availableSlots = entity.components.ItemEjector.slots.length - 1;
+                assert(inputItem instanceof ShapeItem, "Input for sorting is not a shape");
+                if (
+                    inputItem.serialize() == entity.components.Sorter.filter &&
+                    entity.components.Sorter.isfil
+                ) {
                 } else if (!entity.components.Sorter.isfil) {
                     entity.components.Sorter.isfil = true;
                     entity.components.Sorter.filter = inputItem.serialize();

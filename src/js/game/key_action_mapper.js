@@ -52,6 +52,7 @@ export const KEYMAPPINGS = {
         painter: { keyCode: key("9") },
         trash: { keyCode: key("0") },
         sorter: { keyCode: key("-") },
+        targetShapeChecker: { keyCode: key("=") },
     },
 
     placement: {

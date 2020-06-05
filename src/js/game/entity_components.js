@@ -2,6 +2,7 @@
 import { StaticMapEntityComponent } from "./components/static_map_entity";
 import { BeltComponent } from "./components/belt";
 import { SorterComponent } from "./components/sorter";
+import { TargetShapeCheckerComponent } from "./components/targetShapeChecker";
 import { ItemEjectorComponent } from "./components/item_ejector";
 import { ItemAcceptorComponent } from "./components/item_acceptor";
 import { MinerComponent } from "./components/miner";
@@ -29,6 +30,9 @@ export class EntityComponentStorage {
 
         /** @type {BeltComponent} */
         this.Belt;
+
+        /** @type {TargetShapeCheckerComponent} */
+        this.TargetShapeChecker;
 
         /** @type {SorterComponent} */
         this.Sorter;

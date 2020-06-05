@@ -12,6 +12,7 @@ import { MetaSplitterBuilding } from "../../buildings/splitter";
 import { MetaStackerBuilding } from "../../buildings/stacker";
 import { MetaTrashBuilding } from "../../buildings/trash";
 import { MetaSorterBuilding } from "../../buildings/sorter";
+import { MetaTargetShapeCheckerBuilding } from "../../buildings/targetShapeChecker";
 import { MetaUndergroundBeltBuilding } from "../../buildings/underground_belt";
 import { MetaBuilding } from "../../meta_building";
 import { BaseHUDPart } from "../base_hud_part";
@@ -29,6 +30,7 @@ const toolbarBuildings = [
     MetaPainterBuilding,
     MetaTrashBuilding,
     MetaSorterBuilding,
+    MetaTargetShapeCheckerBuilding,
 ];
 
 export class HUDBuildingsToolbar extends BaseHUDPart {

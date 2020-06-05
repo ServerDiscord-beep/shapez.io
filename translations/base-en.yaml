@@ -447,6 +447,10 @@ buildings:
         default:
             name: &sorter Sorter
             description: Sorts items. too lazy to explain
+    targetShapeChecker:
+        default:
+            name: &targetShapeChecker TargetShapeChecker
+            description: TargetShapeChecker items. too lazy to explain
 
 storyRewards:
     # Those are the rewards gained from completing the store
