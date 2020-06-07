@@ -38,6 +38,13 @@ export const enumSubShape = {
     circle: "circle",
     star: "star",
     windmill: "windmill",
+
+    clover: "clover",
+    star8: "star8",
+    rhombus: "rhombus",
+    plus: "plus",
+    razor: "razor",
+    sun: "sun",
 };
 
 /** @enum {string} */
@@ -46,12 +53,27 @@ export const enumSubShapeToShortcode = {
     [enumSubShape.circle]: "C",
     [enumSubShape.star]: "S",
     [enumSubShape.windmill]: "W",
+
+    [enumSubShape.clover]: "L",
+    [enumSubShape.star8]: "T",
+    [enumSubShape.rhombus]: "B",
+    [enumSubShape.plus]: "P",
+    [enumSubShape.razor]: "Z",
+    [enumSubShape.sun]: "U",
 };
+
+/** @enum {string} */
+export const enumDefaultSubShapeColor = {
+    [enumSubShape.clover]: enumColors.green,
+    [enumSubShape.sun]: enumColors.yellow,
+}
 
 /** @enum {enumSubShape} */
 export const enumShortcodeToSubShape = {};
 for (const key in enumSubShapeToShortcode) {
     enumShortcodeToSubShape[enumSubShapeToShortcode[key]] = key;
+    if (!enumDefaultSubShapeColor[key])
+        enumDefaultSubShapeColor[key] = enumColors.uncolored;
 }
 
 /**
@@ -276,10 +298,13 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                 context.fillStyle = enumColorsToHexCode[color];
                 context.strokeStyle = THEME.items.outline;
-                context.lineWidth = THEME.items.outlineWidth;
+                context.lineWidth = THEME.items.outlineWidth * Math.pow(0.8, layerIndex);
 
                 const insetPadding = 0.0;
 
+
+                const dims = quadrantSize * layerScale;
+                const innerDims = insetPadding - quadrantHalfSize;
                 switch (subShape) {
                     case enumSubShape.rect: {
                         context.beginPath();
@@ -331,15 +356,155 @@ export class ShapeDefinition extends BasicSerializableObject {
                             insetPadding + -quadrantHalfSize,
                             -insetPadding + quadrantHalfSize,
                             quadrantSize * layerScale,
-                            -Math_PI * 0.5,
+                            -Math.PI * 0.5,
                             0
                         );
                         context.closePath();
                         break;
                     }
 
+                    case enumSubShape.clover: {
+                        context.save()
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims, -dims);
+                        context.beginPath();
+
+                        const inner = 0.5;
+                        const inner_center = 0.45;
+                        const size = 1.3;
+                        context.scale(size, size);
+
+                        context.moveTo(0, 0);
+                        context.lineTo(0, inner);
+                        context.bezierCurveTo(0, 1,  inner, 1,  inner_center, inner_center);
+                        context.bezierCurveTo(1, inner,  1, 0,  inner, 0);
+
+                        context.closePath();
+                        context.restore();
+                        break;
+                    }
+                    case enumSubShape.star8: {
+                        context.save()
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims, -dims);
+                        context.beginPath();
+
+                        const inner = 0.5;
+                        const size = 1.22;
+                        context.scale(size, size);
+
+                        context.moveTo(0, 0);
+                        context.lineTo(0, inner);
+                        context.lineTo(Math.sin(Math.PI / 8), Math.cos(Math.PI / 8));
+                        context.lineTo(inner * Math.sin(Math.PI / 4), inner * Math.cos(Math.PI / 4));
+                        context.lineTo(Math.sin(Math.PI * 3 / 8), Math.cos(Math.PI * 3 / 8));
+                        context.lineTo(inner, 0);
+
+                        context.closePath();
+                        context.restore();
+                        break;
+                    }
+                    case enumSubShape.rhombus: {
+                        context.save()
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims, -dims);
+                        context.beginPath();
+
+                        const rad = 0.001;
+                        const size = 1.2;
+                        context.scale(size, size);
+
+                        // with rounded borders
+                        context.moveTo(0, 0);
+                        context.arcTo(0, 1,  1, 0,  rad);
+                        context.arcTo(1, 0,  0, 0,  rad);
+
+                        context.closePath();
+                        context.restore();
+                        break;
+                    }
+                    case enumSubShape.plus: {
+                        context.save()
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims, -dims);
+                        context.beginPath();
+
+                        const inner = 0.4;
+                        const size = 1.2;
+                        context.scale(size, size);
+
+                        context.moveTo(0, 0);
+                        context.lineTo(1, 0);
+                        context.lineTo(1, inner);
+                        context.lineTo(inner, inner);
+                        context.lineTo(inner, 1);
+                        context.lineTo(0, 1);
+
+                        context.closePath();
+                        context.restore();
+                        break;
+                    }
+                    case enumSubShape.razor: {
+                        context.save()
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims, -dims);
+                        context.beginPath();
+
+                        const inner = 0.5;
+                        const size = 1.1;
+                        context.scale(size, size);
+
+                        context.moveTo(0, 0);
+                        context.lineTo(inner, 0);
+                        context.bezierCurveTo(inner, 0.3,  1, 0.3,  1, 0);
+                        context.bezierCurveTo(1, inner,  inner * Math.SQRT2 * 0.9, inner * Math.SQRT2 * 0.9,  inner * Math.SQRT1_2, inner * Math.SQRT1_2);
+                        context.rotate(Math.PI / 4);
+                        context.bezierCurveTo(inner, 0.3,  1, 0.3,  1, 0);
+                        context.bezierCurveTo(1, inner,  inner * Math.SQRT2 * 0.9, inner * Math.SQRT2 * 0.9,  inner * Math.SQRT1_2, inner * Math.SQRT1_2);
+
+                        context.closePath();
+                        context.restore();
+                        break;
+                    }
+                    case enumSubShape.sun: {
+                        context.save()
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims, -dims);
+                        context.beginPath();
+
+                        const size = 1.3;
+                        context.scale(size, size);
+
+                        const PI = Math.PI;
+                        const PI3 = (PI * 3) / 8 * 0.75;
+
+                        const c = 1 / Math.cos(Math.PI / 8);
+                        const b = c * Math.sin(Math.PI / 8);
+
+                        context.moveTo(0, 0);
+                        context.rotate(Math.PI / 2);
+                        context.arc(c, 0, b, -PI, -PI + PI3);
+                        context.rotate(-Math.PI / 4);
+                        context.arc(c, 0, b, -PI - PI3, -PI + PI3);
+                        context.rotate(-Math.PI / 4);
+                        context.arc(c, 0, b, PI - PI3, PI);
+
+                        context.closePath();
+                        context.restore();
+                        break;
+                    }
+                    // case enumSubShape.none:
+                    //     {
+                    //         context.beginPath();
+                    //         break;
+                    //     }
                     default: {
-                        assertAlways(false, "Unkown sub shape: " + subShape);
+                        context.save();
+                        context.translate(innerDims, -innerDims);
+                        context.scale(dims / 8, dims / 8);
+                        context.beginPath();
+                        context.fillText(subShape || "?", 0, 0);
+                        context.restore();
                     }
                 }
 

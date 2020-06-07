@@ -12,7 +12,7 @@ import { enumColors } from "./colors";
 import { Entity } from "./entity";
 import { ColorItem } from "./items/color_item";
 import { ShapeItem } from "./items/shape_item";
-import { enumSubShape } from "./shape_definition";
+import { enumSubShape, enumDefaultSubShapeColor } from "./shape_definition";
 import { RandomNumberGenerator } from "../core/rng";
 
 const logger = createLogger("map_chunk");
@@ -140,6 +140,9 @@ export class MapChunk {
         if (distanceToOriginInChunks > 2) {
             availableColors.push(enumColors.blue);
         }
+        if (distanceToOriginInChunks > 5) {
+            availableColors.push(enumColors.black);
+        }
         this.internalGeneratePatch(rng, colorPatchSize, new ColorItem(rng.choice(availableColors)));
     }
 
@@ -162,6 +165,10 @@ export class MapChunk {
             [enumSubShape.star]: Math_round(20 + clamp(distanceToOriginInChunks, 0, 30)),
             [enumSubShape.windmill]: Math_round(6 + clamp(distanceToOriginInChunks / 2, 0, 20)),
         };
+        for (let k in enumSubShape) {
+            if (weights[enumSubShape[k]]) continue;
+            weights[enumSubShape[k]] = Math_round(2 + clamp(distanceToOriginInChunks / 3, 0, 10));
+        }
 
         if (distanceToOriginInChunks < 7) {
             // Initial chunks can not spawn the good stuff
@@ -200,7 +207,14 @@ export class MapChunk {
             subShapes[1] = enumSubShape.rect;
         }
 
-        const definition = this.root.shapeDefinitionMgr.getDefinitionFromSimpleShapes(subShapes);
+        const colors = [
+            enumDefaultSubShapeColor[subShapes[0]],
+            enumDefaultSubShapeColor[subShapes[1]],
+            enumDefaultSubShapeColor[subShapes[2]],
+            enumDefaultSubShapeColor[subShapes[3]],
+        ];
+
+        const definition = this.root.shapeDefinitionMgr.getDefinitionFromSimpleShapesAndColors(subShapes, colors);
         this.internalGeneratePatch(rng, shapePatchSize, new ShapeItem(definition));
     }
 

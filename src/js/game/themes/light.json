@@ -13,7 +13,8 @@
             "shape": "#eaebec",
             "red": "#ffbfc1",
             "green": "#cbffc4",
-            "blue": "#bfdaff"
+            "blue": "#bfdaff",
+            "black": "#eaebec"
         },
 
         "chunkOverview": {
