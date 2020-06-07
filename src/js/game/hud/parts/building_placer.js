@@ -6,6 +6,7 @@ import { Loader } from "../../../core/loader";
 import { STOP_PROPAGATION } from "../../../core/signal";
 import { TrackedState } from "../../../core/tracked_state";
 import { makeDiv, removeAllChildren } from "../../../core/utils";
+import { gMetaBuildingRegistry } from "../../../core/global_registries";
 import {
     enumDirectionToAngle,
     enumDirectionToVector,
@@ -38,6 +39,7 @@ export class HUDBuildingPlacer extends BaseHUDPart {
 
         keyActionMapper.getBinding(KEYMAPPINGS.placement.rotateWhilePlacing).add(this.tryRotate, this);
         keyActionMapper.getBinding(KEYMAPPINGS.placement.cycleBuildingVariants).add(this.cycleVariants, this);
+        keyActionMapper.getBinding(KEYMAPPINGS.placement.pipette).add(this.usePipette, this);
 
         this.root.hud.signals.buildingsSelectedForCopy.add(this.abortPlacement, this);
 
@@ -103,6 +105,49 @@ export class HUDBuildingPlacer extends BaseHUDPart {
             this.currentMetaBuilding.set(null);
             return STOP_PROPAGATION;
         }
+    }
+
+    usePipette() {
+        if (this.currentMetaBuilding.get()) {
+            return;
+        }
+        if (this.root.camera.getIsMapOverlayActive()) {
+            return;
+        }
+
+        const mousePos = this.root.app.mousePosition;
+        if (!mousePos) {
+            return;
+        }
+        const worldPos = this.root.camera.screenToWorld(mousePos);
+        const worldTile = worldPos.toTileSpace();
+
+        const entity = this.root.map.getTileContent(worldTile);
+        if (!entity) {
+            return;
+        }
+        const staticEntity = entity.components.StaticMapEntity;
+
+        this.currentBaseRotation = (Math.round(staticEntity.originalRotation / 90) * 90 + 360) % 360;
+        // maybe not originalRotation, but rotation
+
+        if (!staticEntity.spriteKey) {
+            if (entity.components.Belt) {
+                this.currentMetaBuilding.set(gMetaBuildingRegistry.findById("belt"));
+            }
+            return;
+        }
+
+        let match = staticEntity.spriteKey.match(
+            /sprites\/buildings\/(.*?)(_entry|_exit|_[a-z]+|)(|-(.*))\.png/
+        );
+        const id = match[1];
+        const variant = match[4] || defaultBuildingVariant;
+
+        const metaBuilding = gMetaBuildingRegistry.findById(id);
+
+        this.currentMetaBuilding.set(metaBuilding);
+        this.currentVariant.set(variant);
     }
 
     /**

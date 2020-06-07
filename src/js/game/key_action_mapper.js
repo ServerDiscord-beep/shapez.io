@@ -59,6 +59,7 @@ export const KEYMAPPINGS = {
         rotateInverseModifier: { keyCode: 16 }, // SHIFT
         cycleBuildingVariants: { keyCode: key("T") },
         cycleBuildings: { keyCode: 9 }, // TAB
+        pipette: { keyCode: key("Q") },
     },
 
     massSelect: {
