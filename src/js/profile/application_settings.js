@@ -2,18 +2,20 @@
 import { Application } from "../application";
 /* typehints:end */
 
+import { globalConfig } from "../core/config";
 import { ReadWriteProxy } from "../core/read_write_proxy";
 import { BoolSetting, EnumSetting, BaseSetting } from "./setting_types";
 import { createLogger } from "../core/logging";
 import { ExplainedResult } from "../core/explained_result";
 import { THEMES, THEME, applyGameTheme } from "../game/theme";
-import { IS_DEMO } from "../core/config";
+import { IS_DEMO, IS_DEBUG } from "../core/config";
 import { T } from "../translations";
 
 const logger = createLogger("application_settings");
 
 const categoryGame = "game";
 const categoryApp = "app";
+export const categoryDebug = "debug";
 
 export const uiScales = [
     {
@@ -138,7 +140,7 @@ export const allApplicationSettings = [
     }),
 
     new EnumSetting("refreshRate", {
-        options: ["60", "100", "144", "165"],
+        options: ["29", "30", "31", "59", "60", "61", "100", "144", "165"],
         valueGetter: rate => rate,
         textGetter: rate => rate + " Hz",
         category: categoryGame,
@@ -150,6 +152,22 @@ export const allApplicationSettings = [
     new BoolSetting("alwaysMultiplace", categoryGame, (app, value) => {}),
     new BoolSetting("offerHints", categoryGame, (app, value) => {}),
 ];
+
+/** @type {Array<BaseSetting>} */
+export const allDebugSettings = [];
+for (const k in globalConfig.debug) {
+    allDebugSettings.push(
+        new BoolSetting(
+            "debug_" + k,
+            categoryDebug,
+            (app, value) => {
+                if (globalConfig.debug.enableDebugSettings) globalConfig.debug[k] = value;
+            },
+            IS_DEBUG
+        )
+    );
+}
+allApplicationSettings.push(...allDebugSettings);
 
 export function getApplicationSettingById(id) {
     return allApplicationSettings.find(setting => setting.id === id);
@@ -213,7 +231,10 @@ export class ApplicationSettings extends ReadWriteProxy {
      * @param {string} key
      */
     getSetting(key) {
-        assert(this.getAllSettings().hasOwnProperty(key), "Setting not known: " + key);
+        assert(
+            key.startsWith("debug_") || this.getAllSettings().hasOwnProperty(key),
+            "Setting not known: " + key
+        );
         return this.getAllSettings()[key];
     }
 
@@ -321,6 +342,7 @@ export class ApplicationSettings extends ReadWriteProxy {
         const settings = data.settings;
         for (let i = 0; i < allApplicationSettings.length; ++i) {
             const setting = allApplicationSettings[i];
+            if (setting.id.startsWith("debug_")) continue;
             const storedValue = settings[setting.id];
             if (!setting.validate(storedValue)) {
                 return ExplainedResult.bad("Bad setting value for " + setting.id + ": " + storedValue);

@@ -1,4 +1,6 @@
 export const IS_DEBUG =
+    typeof window !== "undefined" &&
+    window.location.search.indexOf("isdebug") >= 0 ||
     G_IS_DEV &&
     typeof window !== "undefined" &&
     window.location.port === "3005" &&
@@ -6,8 +8,11 @@ export const IS_DEBUG =
     window.location.search.indexOf("nodebug") < 0;
 
 export const IS_DEMO =
-    (G_IS_PROD && !G_IS_STANDALONE) ||
-    (typeof window !== "undefined" && window.location.search.indexOf("demo") >= 0);
+    (
+        G_IS_PROD && !G_IS_STANDALONE &&
+        !(typeof window !== "undefined" && window.location.search.indexOf("nodemo") >= 0)
+    ) ||
+    (typeof window !== "undefined" && window.location.search.indexOf("isdemo") >= 0);
 
 const smoothCanvas = true;
 
@@ -82,35 +87,46 @@ export const globalConfig = {
 
     debug: {
         /* dev:start */
-        fastGameEnter: true,
-        // noArtificialDelays: true,
-        // disableSavegameWrite: true,
-        // showEntityBounds: true,
-        // showAcceptorEjectors: true,
-        // disableMusic: true,
-        // doNotRenderStatics: true,
-        // disableZoomLimits: true,
-        // showChunkBorders: true,
-        // rewardsInstant: true,
-        allBuildingsUnlocked: true,
-        blueprintsNoCost: true,
-        upgradesNoCost: true,
-        // disableUnlockDialog: true,
-        // disableLogicTicks: true,
-        // testClipping: true,
-        // framePausesBetweenTicks: 40,
-        // testTranslations: true,
-        // enableEntityInspector: true,
-        // testAds: true,
-        // disableMapOverview: true,
-        // disableTutorialHints: true,
-        disableUpgradeNotification: true,
-        // instantBelts: true,
-        // instantProcessors: true,
-        // instantMiners: true,
-        // resumeGameOnFastEnter: false,
 
-        // renderForTrailer: true,
+        // Settings menu is generated *automatically*,
+        // but does not changes globalConfig.debug if enableDebugSettings is off
+        // DEFAULT VALUES:
+        enableDebugSettings: true,
+        fastGameEnter: false,
+        noArtificialDelays: false,
+        disableSavegameWrite: false,
+        showEntityBounds: false,
+        showAcceptorEjectors: false,
+        disableMusic: false,
+        doNotRenderStatics: false,
+        disableZoomLimits: false,
+        showChunkBorders: false,
+        rewardsInstant: false,
+        allBuildingsUnlocked: false,
+        blueprintsNoCost: true,
+        upgradesNoCost: false,
+        disableUnlockDialog: false,
+        disableLogicTicks: false,
+        testClipping: false,
+        // framePausesBetweenTicks: 40,
+        testTranslations: false,
+        enableEntityInspector: false,
+        testAds: false,
+        disableMapOverview: false,
+        disableTutorialHints: false,
+        disableUpgradeNotification: false,
+        disableShortNumbers: false,
+        disableBulkOperations: false,
+        disableDynamicTickrate: false,
+
+        disableInternalCheckTile: false,
+        disableGetTileAsserts: false,
+        disableBeltAsserts: false,
+
+        instantBelts: false,
+        instantProcessors: false,
+        instantMiners: false,
+        renderForTrailer: false,
         /* dev:end */
     },
 
