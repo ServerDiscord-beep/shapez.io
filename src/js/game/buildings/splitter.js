@@ -152,11 +152,31 @@ export class MetaSplitterBuilding extends MetaBuilding {
                 ]);
 
                 entity.components.ItemEjector.setSlots([
-                    { pos: new Vector(0, 0), direction: enumDirection.top },
+                    {
+                        pos: new Vector(0, 0),
+                        direction: enumDirection.top,
+                    },
+                    {
+                        pos: new Vector(0, 0),
+                        direction:
+                            variant === enumSplitterVariants.compactInverse
+                                ? enumDirection.right
+                                : enumDirection.left,
+                    },
                 ]);
 
                 entity.components.ItemAcceptor.beltUnderlays = [
-                    { pos: new Vector(0, 0), direction: enumDirection.top },
+                    {
+                        pos: new Vector(0, 0),
+                        direction: enumDirection.top,
+                    },
+                    {
+                        pos: new Vector(0, 0),
+                        direction:
+                            variant === enumSplitterVariants.compactInverse
+                                ? enumDirection.right
+                                : enumDirection.left,
+                    },
                 ];
 
                 break;

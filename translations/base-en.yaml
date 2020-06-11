@@ -432,12 +432,12 @@ buildings:
             description: Multifunctional - Evenly distributes all inputs onto all outputs.
 
         compact:
-            name: Merger (compact)
-            description: Merges two conveyor belts into one.
+            name: Balancer (compact)
+            description: Multifunctional - Evenly distributes all inputs onto all outputs.
 
         compact-inverse:
-            name: Merger (compact)
-            description: Merges two conveyor belts into one.
+            name: Balancer (compact)
+            description: Multifunctional - Evenly distributes all inputs onto all outputs.
 
     cutter:
         default:
