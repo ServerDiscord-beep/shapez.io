@@ -1,17 +1,16 @@
 export const IS_DEBUG =
-    typeof window !== "undefined" &&
-    window.location.search.indexOf("isdebug") >= 0 ||
-    G_IS_DEV &&
-    typeof window !== "undefined" &&
-    window.location.port === "3005" &&
-    (window.location.host.indexOf("localhost:") >= 0 || window.location.host.indexOf("192.168.0.") >= 0) &&
-    window.location.search.indexOf("nodebug") < 0;
+    (typeof window !== "undefined" && window.location.search.indexOf("isdebug") >= 0) ||
+    (G_IS_DEV &&
+        typeof window !== "undefined" &&
+        window.location.port === "3005" &&
+        (window.location.host.indexOf("localhost:") >= 0 ||
+            window.location.host.indexOf("192.168.0.") >= 0) &&
+        window.location.search.indexOf("nodebug") < 0);
 
 export const IS_DEMO =
-    (
-        G_IS_PROD && !G_IS_STANDALONE &&
-        !(typeof window !== "undefined" && window.location.search.indexOf("nodemo") >= 0)
-    ) ||
+    (G_IS_PROD &&
+        !G_IS_STANDALONE &&
+        !(typeof window !== "undefined" && window.location.search.indexOf("nodemo") >= 0)) ||
     (typeof window !== "undefined" && window.location.search.indexOf("isdemo") >= 0);
 
 const smoothCanvas = true;
