@@ -126,6 +126,8 @@ export const globalConfig = {
         instantProcessors: false,
         instantMiners: false,
         renderForTrailer: false,
+
+        cheapLevels: true,
         /* dev:end */
     },
 

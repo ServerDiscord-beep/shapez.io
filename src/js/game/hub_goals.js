@@ -200,7 +200,10 @@ export class HubGoals extends BasicSerializableObject {
     createNextGoal() {
         const storyIndex = this.level - 1;
         if (storyIndex < tutorialGoals.length) {
-            const { shape, required, reward } = tutorialGoals[storyIndex];
+            let { shape, required, reward } = tutorialGoals[storyIndex];
+            if (globalConfig.debug.cheapLevels) {
+                required = Math.ceil(required / 20);
+            }
             this.currentGoal = {
                 /** @type {ShapeDefinition} */
                 definition: this.root.shapeDefinitionMgr.getShapeFromShortKey(shape),
