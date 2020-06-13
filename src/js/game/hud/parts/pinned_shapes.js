@@ -80,6 +80,9 @@ export class HUDPinnedShapes extends BaseHUDPart {
 
         if (this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_blueprints)) {
             this.internalPinShape(blueprintShape, null, false, "blueprint");
+            if (this.root.hubGoals.getShapesStoredByKey(blueprintShape) == 0) {
+                this.root.hubGoals.putShapeByKey(blueprintShape, 50);
+            }
         }
 
         for (let i = 0; i < this.pinnedShapes.length; ++i) {
