@@ -42,6 +42,7 @@ export class HUDBuildingPlacer extends BaseHUDPart {
         keyActionMapper.getBinding(KEYMAPPINGS.placement.pipette).add(this.usePipette, this);
 
         this.root.hud.signals.buildingsSelectedForCopy.add(this.abortPlacement, this);
+        this.root.hud.signals.pasteBlueprintRequested.add(this.abortPlacement, this);
 
         this.domAttach = new DynamicDomAttach(this.root, this.element, {});
 

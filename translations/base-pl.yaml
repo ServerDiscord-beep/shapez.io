@@ -36,7 +36,7 @@ steamPage:
 
         Same kształty mogą z czasem być nudne, dlatego gra będzie wymagała od Ciebie malowania kształtów różnymi kolorami - Połącz czerwoną, zieloną i niebieską farbę, a powstanie farba o innym kolorze. Korzystaj z farb by postępować z kolejnymi poziomami.
 
-        Na tą chwilę gra oferuje 18 poziomów (które powinny zagwarantować rozrywkę na conajmniej kilka godzin!) ale bez przerwy dodaję nowe - Jest naprawdę wiele do dodania! 
+        Na tą chwilę gra oferuje 18 poziomów (które powinny zagwarantować rozrywkę na conajmniej kilka godzin!) ale bez przerwy dodaję nowe - Jest naprawdę wiele do dodania!
 
 
         [b]Zalety pełnej wersji[/b]
@@ -78,7 +78,7 @@ global:
     # Translator note: We don't use SI size units for common speak, but if you want to keep it SI
     # ...also, Polish has wierd nature of diffrent number naming, we have "million" and "milliard"-thing wich actually is billion in English
     suffix:
-        thousands: tyś
+        thousands: tys
         millions: mln
         billions: mld
         trillions: bln
@@ -98,9 +98,10 @@ global:
         xDaysAgo: <x> dni temu
 
         # Short formats for times, e.g. '5h 23m'
+        # 2nd translator's note: Changed 'm' to 'min' to distinguish from meters & to be consistent
         secondsShort: <seconds>s
-        minutesAndSecondsShort: <minutes>m <seconds>s
-        hoursAndMinutesShort: <hours>godz <minutes>m
+        minutesAndSecondsShort: <minutes>min <seconds>s
+        hoursAndMinutesShort: <hours>godz <minutes>min
 
         xMinutes: <x> minut
 
@@ -217,13 +218,6 @@ dialogs:
         title: Wersja Demo
         desc: Próbujesz skorzystać z "<feature>", który nie jest dostępny w wersji demo. Rozważ zakup gry dla pełni doświadczeń!
 
-    saveNotPossibleInDemo:
-        desc: Gra została zapisana, lecz przywracanie zapisu dostępne jest wyłącznie w pełnej wersji gry. Rozważ zakup gry dla pełni doświadczeń!
-
-    leaveNotPossibleInDemo:
-        title: Wersja Demo
-        desc: Gra została zapisana, lecz przywrócenie zapisu nie będzie możliwe w wersji demo. Na pewno chcesz kontynuować?
-
     oneSavegameLimit:
         title: Limit Zapisów Gry
         desc: W wersji demo możesz posiadać wyłącznie jeden zapis gry. Proszę usuń obecny lub zakup pełną wersję gry!
@@ -232,11 +226,6 @@ dialogs:
         title: Nowa aktualizacja!
         desc: >-
             Lista zmian od Twojej ostatniej rozgrywki:
-
-    hintDescription:
-        title: Tutorial
-        desc: >-
-            W razie utknięcia lub potrzeby pomocy, sprawdź przycisk 'Pokaż Wskazówkę' w lewym dolnym rogu - pomogę na tyle, ile będę mógł!
 
     upgradesIntroduction:
         title: Ulepszenia
@@ -247,7 +236,7 @@ dialogs:
     massDeleteConfirm:
         title: Potwierdź Usuwanie
         desc: >-
-            Usuwasz sporą ilość budynków (<count> gwoli ścisłości)! Czy na pewno chcesz kontynuować?
+            Usuwasz sporą ilość maszyn (<count> gwoli ścisłości)! Czy na pewno chcesz kontynuować?
 
     blueprintsNotUnlocked:
         title: Jeszcze Nie Odblokowane
@@ -270,6 +259,17 @@ dialogs:
     markerDemoLimit:
         desc: Możesz stworzyć tylko dwa własne znaczniki w wersji demo. Zakup pełną wersję gry dla nielimitowanych znaczników!
 
+    massCutConfirm:
+        title: Potwierdź wycinanie
+        desc: >-
+            Wycinasz sporą ilość maszyn (<count> gwoli ścisłości)! Czy na pewno chcesz kontynuować?
+
+    exportScreenshotWarning:
+        title: Export screenshot
+        desc: >-
+            You requested to export your base as a screenshot. Please note that this can
+            be quite slow for a big base and even crash your game!
+
 ingame:
     # This is shown in the top left corner and displays useful keybindings in
     # every situation
@@ -285,6 +285,7 @@ ingame:
         placeBuilding: Postaw budynek
         createMarker: Stwórz znacznik
         delete: Usuń
+        pasteLastBlueprint: Wklej ostatnio skopiowany obszar
 
     # Everything related to placing buildings (I.e. as soon as you selected a building
     # from the toolbar)
@@ -301,8 +302,8 @@ ingame:
             speed: Szybkość
             range: Zasięg
             storage: Pojemność
-            oneItemPerSecond: 1 obiekt / sekundę
-            itemsPerSecond: <x> obiektów / sekundę
+            oneItemPerSecond: 1 obiekt / s
+            itemsPerSecond: <x> obiektów / s
             itemsPerSecondDouble: (x2)
 
             tiles: <x> kafelków
@@ -323,7 +324,7 @@ ingame:
     # Mass select information, this is when you hold CTRL and then drag with your mouse
     # to select multiple buildings
     massSelect:
-        infoText: Naciśnij <keyCopy> by skopiować, <keyDelete> by usunąć lub <keyCancel> by anulować.
+        infoText: Naciśnij <keyCut> by wyciąć, <keyCopy> by skopiować, <keyDelete> by usunąć lub <keyCancel> by anulować.
 
     # The "Upgrades" window
     shop:
@@ -422,7 +423,7 @@ buildings:
     belt:
         default:
             name: &belt Taśmociąg
-            description: Transportuje obiekty, przytrymaj by postawić kilka.
+            description: Transportuje obiekty, przytrzymaj by postawić kilka.
 
     miner: # Internal name for the Extractor
         default:
@@ -538,7 +539,7 @@ storyRewards:
 
     reward_tunnel:
         title: Tunel
-        desc: <strong>Tunel</strong> został odblokowany - Możesz prowadzić podziemne taśmociągi!
+        desc: <strong>Tunel</strong> został odblokowany - Możesz teraz prowadzić podziemne taśmociągi!
 
     reward_rotater_ccw:
         title: Obracanie odwrotne
@@ -555,7 +556,9 @@ storyRewards:
     reward_splitter_compact:
         title: Łącznik Kompaktowy
         desc: >-
-            Odblokowano nowy wariant rozdzielacza: <strong>łącznik kompaktowy</strong> - Przyjmuje dwa wejścia i oddaje je na jednen taśmociąg. <strong>Użyj 'T' by zmienić wariant Rozdzielacza</strong>!
+            Odblokowano nowy wariant <strong>rozdzielacza</strong> - Przyjmuje
+            przedmioty z dwóch taśmociągów i przenosi je na jeden!
+
     reward_cutter_quad:
         title: Przecinak Poczwórny
         desc: Odblokowano nowy wariant <strong>Przecinaka</strong> - Pozwala ciąć kształty na <strong>cztery ćwiartki</strong>!
@@ -578,7 +581,12 @@ storyRewards:
 
     reward_blueprints:
         title: Schematy
-        desc: Odblokowano <strong>schematy</strong>! Możesz teraz <strong>kopiować i wklejać</strong> segmenty Twoich fabryk! Zaznacz obszar (Trzymaj CTRL, następnie przeciągnij mysz), potem wciśnij 'C' aby skopiować.<br><br>Wklejanie <strong>nie jest darmowe</strong>, potrzebujesz wyprodukować <strong>kształty schematu</strong> (Te, które właśnie dostarczyłeś), aby było Cie stać!
+        desc: >-
+            Możesz teraz <strong>kopiować i wklejać</strong> części swojej fabryki!
+            Zaznacz obszar (Przytrzymaj CTRL, a następnie przeciągnij myszą) i naciśnij 'C',
+            by go skopiować.<br><br>Wklejanie <strong>nie jest darmowe</strong> - musisz
+            produkować <strong>kształty schematów</strong> (te, które właśnie dostarczyłeś),
+            by móc wklejać!
 
     # Special reward, which is shown when there is no reward actually
     no_reward:
@@ -626,6 +634,18 @@ settings:
                 fast: Duża
                 super_fast: Bardzo Duża
 
+        movementSpeed:
+            title: Prędkość poruszania
+            description: >-
+                Zmienia, jak szybko widok porusza się, używając skrótów klawiszowych.
+            speeds:
+                super_slow: Bardzo wolna
+                slow: Wolna
+                regular: Zwykła
+                fast: Szybka
+                super_fast: Bardzo szybka
+                extremely_fast: Ekstremalnie szybka
+
         language:
             title: Język
             description: >-
@@ -657,7 +677,7 @@ settings:
         refreshRate:
             title: Częstość Odświeżania
             description: >-
-                Jeśli posiadasz monitor z częstotliwością odświeżania 144hz, zmień tę opcje na poprawnego odświeżania ekranu. To może wpłynąć na FPS jeśli masz za wolny komputer.
+                Jeśli posiadasz monitor z częstotliwością odświeżania 144hz, zmień tę opcje na poprawną częstotliwość odświeżania ekranu. To może wpłynąć na FPS jeśli masz za wolny komputer.
 
         alwaysMultiplace:
             title: Wielokrotne budowanie
@@ -672,7 +692,7 @@ settings:
 keybindings:
     title: Klawiszologia
     hint: >-
-        Tip: Upewnij się, że wykorzystujesz CTRL, SHIFT i ALT! Pozwalają na różne metody kładzenia elementów.
+        Wskazówka: Upewnij się, że wykorzystujesz CTRL, SHIFT i ALT! Pozwalają na różne metody kładzenia elementów.
     resetKeybindings: Zresetuj Klawiszologię
 
     categoryLabels:
@@ -728,9 +748,18 @@ keybindings:
         placementDisableAutoOrientation: Wyłącz automatyczną orientacje
         placeMultiple: Pozostań w trybie stawiania
         placeInverse: Odwróć automatyczną orientacje pasów
+        pasteLastBlueprint: Wklej ostatnio skopiowany obszar
+        massSelectCut: Wytnij obszar
+        exportScreenshot: Export whole Base as Image
 
 about:
     title: O Grze
+    body: >-
+        Ta gra jest open-source. Rozwijana jest przez <a href="https://github.com/tobspr" target="_blank">Tobiasa Springera</a> (to ja).<br><br>
+        Jeżeli chcesz pomóc w rozwoju gry, sprawdź <a href="<githublink>" target="_blank">repozytorium shapez.io na Githubie</a>.<br><br>
+        Ta gra nie byłaby możliwa bez wspaniałej społeczności Discord skupionej na moich grach - Naprawdę powinieneś dołączyć do <a href="<discordlink>" target="_blank">mojego serwera Discord</a>!<br><br>
+        Ścieżka dźwiękowa tej gry została stworzona przez <a href="https://soundcloud.com/pettersumelius" target="_blank">Peppsena</a> - Jest niesamowity.<br><br>
+        Na koniec, wielkie dzięki mojemu najlepszemu przyjacielowi: <a href="https://github.com/niklas-dahl" target="_blank">Niklas</a> - Bez naszego wspólnego grania w Factorio, ta gra nigdy by nie powstała.
 
 changelog:
     title: Dziennik zmian
@@ -741,5 +770,6 @@ demo:
         importingGames: Importowanie zapisów gry
         oneGameLimit: Limit jednego zapisu gry
         customizeKeybindings: Personalizowanie Klawiszologii
+        exportingBase: Exporting whole Base as Image
 
     settingNotAvailable: Niedostępne w wersji demo.

@@ -153,6 +153,7 @@ mainMenu:
 
         showInfo: Voir
         contestOver: Ce concours est terminé - Rejoignez le serveur discord pour être tenu au courant des prochains concours !
+    helpTranslate: Help translate!
 
 dialogs:
     buttons:
@@ -214,17 +215,6 @@ dialogs:
         title: Version démo
         desc: Vous avez essayé d'accéder à la fonction (<feature>) qui n'est pas disponible dans la démo. Considérez l'achat de la version complète pour une expérience optimale!
 
-    saveNotPossibleInDemo:
-        desc: Votre partie a été sauvegardée, mais la charger n'est possible que dans la version complète. Considérez son achat pour une expérience optimale!
-
-    leaveNotPossibleInDemo:
-        title: Version démo
-        desc: Votre partie a été sauvée mais nous ne pourrez pas la charger dans la démo. Charger les parties n'est disponible que dans la version complète. Etes-vous certain?
-
-    newUpdate:
-        title: Mise-à-jour disponible
-        desc: Une mise-à-jour est disponible pour ce jeu!
-
     oneSavegameLimit:
         title: Sauvegardes limitées
         desc: Vous ne pouvez avoir qu'une seule sauvegarde en même temps dans la version démo. Merci de soit effacer l'actuelle ou de vous procurer la version complète!
@@ -233,11 +223,6 @@ dialogs:
         title: Nouvel mise-à-jour!
         desc: >-
             Voici les modifications depuis votre dernière session:
-
-    hintDescription:
-        title: Tutorial
-        desc: >-
-            Si vous avez besoin d'aide ou êtes coincé, vérifiez le bouton 'Aide' dans le coin inférieur gauche et j'essayerai de vous aider au mieux!
 
     upgradesIntroduction:
         title: Débloquer les améliorations
@@ -270,6 +255,17 @@ dialogs:
 
     markerDemoLimit:
         desc: Vous ne pouvez créer que deux balises dans la démo. Achetez la version complète pour en faire tant que vous voulez !
+    massCutConfirm:
+        title: Confirm cut
+        desc: >-
+            You are cutting a lot of buildings (<count> to be exact)! Are you sure you
+            want to do this?
+
+    exportScreenshotWarning:
+        title: Export screenshot
+        desc: >-
+            You requested to export your base as a screenshot. Please note that this can
+            be quite slow for a big base and even crash your game!
 
 ingame:
     # This is shown in the top left corner and displays useful keybindings in
@@ -286,6 +282,7 @@ ingame:
         placeBuilding: Placer un bâtiment
         createMarker: Créer une balise
         delete: Supprimer
+        pasteLastBlueprint: Paste last blueprint
 
     # Everything related to placing buildings (I.e. as soon as you selected a building
     # from the toolbar)
@@ -324,7 +321,7 @@ ingame:
     # Mass select information, this is when you hold CTRL and then drag with your mouse
     # to select multiple buildings
     massSelect:
-        infoText: Appuyez sur <keyCopy> pour copier, <keyDelete> pour supprimer et <keyCancel> pour annuler.
+        infoText: Press <keyCut> to cut, <keyCopy> to copy, <keyDelete> to remove and <keyCancel> to cancel.
 
     # The "Upgrades" window
     shop:
@@ -336,8 +333,7 @@ ingame:
 
         # The roman number for each tier
         tierLabels: [I, II, III, IV, V, VI, VII, VIII, IX, X]
-
-        maximumLevel: Niveau maximum
+        maximumLevel: MAXIMUM LEVEL (Speed x<currentMult>)
 
     # The "Statistics" window
     statistics:
@@ -401,16 +397,19 @@ ingame:
 shopUpgrades:
     belt:
         name: Convoyeurs, Distributeurs et Tunnels
-        description: Vitesse +<gain>%
+        description: Speed x<currentMult> → x<newMult>
+
     miner:
         name: Extraction
-        description: Vitesse +<gain>%
+        description: Speed x<currentMult> → x<newMult>
+
     processors:
         name: Découpage, Rotation et Empilage
-        description: Vitesse +<gain>%
+        description: Speed x<currentMult> → x<newMult>
+
     painting:
         name: Mélange et Peinture
-        description: Vitesse +<gain>%
+        description: Speed x<currentMult> → x<newMult>
 
 # Buildings and their name / description
 buildings:
@@ -495,6 +494,10 @@ buildings:
         storage:
             name: Stockage
             description: Stocke les formes en trop jusqu'à une certaine capacité. Peut être utilisé comme tampon.
+    hub:
+        deliver: Deliver
+        toUnlock: to unlock
+        levelShortcut: LVL
 
 storyRewards:
     # Those are the rewards gained from completing the store
@@ -640,6 +643,10 @@ settings:
             description: >-
                 Choisissez votre thème (clair / sombre).
 
+            themes:
+                dark: Dark
+                light: Light
+
         refreshRate:
             title: Fréquence de simulation
             description: >-
@@ -654,6 +661,23 @@ settings:
             title: Indices
             description: >-
                 Affiche ou non le bouton 'Afficher un indice' dans le coin inférieur gauche.
+
+        language:
+            title: Language
+            description: >-
+                Change the language. All translations are user contributed and might be
+                incomplete!
+
+        movementSpeed:
+            title: Movement speed
+            description: Changes how fast the view moves when using the keyboard.
+            speeds:
+                super_slow: Super slow
+                slow: Slow
+                regular: Regular
+                fast: Fast
+                super_fast: Super Fast
+                extremely_fast: Extremely Fast
 
 keybindings:
     title: Contrôles
@@ -715,9 +739,29 @@ keybindings:
         placementDisableAutoOrientation: Désactiver l'orientation automatique
         placeMultiple: Rester en mode placement
         placeInverse: Inverser le mode d'orientation automatique
+        pasteLastBlueprint: Paste last blueprint
+        massSelectCut: Cut area
+        exportScreenshot: Export whole Base as Image
 
 about:
     title: À propos de ce jeu
+    body: >-
+        This game is open source and developed by <a href="https://github.com/tobspr"
+        target="_blank">Tobias Springer</a> (this is me).<br><br>
+
+        If you want to contribute, check out <a href="<githublink>"
+        target="_blank">shapez.io on github</a>.<br><br>
+
+        This game wouldn't have been possible without the great discord community
+        around my games - You should really join the <a href="<discordlink>"
+        target="_blank">discord server</a>!<br><br>
+
+        The soundtrack was made by <a href="https://soundcloud.com/pettersumelius"
+        target="_blank">Peppsen</a> - He's awesome.<br><br>
+
+        Finally, huge thanks to my best friend <a
+        href="https://github.com/niklas-dahl" target="_blank">Niklas</a> - Without our
+        factorio sessions this game would never have existed.
 
 changelog:
     title: Historique
@@ -728,6 +772,7 @@ demo:
         importingGames: Importer des sauvegardes
         oneGameLimit: Limité à une sauvegarde
         customizeKeybindings: Personnalisation des contrôles
+        exportingBase: Exporting whole Base as Image
 
     settingNotAvailable: Indisponible dans la démo.
 #

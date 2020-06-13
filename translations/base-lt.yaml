@@ -98,7 +98,7 @@ global:
         # Short formats for times, e.g. '5h 23m'
         secondsShort: <seconds>s
         minutesAndSecondsShort: <minutes>m <seconds>s
-        hoursAndMinutesShort: <hours>h <minutes>s
+        hoursAndMinutesShort: <hours>h <minutes>m
 
         xMinutes: <x> minutes
 
@@ -237,14 +237,14 @@ dialogs:
     blueprintsNotUnlocked:
         title: Not unlocked yet
         desc: >-
-            Blueprints have not been unlocked yet! Complete more levels to unlock them.
+            Complete level 12 to unlock Blueprints!
 
     keybindingsIntroduction:
         title: Useful keybindings
         desc: >-
             This game has a lot of keybindings which make it easier to build big factories.
             Here are a few, but be sure to <strong>check out the keybindings</strong>!<br><br>
-            <code class='keybinding'>CTRL</code> + Drag: Select area to copy / delete.<br>
+            <code class='keybinding'>CTRL</code> + Drag: Select an area.<br>
             <code class='keybinding'>SHIFT</code>: Hold to place multiple of one building.<br>
             <code class='keybinding'>ALT</code>: Invert orientation of placed belts.<br>
 
@@ -410,6 +410,11 @@ shopUpgrades:
 
 # Buildings and their name / description
 buildings:
+    hub:
+        deliver: Deliver
+        toUnlock: to unlock
+        levelShortcut: LVL
+
     belt:
         default:
             name: &belt Conveyor Belt
@@ -452,7 +457,7 @@ buildings:
             description: Cuts shapes from top to bottom and outputs both halfs. <strong>If you use only one part, be sure to destroy the other part or it will stall!</strong>
         quad:
             name: Cutter (Quad)
-            description: Cuts shapes into four parts. <strong>If you use only one part, be sure to destroy the other part or it will stall!</strong>
+            description: Cuts shapes into four parts. <strong>If you use only one part, be sure to destroy the other parts or it will stall!</strong>
 
     rotater:
         default:
@@ -475,7 +480,7 @@ buildings:
     painter:
         default:
             name: &painter Painter
-            description: Colors the whole shape on the left input with the color from the right input.
+            description: Colors the whole shape on the left input with the color from the top input.
         double:
             name: Painter (Double)
             description: Colors the shapes on the left inputs with the color from the top input.
@@ -491,10 +496,6 @@ buildings:
         storage:
             name: Storage
             description: Stores excess items, up to a given capacity. Can be used as an overflow gate.
-    hub:
-        deliver: Deliver
-        toUnlock: to unlock
-        levelShortcut: LVL
 
 storyRewards:
     # Those are the rewards gained from completing the store
@@ -525,7 +526,7 @@ storyRewards:
 
     reward_tunnel:
         title: Tunnel
-        desc: The <strong>tunnel</strong> has been unlocked - You can now pipe items through belts and buildings with it!
+        desc: The <strong>tunnel</strong> has been unlocked - You can now tunnel items through belts and buildings with it!
 
     reward_rotater_ccw:
         title: CCW Rotating
@@ -638,7 +639,6 @@ settings:
             title: Game theme
             description: >-
                 Choose the game theme (light / dark).
-
             themes:
                 dark: Dark
                 light: Light
@@ -674,7 +674,7 @@ keybindings:
     hint: >-
         Tip: Be sure to make use of CTRL, SHIFT and ALT! They enable different placement options.
 
-    resetKeybindings: Reset Keyinbindings
+    resetKeybindings: Reset Keybindings
 
     categoryLabels:
         general: Application

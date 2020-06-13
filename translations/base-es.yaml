@@ -99,7 +99,7 @@ global:
         minutesAndSecondsShort: <minutes>m <seconds>s
         hoursAndMinutesShort: <hours>h <minutes>m
 
-        xMinutes: <x> minutes
+        xMinutes: <x> minutos
 
     keys:
         tab: TAB
@@ -120,7 +120,7 @@ mainMenu:
     changelog: Registro de cambios
     importSavegame: Importar
     openSourceHint: Este juego es de código abierto!
-    discordLink: Servidor de Discord Oficil
+    discordLink: Servidor de Discord Oficial
     helpTranslate: Ayuda a traducirlo!
 
     # This is shown when using firefox and other browsers which are not supported.
@@ -212,14 +212,6 @@ dialogs:
     featureRestriction:
         title: Versión de Prueba
         desc: Has intentado acceder a una característica (<feature>) que no está disponible en la demo. Considera obtener el juego completo para la experiencia completa!
-    saveNotPossibleInDemo:
-        desc: Tu partida ha sigo guardada, pero recuperarla es solo posible en el juego completo. Considera obtenerlo para la experiencia completa!
-    leaveNotPossibleInDemo:
-        title: Versión de Prueba
-        desc: Tu partida ha sido guaradada, pero no serás capaz de recupararla en la demo. Recuperar tu partida guardada es solo posible en la versión completa. Estás seguro?
-    newUpdate:
-        title: Actualización disponible
-        desc: Hay una actualización disponible, acuérdate de descargarla!
 
     oneSavegameLimit:
         title: partidas guardadas limitadas
@@ -227,12 +219,8 @@ dialogs:
     updateSummary:
         title: Nueva actualización!
         desc: >-
-            Estos on los cambios desde la última vez que jugaste:
+            Estos son los cambios desde la última vez que jugaste:
 
-    hintDescription:
-        title: Tutorial
-        desc: >-
-            Cuando necesites ayuda o estés atascado, échale un vistazo al botón 'Ver pista' en la esquina inferior izquierda e intentaré ayudarte lo mejor posible!
     upgradesIntroduction:
         title: Desbloquear Mejoras
         desc: >-
@@ -262,6 +250,17 @@ dialogs:
 
     markerDemoLimit:
         desc: solo puedes crear dos marcas en la versión de prueba. Obtén el juego completo para marcas ilimitadas!
+    massCutConfirm:
+        title: Confirm cut
+        desc: >-
+            You are cutting a lot of buildings (<count> to be exact)! Are you sure you
+            want to do this?
+
+    exportScreenshotWarning:
+        title: Export screenshot
+        desc: >-
+            You requested to export your base as a screenshot. Please note that this can
+            be quite slow for a big base and even crash your game!
 
 ingame:
     # This is shown in the top left corner and displays useful keybindings in
@@ -278,6 +277,7 @@ ingame:
         placeBuilding: Colocar edificio
         createMarker: Crear marca
         delete: Destruir
+        pasteLastBlueprint: Paste last blueprint
 
     # Everything related to placing buildings (I.e. as soon as you selected a building
     # from the toolbar)
@@ -288,7 +288,7 @@ ingame:
 
         # Shows the hotkey in the ui, e.g. "Hotkey: Q"
         hotkeyLabel: >-
-            Hotkey: <key>
+            Tecla: <key>
 
         infoTexts:
             speed: Velocidad
@@ -316,7 +316,7 @@ ingame:
     # Mass select information, this is when you hold CTRL and then drag with your mouse
     # to select multiple buildings
     massSelect:
-        infoText: Pulsa <keyCopy> para copiar, <keyDelete> para borrar y <keyCancel> para cancelar.
+        infoText: Press <keyCut> to cut, <keyCopy> to copy, <keyDelete> to remove and <keyCancel> to cancel.
 
     # The "Upgrades" window
     shop:
@@ -486,6 +486,11 @@ buildings:
             name: Almacenamiento.
             description: Guarda el exceso de elementos, hasta cierta cantidad. Puede ser usado para contolar el desborde de elementos.
 
+    hub:
+        deliver: Deliver
+        toUnlock: to unlock
+        levelShortcut: LVL
+
 storyRewards:
     # Those are the rewards gained from completing the store
     reward_cutter_and_trash:
@@ -624,6 +629,10 @@ settings:
             description: >-
                 Elije el tema del juego (claro/oscuro).
 
+            themes:
+                dark: Dark
+                light: Light
+
         refreshRate:
             title: Objetivo de Simulación
             description: >-
@@ -638,6 +647,17 @@ settings:
             title: Pistas & Tutorial
             description: >-
                 Activa si recibir pistas y tutoriales mientras juegas. También oculta algunos elementos de la interfaz hasta cierto nivel para hacer más fácil la introducción al juego.
+
+        movementSpeed:
+            title: Movement speed
+            description: Changes how fast the view moves when using the keyboard.
+            speeds:
+                super_slow: Super slow
+                slow: Slow
+                regular: Regular
+                fast: Fast
+                super_fast: Super Fast
+                extremely_fast: Extremely Fast
 
 keybindings:
     title: Atajos de Teclado
@@ -698,9 +718,29 @@ keybindings:
         placementDisableAutoOrientation: Desactivar orientación automática
         placeMultiple: Permanecer en modo de construcción
         placeInverse: Invierte automáticamente la orientación de las cintas transportadoras
+        pasteLastBlueprint: Paste last blueprint
+        massSelectCut: Cut area
+        exportScreenshot: Export whole Base as Image
 
 about:
     title: Sobre el Juego
+    body: >-
+        This game is open source and developed by <a href="https://github.com/tobspr"
+        target="_blank">Tobias Springer</a> (this is me).<br><br>
+
+        If you want to contribute, check out <a href="<githublink>"
+        target="_blank">shapez.io on github</a>.<br><br>
+
+        This game wouldn't have been possible without the great discord community
+        around my games - You should really join the <a href="<discordlink>"
+        target="_blank">discord server</a>!<br><br>
+
+        The soundtrack was made by <a href="https://soundcloud.com/pettersumelius"
+        target="_blank">Peppsen</a> - He's awesome.<br><br>
+
+        Finally, huge thanks to my best friend <a
+        href="https://github.com/niklas-dahl" target="_blank">Niklas</a> - Without our
+        factorio sessions this game would never have existed.
 
 changelog:
     title: Registro de Cambios
@@ -711,5 +751,6 @@ demo:
         importingGames: Importando partidas guardadas
         oneGameLimit: Limitado a una partida guardada
         customizeKeybindings: Personalizando Atajos de Teclado
+        exportingBase: Exporting whole Base as Image
 
     settingNotAvailable: No disponible en la versión de prueba.

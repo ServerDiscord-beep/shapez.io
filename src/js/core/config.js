@@ -1,3 +1,5 @@
+import { queryParamOptions } from "./query_parameters";
+
 export const IS_DEBUG =
     (typeof window !== "undefined" && window.location.search.indexOf("isdebug") >= 0) ||
     (G_IS_DEV &&
@@ -7,8 +9,9 @@ export const IS_DEBUG =
             window.location.host.indexOf("192.168.0.") >= 0) &&
         window.location.search.indexOf("nodebug") < 0);
 
-export const IS_DEMO =
-    (G_IS_PROD &&
+export const IS_DEMO = queryParamOptions.fullVersion
+    ? false
+    : (G_IS_PROD &&
         !G_IS_STANDALONE &&
         !(typeof window !== "undefined" && window.location.search.indexOf("nodemo") >= 0)) ||
     (typeof window !== "undefined" && window.location.search.indexOf("isdemo") >= 0);
@@ -83,53 +86,7 @@ export const globalConfig = {
     },
 
     rendering: {},
-
-    debug: {
-        /* dev:start */
-
-        // Settings menu is generated *automatically*,
-        // but does not changes globalConfig.debug if enableDebugSettings is off
-        // DEFAULT VALUES:
-        enableDebugSettings: true,
-        fastGameEnter: false,
-        noArtificialDelays: false,
-        disableSavegameWrite: false,
-        showEntityBounds: false,
-        showAcceptorEjectors: false,
-        disableMusic: false,
-        doNotRenderStatics: false,
-        disableZoomLimits: false,
-        showChunkBorders: false,
-        rewardsInstant: false,
-        allBuildingsUnlocked: false,
-        blueprintsNoCost: true,
-        upgradesNoCost: false,
-        disableUnlockDialog: false,
-        disableLogicTicks: false,
-        testClipping: false,
-        // framePausesBetweenTicks: 40,
-        testTranslations: false,
-        enableEntityInspector: false,
-        testAds: false,
-        disableMapOverview: false,
-        disableTutorialHints: false,
-        disableUpgradeNotification: false,
-        disableShortNumbers: false,
-        disableBulkOperations: false,
-        disableDynamicTickrate: false,
-
-        disableInternalCheckTile: false,
-        disableGetTileAsserts: false,
-        disableBeltAsserts: false,
-
-        instantBelts: false,
-        instantProcessors: false,
-        instantMiners: false,
-        renderForTrailer: false,
-
-        cheapLevels: true,
-        /* dev:end */
-    },
+    debug: require("./config.local").default,
 
     // Secret vars
     info: {
@@ -147,14 +104,15 @@ export const globalConfig = {
 export const IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 // Automatic calculations
-
 globalConfig.minerSpeedItemsPerSecond = globalConfig.beltSpeedItemsPerSecond / 5;
 
+// Dynamic calculations
 if (globalConfig.debug.disableMapOverview) {
     globalConfig.mapChunkOverviewMinZoom = 0;
     globalConfig.mapChunkPrerenderMinZoom = 0;
 }
 
+// Stuff for making the trailer
 if (G_IS_DEV && globalConfig.debug.renderForTrailer) {
     globalConfig.debug.framePausesBetweenTicks = 32;
     // globalConfig.mapChunkOverviewMinZoom = 0.0;
@@ -164,4 +122,8 @@ if (G_IS_DEV && globalConfig.debug.renderForTrailer) {
     // globalConfig.debug.instantMiners = true;
     globalConfig.debug.disableSavegameWrite = true;
     // globalConfig.beltSpeedItemsPerSecond *= 2;
+}
+
+if (globalConfig.debug.fastGameEnter) {
+    globalConfig.debug.noArtificalDelays = true;
 }
