@@ -14,13 +14,10 @@ import { Vector } from "./core/vector";
 import { AdProviderInterface } from "./platform/ad_provider";
 import { NoAdProvider } from "./platform/ad_providers/no_ad_provider";
 import { AnalyticsInterface } from "./platform/analytics";
-import { ShapezGameAnalytics } from "./platform/browser/game_analytics";
 import { GoogleAnalyticsImpl } from "./platform/browser/google_analytics";
+import { NoGameAnalytics } from "./platform/browser/no_game_analytics";
 import { SoundImplBrowser } from "./platform/browser/sound";
-import { StorageImplBrowser } from "./platform/browser/storage";
-import { StorageImplBrowserIndexedDB } from "./platform/browser/storage_indexed_db";
 import { PlatformWrapperImplBrowser } from "./platform/browser/wrapper";
-import { StorageImplElectron } from "./platform/electron/storage";
 import { PlatformWrapperImplElectron } from "./platform/electron/wrapper";
 import { GameAnalyticsInterface } from "./platform/game_analytics";
 import { SoundInterface } from "./platform/sound";
@@ -133,7 +130,8 @@ export class Application {
         this.adProvider = new NoAdProvider(this);
         this.sound = new SoundImplBrowser(this);
         this.analytics = new GoogleAnalyticsImpl(this);
-        this.gameAnalytics = new ShapezGameAnalytics(this);
+        // this.gameAnalytics = new ShapezGameAnalytics(this);
+        this.gameAnalytics = new NoGameAnalytics(this);
     }
 
     /**

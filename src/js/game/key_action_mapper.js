@@ -24,6 +24,7 @@ export const KEYMAPPINGS = {
         menuOpenStats: { keyCodes: [key("G")] },
 
         toggleHud: { keyCodes: [113] }, // F2
+        exportScreenshot: { keyCodes: [114] }, // F3
         toggleFPSInfo: { keyCodes: [115] }, // F1
     },
 
@@ -64,8 +65,10 @@ export const KEYMAPPINGS = {
     massSelect: {
         massSelectStart: { keyCodes: [17] }, // CTRL
         massSelectSelectMultiple: { keyCodes: [16] }, // SHIFT
-        massSelectCopy: { keyCodes: [key("C"), key("X")] },
-        confirmMassDelete: { keyCodes: [46, key("X")] }, // DEL
+        massSelectCopy: { keyCodes: [key("C")] },
+        massSelectCut: { keyCodes: [key("X")] },
+        confirmMassDelete: { keyCodes: [46] }, // DEL
+        pasteLastBlueprint: { keyCodes: [key("V")] },
     },
 
     placementModifiers: {

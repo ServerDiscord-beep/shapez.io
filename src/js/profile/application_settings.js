@@ -9,6 +9,7 @@ import { ExplainedResult } from "../core/explained_result";
 import { THEMES, THEME, applyGameTheme } from "../game/theme";
 import { IS_DEMO } from "../core/config";
 import { T } from "../translations";
+import { LANGUAGES } from "../languages";
 
 const logger = createLogger("application_settings");
 
@@ -30,11 +31,11 @@ export const uiScales = [
     },
     {
         id: "large",
-        size: 1.2,
+        size: 1.05,
     },
     {
         id: "huge",
-        size: 1.4,
+        size: 1.1,
     },
 ];
 
@@ -61,8 +62,45 @@ export const scrollWheelSensitivities = [
     },
 ];
 
+export const movementSpeeds = [
+    {
+        id: "super_slow",
+        multiplier: 0.25,
+    },
+    {
+        id: "slow",
+        multiplier: 0.5,
+    },
+    {
+        id: "regular",
+        multiplier: 1,
+    },
+    {
+        id: "fast",
+        multiplier: 2,
+    },
+    {
+        id: "super_fast",
+        multiplier: 4,
+    },
+    {
+        id: "extremely_fast",
+        multiplier: 8,
+    },
+];
+
 /** @type {Array<BaseSetting>} */
 export const allApplicationSettings = [
+    new EnumSetting("language", {
+        options: Object.keys(LANGUAGES),
+        valueGetter: key => key,
+        textGetter: key => LANGUAGES[key].name,
+        category: categoryApp,
+        restartRequired: true,
+        changeCb: (app, id) => null,
+        magicValue: "auto-detect",
+    }),
+
     new EnumSetting("uiScale", {
         options: uiScales.sort((a, b) => a.size - b.size),
         valueGetter: scale => scale.id,
@@ -106,24 +144,13 @@ export const allApplicationSettings = [
          */
         (app, value) => app.sound.setMusicMuted(value)
     ),
-    new EnumSetting("scrollWheelSensitivity", {
-        options: scrollWheelSensitivities.sort((a, b) => a.scale - b.scale),
-        valueGetter: scale => scale.id,
-        textGetter: scale => T.settings.labels.scrollWheelSensitivity.sensitivity[scale.id],
-        category: categoryApp,
-        restartRequired: false,
-        changeCb:
-            /**
-             * @param {Application} app
-             */
-            (app, id) => app.updateAfterUiScaleChanged(),
-    }),
 
     // GAME
+
     new EnumSetting("theme", {
         options: Object.keys(THEMES),
         valueGetter: theme => theme,
-        textGetter: theme => theme.substr(0, 1).toUpperCase() + theme.substr(1),
+        textGetter: theme => T.settings.labels.theme.themes[theme],
         category: categoryGame,
         restartRequired: false,
         changeCb:
@@ -138,13 +165,35 @@ export const allApplicationSettings = [
     }),
 
     new EnumSetting("refreshRate", {
-        options: ["60", "100", "144", "165"],
+        options: ["60", "100", "144", "165", "250", "500"],
         valueGetter: rate => rate,
         textGetter: rate => rate + " Hz",
         category: categoryGame,
         restartRequired: false,
         changeCb: (app, id) => {},
         enabled: !IS_DEMO,
+    }),
+
+    new EnumSetting("scrollWheelSensitivity", {
+        options: scrollWheelSensitivities.sort((a, b) => a.scale - b.scale),
+        valueGetter: scale => scale.id,
+        textGetter: scale => T.settings.labels.scrollWheelSensitivity.sensitivity[scale.id],
+        category: categoryGame,
+        restartRequired: false,
+        changeCb:
+            /**
+             * @param {Application} app
+             */
+            (app, id) => app.updateAfterUiScaleChanged(),
+    }),
+
+    new EnumSetting("movementSpeed", {
+        options: movementSpeeds.sort((a, b) => a.multiplier - b.multiplier),
+        valueGetter: multiplier => multiplier.id,
+        textGetter: multiplier => T.settings.labels.movementSpeed.speeds[multiplier.id],
+        category: categoryGame,
+        restartRequired: false,
+        changeCb: (app, id) => {},
     }),
 
     new BoolSetting("alwaysMultiplace", categoryGame, (app, value) => {}),
@@ -165,6 +214,8 @@ class SettingsStorage {
         this.theme = "light";
         this.refreshRate = "60";
         this.scrollWheelSensitivity = "regular";
+        this.movementSpeed = "regular";
+        this.language = "auto-detect";
 
         this.alwaysMultiplace = false;
         this.offerHints = true;
@@ -251,6 +302,17 @@ export class ApplicationSettings extends ReadWriteProxy {
         return 1;
     }
 
+    getMovementSpeed() {
+        const id = this.getAllSettings().movementSpeed;
+        for (let i = 0; i < movementSpeeds.length; ++i) {
+            if (movementSpeeds[i].id === id) {
+                return movementSpeeds[i].multiplier;
+            }
+        }
+        logger.error("Unknown movement speed id:", id);
+        return 1;
+    }
+
     getIsFullScreen() {
         return this.getAllSettings().fullscreen;
     }
@@ -259,7 +321,16 @@ export class ApplicationSettings extends ReadWriteProxy {
         return this.getAllSettings().keybindingOverrides;
     }
 
+    getLanguage() {
+        return this.getAllSettings().language;
+    }
+
     // Setters
+
+    updateLanguage(id) {
+        assert(LANGUAGES[id], "Language not known: " + id);
+        return this.updateSetting("language", id);
+    }
 
     /**
      * @param {string} key
@@ -341,7 +412,7 @@ export class ApplicationSettings extends ReadWriteProxy {
     }
 
     getCurrentVersion() {
-        return 8;
+        return 10;
     }
 
     /** @param {{settings: SettingsStorage, version: number}} data */
@@ -366,6 +437,16 @@ export class ApplicationSettings extends ReadWriteProxy {
         if (data.version < 8) {
             data.settings.scrollWheelSensitivity = "regular";
             data.version = 8;
+        }
+
+        if (data.version < 9) {
+            data.settings.language = "auto-detect";
+            data.version = 9;
+        }
+
+        if (data.version < 10) {
+            data.settings.movementSpeed = "regular";
+            data.version = 10;
         }
 
         return ExplainedResult.good();
