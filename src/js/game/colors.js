@@ -7,7 +7,7 @@ export const enumColors = {
     blue: "blue",
 
     yellow: "yellow",
-    magenta: "magenta",
+    purple: "purple",
     cyan: "cyan",
 
     white: "white",
@@ -21,7 +21,7 @@ export const enumColorToShortcode = {
     [enumColors.blue]: "b",
 
     [enumColors.yellow]: "y",
-    [enumColors.magenta]: "p",
+    [enumColors.purple]: "p",
     [enumColors.cyan]: "c",
 
     [enumColors.white]: "w",
@@ -91,8 +91,8 @@ export const allColorData = {
             blue: "this",
         },
     },
-    magenta: {
-        id: "magenta",
+    purple: {
+        id: "purple",
         code: "p",
         hex: "#dd66ff",
         mixingFrom: ["red", "blue"],
@@ -120,11 +120,11 @@ export const allColorData = {
         },
         mixingFrom: [
             ["red", "cyan"],
-            ["green", "magenta"],
+            ["green", "purple"],
             ["blue", "yellow"],
-            ["cyan", "magenta"],
+            ["cyan", "purple"],
             ["cyan", "yellow"],
-            ["magenta", "yellow"],
+            ["purple", "yellow"],
         ],
     },
 };
