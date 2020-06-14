@@ -7,7 +7,6 @@ import { Component } from "../component";
 export const enumItemProcessorTypes = {
     splitter: "splitter",
     splitterWires: "splitterWires",
-    targetShapeChecker: "targetShapeChecker",
     cutter: "cutter",
     cutterQuad: "cutterQuad",
     rotater: "rotater",
