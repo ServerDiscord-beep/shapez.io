@@ -27,3 +27,17 @@ registerCustomColor({
     spawnable: true,
     minDistance: 5,
 });
+
+registerCustomColor({
+    id: "black",
+    code: "k",
+    hex: "#00000000",
+    mixing: {
+        white: "any",
+        uncolored: "any",
+        black: "any",
+        any: "any",
+    },
+    spawnable: true,
+    minDistance: 5,
+});
