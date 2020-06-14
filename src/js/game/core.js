@@ -33,6 +33,7 @@ import { ProductionAnalytics } from "./production_analytics";
 import { randomInt } from "../core/utils";
 import { defaultBuildingVariant } from "./meta_building";
 import { DynamicTickrate } from "./dynamic_tickrate";
+import { allCustomBuildingData } from "./custom/buildings";
 
 const logger = createLogger("ingame/core");
 
@@ -406,7 +407,12 @@ export class GameCore {
         if (!this.root.camera.getIsMapOverlayActive()) {
             systems.hub.draw(params);
             systems.storage.draw(params);
-            systems.targetShapeChecker.draw(params);
+            for (let b in allCustomBuildingData) {
+                let data = allCustomBuildingData[b];
+                if (data.draw) {
+                    systems[data.id].draw(params);
+                }
+            }
         }
 
         if (G_IS_DEV) {

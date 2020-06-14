@@ -7,7 +7,6 @@ import { gItemRegistry } from "../../core/global_registries";
 /** @enum {string} */
 export const enumItemProcessorTypes = {
     splitter: "splitter",
-    targetShapeChecker: "targetShapeChecker",
     cutter: "cutter",
     cutterQuad: "cutterQuad",
     rotater: "rotater",

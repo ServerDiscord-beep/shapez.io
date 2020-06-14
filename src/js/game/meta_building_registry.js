@@ -8,13 +8,12 @@ import { MetaRotaterBuilding } from "./buildings/rotater";
 import { MetaSplitterBuilding } from "./buildings/splitter";
 import { MetaStackerBuilding } from "./buildings/stacker";
 import { MetaTrashBuilding } from "./buildings/trash";
-import { MetaTargetShapeCheckerBuilding } from "./buildings/targetShapeChecker";
 import { MetaUndergroundBeltBuilding } from "./buildings/underground_belt";
 import { MetaHubBuilding } from "./buildings/hub";
+import { allCustomBuildingData } from "./custom/buildings";
 
 export function initMetaBuildingRegistry() {
     gMetaBuildingRegistry.register(MetaSplitterBuilding);
-    gMetaBuildingRegistry.register(MetaTargetShapeCheckerBuilding);
     gMetaBuildingRegistry.register(MetaMinerBuilding);
     gMetaBuildingRegistry.register(MetaCutterBuilding);
     gMetaBuildingRegistry.register(MetaRotaterBuilding);
@@ -25,4 +24,10 @@ export function initMetaBuildingRegistry() {
     gMetaBuildingRegistry.register(MetaBeltBaseBuilding);
     gMetaBuildingRegistry.register(MetaUndergroundBeltBuilding);
     gMetaBuildingRegistry.register(MetaHubBuilding);
+    for (let b in allCustomBuildingData) {
+        let data = allCustomBuildingData[b];
+        if (data.building) {
+            gMetaBuildingRegistry.register(data.building);
+        }
+    }
 }

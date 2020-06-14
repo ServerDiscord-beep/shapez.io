@@ -11,11 +11,11 @@ import { MetaRotaterBuilding } from "../../buildings/rotater";
 import { MetaSplitterBuilding } from "../../buildings/splitter";
 import { MetaStackerBuilding } from "../../buildings/stacker";
 import { MetaTrashBuilding } from "../../buildings/trash";
-import { MetaTargetShapeCheckerBuilding } from "../../buildings/targetShapeChecker";
 import { MetaUndergroundBeltBuilding } from "../../buildings/underground_belt";
 import { MetaBuilding } from "../../meta_building";
 import { BaseHUDPart } from "../base_hud_part";
 import { KEYMAPPINGS } from "../../key_action_mapper";
+import { allCustomBuildingData } from "../../custom/buildings";
 
 const toolbarBuildings = [
     MetaBeltBaseBuilding,
@@ -28,8 +28,14 @@ const toolbarBuildings = [
     MetaMixerBuilding,
     MetaPainterBuilding,
     MetaTrashBuilding,
-    MetaTargetShapeCheckerBuilding,
 ];
+
+for (let b in allCustomBuildingData) {
+    let data = allCustomBuildingData[b];
+    if (data.building && data.toolbar) {
+        toolbarBuildings.push(data.building);
+    }
+}
 
 export class HUDBuildingsToolbar extends BaseHUDPart {
     constructor(root) {
@@ -68,12 +74,17 @@ export class HUDBuildingsToolbar extends BaseHUDPart {
 
         for (let i = 0; i < toolbarBuildings.length; ++i) {
             const metaBuilding = gMetaBuildingRegistry.findByClass(toolbarBuildings[i]);
-            const binding = actionMapper.getBinding(KEYMAPPINGS.buildings[metaBuilding.getId()]);
+            const mapping = KEYMAPPINGS.buildings[metaBuilding.getId()];
+            const binding = mapping && actionMapper.getBinding(mapping);
 
             const itemContainer = makeDiv(items, null, ["building"]);
             itemContainer.setAttribute("data-icon", "building_icons/" + metaBuilding.getId() + ".png");
 
-            binding.add(() => this.selectBuildingForPlacement(metaBuilding));
+            if (binding) {
+                binding.add(() => this.selectBuildingForPlacement(metaBuilding));
+            } else {
+                console.warn(`${metaBuilding.getId()} has no keybinding`);
+            }
 
             this.trackClicks(itemContainer, () => this.selectBuildingForPlacement(metaBuilding), {
                 clickSound: null,
