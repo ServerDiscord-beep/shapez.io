@@ -165,7 +165,7 @@ export class HUDPinnedShapes extends BaseHUDPart {
         // Pin blueprint shape as well
         if (this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_blueprints)) {
             this.internalPinShape(blueprintShape, false, "blueprint");
-             if (this.root.hubGoals.getShapesStoredByKey(blueprintShape) == 0) {
+            if (this.root.hubGoals.getShapesStoredByKey(blueprintShape) == 0) {
                 this.root.hubGoals.putShapeByKey(blueprintShape, 50);
             }
         }

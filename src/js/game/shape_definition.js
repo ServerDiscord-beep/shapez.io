@@ -32,8 +32,6 @@ const logger = createLogger("shape_definition");
  * @typedef {number} FormStack
  */
 
-
-
 const arrayQuadrantIndexToOffset = [
     new Vector(1, -1), // tr
     new Vector(1, 1), // br
@@ -185,7 +183,11 @@ export class ShapeDefinition extends BasicSerializableObject {
      * @returns {FormStack}
      */
     getForm() {
-        return this.layers.reduceRight((v, [q1, q2, q3, q4]) => (v << 4) | (!!q1 && 0b1000) | (!!q2 && 0b0100) | (!!q3 && 0b0010) | (!!q4 && 0b0001), 0);
+        return this.layers.reduceRight(
+            (v, [q1, q2, q3, q4]) =>
+                (v << 4) | (!!q1 && 0b1000) | (!!q2 && 0b0100) | (!!q3 && 0b0010) | (!!q4 && 0b0001),
+            0
+        );
     }
 
     /**
@@ -415,7 +417,7 @@ export class ShapeDefinition extends BasicSerializableObject {
             let layerForm = (dForm & (0b1111 << (4 * i))) >> (4 * i);
 
             let highestOverlay = 7;
-            while (  ((layerForm << (4 * highestOverlay)) & form) == 0 && highestOverlay >= 0 ) {
+            while (((layerForm << (4 * highestOverlay)) & form) == 0 && highestOverlay >= 0) {
                 highestOverlay--;
             }
             // highestOverlay is topmost unmergeable layer, so go up 1 more

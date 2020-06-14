@@ -12,9 +12,9 @@ export const IS_DEBUG =
 export const IS_DEMO = queryParamOptions.fullVersion
     ? false
     : (G_IS_PROD &&
-        !G_IS_STANDALONE &&
-        !(typeof window !== "undefined" && window.location.search.indexOf("nodemo") >= 0)) ||
-    (typeof window !== "undefined" && window.location.search.indexOf("isdemo") >= 0);
+          !G_IS_STANDALONE &&
+          !(typeof window !== "undefined" && window.location.search.indexOf("nodemo") >= 0)) ||
+      (typeof window !== "undefined" && window.location.search.indexOf("isdemo") >= 0);
 
 const smoothCanvas = true;
 
