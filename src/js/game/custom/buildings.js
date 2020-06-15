@@ -21,9 +21,9 @@ allCustomBuildingData.targetShapeChecker = {
     process: targetShapeCheckerProcess,
     speed: 1 / 1,
     draw: true,
+    sprite: drawTSCSprite,
     // TODO: keybinding in KEYMAPPINGS
     // TODO: T
-    // TODO: atlas
 };
 
 for (let b in allCustomBuildingData) {
@@ -84,41 +84,108 @@ function makeLine(ctx, points) {
   ctx.closePath();
 }
 
-function drawWithShadow(ctx, points, bg, fg, sh, lw) {
-  ctx.save();
-  ctx.save();
-  // ctx.translate(9, 11);
-  ctx.translate(6, 7);
-  makeLine(ctx, points);
-  ctx.fillStyle = sh;
-  ctx.fill();
-  ctx.restore();
-  makeLine(ctx, points);
-  ctx.fillStyle = fg;
-  ctx.strokeStyle = bg;
-  ctx.lineWidth = lw;
-  ctx.stroke();
-  ctx.fill();
-  ctx.restore();
+/** 
+ * draws building base on 192m*192n cells context
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {string} path
+ */
+function drawBaseLayer(ctx, path) {
+	let p  = new Path2D(path);
+	ctx.save();
+	// shadow:
+	ctx.save();
+	ctx.fillStyle = "#91949e";
+	ctx.globalAlpha = 0.2;
+	ctx.translate(6, 8);
+	ctx.fill(p);
+	ctx.restore();
+	// base:
+	ctx.fillStyle = "#dee1ea";
+	ctx.strokeStyle = "#64666e";
+	ctx.lineWidth = 6;
+	ctx.lineCap = "round";
+	ctx.lineJoin = "round";
+	ctx.miterLimit = 4;
+	ctx.fill(p);
+	ctx.stroke(p);
+	ctx.restore();
 }
-
+/**
+ * draws a color-filled path on 192m*192n cells context
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {string} path
+ */
+function drawfillShape(ctx, path, color) {
+	let p = new Path2D(path);
+	ctx.save();
+	// shadow:
+	ctx.save();
+	ctx.fillStyle = '#91949e';
+	ctx.globalAlpha = 0.2;
+	ctx.translate(6, 8);
+	ctx.fill(p);
+	ctx.restore();
+	// base:
+	ctx.fillStyle = color;
+	ctx.strokeStyle = '#64666e';
+	ctx.lineWidth = 10;
+	ctx.lineCap = 'round';
+	ctx.lineJoin = 'round';
+	ctx.miterLimit = 4;
+	ctx.stroke(p);
+	ctx.fill(p);
+	ctx.restore();
+}
+function drawShape(ctx, path, color1, color2) {
+	let p = new Path2D(path);
+	ctx.save();
+	// base:
+	ctx.fillStyle = color1;
+	ctx.strokeStyle = color2;
+	ctx.lineWidth = 10;
+	ctx.lineCap = 'round';
+	ctx.lineJoin = 'round';
+	ctx.miterLimit = 4;
+	ctx.stroke(p);
+	ctx.fill(p);
+	ctx.restore();
+}
 
 
 function drawTSCSprite({ canvas, context, w, h, smooth, mipmap, resolution }){
-	  var h1 = 20, h2 = 128 - 20, w1 = 10, w2 = 128 - 10;
 
-  var points1 = [
-    [h1, w1, 0],
-    [h2, w1, 0],
-    [h2, w2, 0],
-    [h1, w2, 0],
-  ];
+	let d_base = "M 11,31 v 130 l 20,20 h 130 l 20,-20 v -130 l -20,-20 h -130 z";
+	drawBaseLayer(context, d_base);
+	let s = 12;
+	let d2 = `M 175,40 l ${s},${s} -${s},${s} ${s},${s} -${s},${s} -${s},-${s} -${s},${s} -${s},-${s} ${s},-${s} -${s},-${s} ${s},-${s} ${s},${s} z`;
+	drawfillShape(context, d2, 'red');
 
-  points1 = [[34,59,0],[76,59,0],[76,40,0],[68,40,0],[81,14,0],[94,40,0],[84,40,0],[84,58,0],[112,58,0],[119,65,0],[112,69,0],[112,84,0],[120,92,0],[112,98,0],[112,108,0],[73,108,0],[34,108,0],[25,108,0],[25,39,0],[14,39,0],[30,12,0],[45,39,0],[34,39,0]];
-
-
-  drawWithShadow(context, points1, "black", "gray", "#aaaa0080", 4);
+	let g = 30;
+	let d3 = `M 40,35 l ${g},-${g} ${g},${g} z`;
+	drawfillShape(context, d3, 'lightgreen');
 }
 
 
-Loader.drawSprite("sprites/buildings/targetShapeChecker.png", drawTSCSprite, {});
+function drawTSCSpriteBp({ canvas, context, canvas2, context2, w, h, smooth, mipmap, resolution }){
+
+	let d_base = "M 11,31 v 130 l 20,20 h 130 l 20,-20 v -130 l -20,-20 h -130 z";
+	drawShape(context2, d_base, '#6CD1FF', '#56A7D8');
+	let s = 12;
+	let d2 = `M 172,40 l ${s},${s} -${s},${s} ${s},${s} -${s},${s} -${s},-${s} -${s},${s} -${s},-${s} ${s},-${s} -${s},-${s} ${s},-${s} ${s},${s} z`;
+	drawShape(context2, d2, '#5EB7ED', '#56A7D8');
+
+	let g = 30;
+	let d3 = `M 40,35 l ${g},-${g} ${g},${g} z`;
+	drawShape(context2, d3, '#5EB7ED', '#56A7D8');
+
+	context.save()
+	context.globalAlpha = 0x99/0xff;
+	context.drawImage(canvas2, 0, 0);
+	context.restore();
+
+}
+
+
+Loader.drawSprite("sprites/buildings/targetShapeChecker.png", drawTSCSprite, {w: 192, h:192});
+
+Loader.drawSprite("sprites/blueprints/targetShapeChecker.png", drawTSCSpriteBp, {w: 192, h:192});
