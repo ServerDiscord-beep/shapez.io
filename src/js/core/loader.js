@@ -246,6 +246,12 @@ class LoaderImpl {
         // TODO: mipmap
         const [canvas, context] = makeOffscreenBuffer(w, h, {
             smooth,
+            reusable: false,
+            label: "not-found-sprite",
+        });
+        const [canvas2, context2] = makeOffscreenBuffer(w, h, {
+            smooth,
+            reusable: true,
             label: "not-found-sprite",
         });
 
@@ -253,7 +259,7 @@ class LoaderImpl {
         context.save();
         // TODO: scale and translate to make mipmap state same
 
-        callback({ canvas, context, w, h, smooth, mipmap, resolution });
+        callback({ canvas, context, canvas2, context2, w, h, smooth, mipmap, resolution });
 
         const resolutions = ["0.1", "0.25", "0.5", "0.75", "1"];
         const sprite = new AtlasSprite({
