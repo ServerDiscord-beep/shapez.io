@@ -51,10 +51,12 @@ export class SettingsState extends TextualGameState {
                 if (i !== 0) {
                     html += "</div>";
                 }
-                html += `<strong class='categoryLabel categoryLabel_${lastCategory}'${isHidden ? " style='display:none'" : ""}>${
-                    T.settings.categories[lastCategory]
-                }</strong>`;
-                html += `<div class='settingsContainer settingsContainer_${lastCategory}'${isHidden ? " style='display:none'" : ""}>`;
+                html += `<strong class='categoryLabel categoryLabel_${lastCategory}'${
+                    isHidden ? " style='display:none'" : ""
+                }>${T.settings.categories[lastCategory]}</strong>`;
+                html += `<div class='settingsContainer settingsContainer_${lastCategory}'${
+                    isHidden ? " style='display:none'" : ""
+                }>`;
             }
 
             html += setting.getHtml();
