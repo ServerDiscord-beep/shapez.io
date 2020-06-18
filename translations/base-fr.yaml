@@ -154,6 +154,9 @@ mainMenu:
 
         showInfo: Voir
         contestOver: Ce concours est terminé - Rejoignez le serveur discord pour être tenu au courant des prochains concours !
+    continue: Continuer
+    newGame: Nouvelle partie
+    madeBy: Créé par <author-link>
 
 dialogs:
     buttons:
@@ -257,7 +260,7 @@ dialogs:
 
     createMarker:
         title: Nouvelle balise
-        desc: Donnez-lui un nom approprié
+        desc: Donnez-lui un nom, vous pouvez aussi inclure <strong>le raccourci </strong> d'une forme (Que vous pouvez générer <a href="https://viewer.shapez.io" target="_blank">ici</a>)
 
     markerDemoLimit:
         desc: Vous ne pouvez créer que deux balises dans la démo. Achetez la version complète pour en faire tant que vous voulez !
@@ -283,6 +286,8 @@ ingame:
         createMarker: Créer une balise
         delete: Supprimer
         pasteLastBlueprint: Copier le dernier patron
+        lockBeltDirection: Enable belt planner
+        plannerSwitchSide: Flip planner side
 
     # Everything related to placing buildings (I.e. as soon as you selected a building
     # from the toolbar)
@@ -478,13 +483,16 @@ buildings:
     painter:
         default:
             name: &painter Peintre
-            description: Colorie entièrement la forme de gauche avec la couleur de droite.
+            description: &painter_desc Colorie entièrement la forme de gauche avec la couleur de droite.
         double:
             name: Peintre (Double)
             description: Colorie les deux formes de gauche avec la couleur de droite.
         quad:
             name: Peintre (Quadruple)
             description: Permet de colorier chaque quadrant d'une forme avec une couleur différente.
+        mirrored:
+            name: *painter
+            description: *painter_desc
 
     trash:
         default:
@@ -673,6 +681,16 @@ settings:
                 fast: Rapide
                 super_fast: Très rapide
                 extremely_fast: Extrêmement rapide
+        enableTunnelSmartplace:
+            title: Smart Tunnels
+            description: >-
+                When enabled, placing tunnels will automatically remove unnecessary belts.
+                This also enables to drag tunnels and excess tunnels will get removed.
+        vignette:
+            title: Vignette
+            description: >-
+                Enables the vignette which darkens the screen corners and makes text easier
+                to read.
 
 keybindings:
     title: Contrôles
@@ -737,6 +755,9 @@ keybindings:
         pasteLastBlueprint: Copier le dernier patron
         massSelectCut: Couper la sélection
         exportScreenshot: Exporter toute la base en tant qu'image.
+        mapMoveFaster: Se déplacer plus vite
+        lockBeltDirection: Enable belt planner
+        switchDirectionLockSide: 'Planner: Switch side'
 
 about:
     title: À propos de ce jeu
@@ -773,4 +794,4 @@ demo:
 # French translation version v0.5 based on english v1.1.8 by Didier WEERTS 'The Corsaire'
 #
 
-# French translation completed (and corrected) by Pascal Grossé.
+# French translation completed (and corrected) by Pascal Grossé and Withers001

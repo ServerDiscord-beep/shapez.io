@@ -153,6 +153,9 @@ mainMenu:
 
         showInfo: Ver
         contestOver: Este concurso terminou - Entra no discord para seres notificado quando abrirem novos concursos!
+    continue: Continuar
+    newGame: Novo Jogo
+    madeBy: Criado por <author-link>
 
 dialogs:
     buttons:
@@ -250,7 +253,7 @@ dialogs:
 
     createMarker:
         title: Novo marco
-        desc: Dá-lhe um nome com significado
+        desc: Dá-lhe um nome com significado, também poderás adicionar <strong>um pequeno código</strong> de uma forma. (Pode ser gerado <a href="https://viewer.shapez.io" target="_blank">aqui</a>)
 
     markerDemoLimit:
         desc: Apenas podes criar dois marcos na versão Demo. Adquire o jogo completo para colocar marcos infinitos!
@@ -271,7 +274,7 @@ ingame:
     keybindingsOverlay:
         moveMap: Mover
         selectBuildings: Selecionar área
-        stopPlacement: Parar posicionamento
+        stopPlacement: Cancelar
         rotateBuilding: Rodar construção
         placeMultiple: Colocar vários
         reverseOrientation: Reverter orientação
@@ -281,6 +284,8 @@ ingame:
         createMarker: Criar marco
         delete: Destruir
         pasteLastBlueprint: Colar o último blueprint
+        lockBeltDirection: Ativa o planeamento de tapetes
+        plannerSwitchSide: Lado de rotação do planeamento
 
     # Everything related to placing buildings (I.e. as soon as you selected a building
     # from the toolbar)
@@ -291,7 +296,7 @@ ingame:
 
         # Shows the hotkey in the ui, e.g. "Hotkey: Q"
         hotkeyLabel: >-
-            Hotkey: <key>
+            Atalho: <key>
 
         infoTexts:
             speed: Velocidade
@@ -412,7 +417,7 @@ buildings:
     belt:
         default:
             name: &belt Tapete Rolante
-            description: Transporta items, mantém pressionado e arrasta para colocar vários.
+            description: Transporta items. Mantém pressionado e arrasta para colocar vários.
 
     miner: # Internal name for the Extractor
         default:
@@ -438,12 +443,12 @@ buildings:
             description: Multifunções - Distribui igualmente todas as entradas por todas as saídas.
 
         compact:
-            name: Misturador (compacto)
-            description: Junta dois tapetes rolantes num só.
+            name: Misturador (Comp.)
+            description: O Misturador Compacto é uma variante do distibruidor. Junta dois tapetes rolantes num só.
 
         compact-inverse:
-            name: Misturador (compacto)
-            description: Junta dois tapetes rolantes num só.
+            name: Misturador (Comp.)
+            description: O Misturador Compacto é uma variante do distibruidor. Junta dois tapetes rolantes num só.
 
     cutter:
         default:
@@ -468,19 +473,22 @@ buildings:
 
     mixer:
         default:
-            name: &mixer Misturador de cores
+            name: &mixer Misturador de cor
             description: Mistura duas cores através de mistura aditiva.
 
     painter:
         default:
             name: &painter Pintor
-            description: Pinta a forma geométrica da entrada esquerda com a cor da entrada superior.
+            description: &painter_desc Pinta a forma geométrica da entrada esquerda com a cor da entrada superior.
         double:
             name: Pintor (Duplo)
             description: Pinta as formas geométricas das entradas esquerdas com a cor da entrada superior.
         quad:
             name: Pintor (Quádruplo)
             description: Pinta cada quadrante da forma geométrica com uma cor diferente.
+        mirrored:
+            name: *painter
+            description: *painter_desc
 
     trash:
         default:
@@ -667,6 +675,16 @@ settings:
                 fast: Rápiada
                 super_fast: Muito rádida
                 extremely_fast: Extremamente rápida
+        enableTunnelSmartplace:
+            title: Túneis inteligentes
+            description: >-
+                Quando ativo, a colocação de túneis removerá tapetes desnecessários automaticamente.
+                Isto também permite arrastar túneis e túneis supérfluos serão removidos.
+        vignette:
+            title: Vinheta
+            description: >-
+                Ativa a vinheta, que escurece os cantos do ecrã e torna a leitura do texto
+                mais fácil.
 
 keybindings:
     title: Atalhos
@@ -731,6 +749,9 @@ keybindings:
         pasteLastBlueprint: Colar o último blueprint
         massSelectCut: Cortar área
         exportScreenshot: Exportar a base como uma imagem
+        mapMoveFaster: Mover rapidamente
+        lockBeltDirection: Ativa o planeamento de tapetes
+        switchDirectionLockSide: 'Planeador: Troca o lado'
 about:
     title: Sobre o jogo
     body: >-
@@ -744,7 +765,7 @@ about:
         em torno dos meus jogos - Devias mesmo juntar-te ao <a href="<discordlink>"
         target="_blank">servidor no discord</a>!<br><br>
 
-        The soundtrack foi feita por <a href="https://soundcloud.com/pettersumelius"
+        A banda sonora foi feita por <a href="https://soundcloud.com/pettersumelius"
         target="_blank">Peppsen</a> - Ele é Fantástico.<br><br>
 
         Finalmente, um grande agradecimento ao meu melhor amigo <a

@@ -1,5 +1,51 @@
 export const CHANGELOG = [
     {
+        version: "1.1.16",
+        date: "unreleased",
+        entries: ["Fix belt planner not placing the last belt"],
+    },
+    {
+        version: "1.1.15",
+        date: "17.06.2020",
+        entries: [
+            "You can now place straight belts (and tunnels) by holding SHIFT! (For you, @giantwaffle ❤️)",
+            "Added continue button to main menu and add seperate 'New game' button (by jaysc)",
+            "Added setting to disable smart tunnel placement introduced with the last update",
+            "Added setting to disable vignette",
+            "Update translations",
+        ],
+    },
+    {
+        version: "1.1.14",
+        date: "16.06.2020",
+        entries: [
+            "There is now an indicator (compass) to the HUB for the HUB Marker!",
+            "You can now include shape short keys in markers to render shape icons instead of text!",
+            "Added mirrored variant of the painter",
+            "When placing tunnels, unnecessary belts inbetween are now removed!",
+            "You can now drag tunnels and they will automatically expand! (Just try it out, its intuitive)",
+        ],
+    },
+    {
+        version: "1.1.13",
+        date: "15.06.2020",
+        entries: [
+            "Added shift modifier for faster pan (by jaysc)",
+            "Added Japanese translations",
+            "Added Portuguese (Portugal) translations",
+            "Updated icon for Spanish (Latin America) - It was showing a Spanish flag before",
+            "Updated existing translations",
+        ],
+    },
+    {
+        version: "1.1.12",
+        date: "14.06.2020",
+        entries: [
+            "Huge performance improvements! The game should now run up to 60% faster!",
+            "Added norwegian translation",
+        ],
+    },
+    {
         version: "1.1.11",
         date: "13.06.2020",
         entries: [

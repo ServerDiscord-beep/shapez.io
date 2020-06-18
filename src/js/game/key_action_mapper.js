@@ -33,6 +33,7 @@ export const KEYMAPPINGS = {
         mapMoveRight: { keyCode: key("D") },
         mapMoveDown: { keyCode: key("S") },
         mapMoveLeft: { keyCode: key("A") },
+        mapMoveFaster: { keyCode: 16 }, //shift
 
         centerMap: { keyCode: 32 }, // SPACE
         mapZoomIn: { keyCode: 187, repeated: true }, // "+"
@@ -60,6 +61,7 @@ export const KEYMAPPINGS = {
         rotateInverseModifier: { keyCode: 16 }, // SHIFT
         cycleBuildingVariants: { keyCode: key("T") },
         cycleBuildings: { keyCode: 9 }, // TAB
+        switchDirectionLockSide: { keyCode: key("R") },
     },
 
     massSelect: {
@@ -72,6 +74,7 @@ export const KEYMAPPINGS = {
     },
 
     placementModifiers: {
+        lockBeltDirection: { keyCode: 16 }, // SHIFT
         placementDisableAutoOrientation: { keyCode: 17 }, // CTRL
         placeMultiple: { keyCode: 16 }, // SHIFT
         placeInverse: { keyCode: 18 }, // ALT
@@ -259,14 +262,16 @@ export class Keybinding {
 
     /**
      * Returns whether this binding is currently pressed
+     * @returns {boolean}
      */
-    isCurrentlyPressed() {
+    get pressed() {
         // Check if the key is down
         if (this.app.inputMgr.keysDown.has(this.keyCode)) {
             // Check if it is the top reciever
             const reciever = this.keyMapper.inputReceiver;
             return this.app.inputMgr.getTopReciever() === reciever;
         }
+        return false;
     }
 
     /**

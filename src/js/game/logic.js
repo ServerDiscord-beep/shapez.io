@@ -152,6 +152,7 @@ export class GameLogic {
      * @param {number} param0.rotationVariant
      * @param {string} param0.variant
      * @param {MetaBuilding} param0.building
+     * @returns {Entity}
      */
     tryPlaceBuilding({ origin, rotation, rotationVariant, originalRotation, variant, building }) {
         if (this.checkCanPlaceBuilding({ origin, rotation, rotationVariant, variant, building })) {
@@ -171,13 +172,13 @@ export class GameLogic {
                     if (contents) {
                         if (!this.tryDeleteBuilding(contents)) {
                             logger.error("Building has replaceable component but is also unremovable");
-                            return false;
+                            return null;
                         }
                     }
                 }
             }
 
-            building.createAndPlaceEntity({
+            const entity = building.createAndPlaceEntity({
                 root: this.root,
                 origin,
                 rotation,
@@ -187,10 +188,9 @@ export class GameLogic {
             });
 
             this.root.soundProxy.playUi(building.getPlacementSound());
-
-            return true;
+            return entity;
         }
-        return false;
+        return null;
     }
 
     /**
