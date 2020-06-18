@@ -593,6 +593,7 @@ settings:
     categories:
         game: Game
         app: Application
+        debug: Debug
 
     versionBadges:
         dev: Development
@@ -687,6 +688,167 @@ settings:
             title: Vignette
             description: >-
                 Enables the vignette which darkens the screen corners and makes text easier to read.
+
+        
+        #/*dev:start */#        
+        # -----------------------------------------------------------------------------------
+        debug_enableDebugSettings:
+            title: DEBUG / enable Debug Settings
+            description: >-
+                Import debug settings from game settings
+        # -----------------------------------------------------------------------------------
+        debug_fastGameEnter:
+            title: DEBUG / fast Game Enter
+            description: >-
+                Quickly enters the game and skips the main menu - good for fast iterating
+        # -----------------------------------------------------------------------------------
+        debug_noArtificialDelays:
+            title: DEBUG / no Artificial Delays
+            description: >-
+                Skips any delays like transitions between states and such
+        # -----------------------------------------------------------------------------------
+        debug_disableSavegameWrite:
+            title: DEBUG / disable Savegame Write
+            description: >-
+                Disables writing of savegames, useful for testing the same savegame over and over
+        # -----------------------------------------------------------------------------------
+        debug_showEntityBounds:
+            title: DEBUG / show Entity Bounds
+            description: >-
+                Shows bounds of all entities
+        # -----------------------------------------------------------------------------------
+        debug_showAcceptorEjectors:
+            title: DEBUG / show Acceptor Ejectors
+            description: >-
+                Shows arrows for every ejector / acceptor
+        # -----------------------------------------------------------------------------------
+        debug_disableMusic:
+            title: DEBUG / disable Music
+            description: >-
+                Disables the music (Overrides any setting, can cause weird behaviour)
+        # -----------------------------------------------------------------------------------
+        debug_doNotRenderStatics:
+            title: DEBUG / do Not Render Statics
+            description: >-
+                Do not render static map entities (=most buildings)
+        # -----------------------------------------------------------------------------------
+        debug_disableZoomLimits:
+            title: DEBUG / disable Zoom Limits
+            description: >-
+                Allow to zoom freely without limits
+        # -----------------------------------------------------------------------------------
+        debug_showChunkBorders:
+            title: DEBUG / show Chunk Borders
+            description: >-
+                Shows a border arround every chunk
+        # -----------------------------------------------------------------------------------
+        debug_rewardsInstant:
+            title: DEBUG / rewards Instant
+            description: >-
+                All rewards can be unlocked by passing just 1 of any shape
+        # -----------------------------------------------------------------------------------
+        debug_allBuildingsUnlocked:
+            title: DEBUG / all Buildings Unlocked
+            description: >-
+                Unlocks all buildings
+        # -----------------------------------------------------------------------------------
+        debug_blueprintsNoCost:
+            title: DEBUG / blueprints No Cost
+            description: >-
+                Disables cost of bluepirnts
+        # -----------------------------------------------------------------------------------
+        debug_upgradesNoCost:
+            title: DEBUG / upgrades No Cost
+            description: >-
+                Disables cost of upgrades
+        # -----------------------------------------------------------------------------------
+        debug_disableUnlockDialog:
+            title: DEBUG / disable Unlock Dialog
+            description: >-
+                Disables the dialog when completing a level
+        # -----------------------------------------------------------------------------------
+        debug_disableInternalCheckTile:
+            title: DEBUG / disable Internal Check Tile
+            description: >-
+                Speed ups the game at the cost of not checking obvious things
+        # -----------------------------------------------------------------------------------
+        debug_disableGetTileAsserts:
+            title: DEBUG / disable Get Tile Asserts
+            description: >-
+                Speed ups the game at the cost of not checking obvious things
+        # -----------------------------------------------------------------------------------
+        debug_disableBeltAsserts:
+            title: DEBUG / disable Belt Asserts
+            description: >-
+                Speed ups the game at the cost of not checking obvious things
+        # -----------------------------------------------------------------------------------
+        debug_disableLogicTicks:
+            title: DEBUG / disable Logic Ticks
+            description: >-
+                Disables the simulation - This effectively pauses the game.
+        # -----------------------------------------------------------------------------------
+        debug_testClipping:
+            title: DEBUG / test Clipping
+            description: >-
+                Test the rendering if everything is clipped out properly
+        # -----------------------------------------------------------------------------------
+        debug_framePausesBetweenTicks:
+            title: DEBUG / frame Pauses Between Ticks
+            description: >-
+                Allows to render slower, useful for recording at half speed to avoid stuttering
+        # -----------------------------------------------------------------------------------
+        debug_testTranslations:
+            title: DEBUG / test Translations
+            description: >-
+                Replace all translations with emojis to see which texts are translateable
+        # -----------------------------------------------------------------------------------
+        debug_enableEntityInspector:
+            title: DEBUG / enable Entity Inspector
+            description: >-
+                Enables an inspector which shows information about the entity below the curosr
+        # -----------------------------------------------------------------------------------
+        debug_testAds:
+            title: DEBUG / test Ads
+            description: >-
+                Enables ads in the local build (normally they are deactivated there)
+        # -----------------------------------------------------------------------------------
+        debug_disableMapOverview:
+            title: DEBUG / disable Map Overview
+            description: >-
+                Disables the automatic switch to an overview when zooming out
+        # -----------------------------------------------------------------------------------
+        debug_disableUpgradeNotification:
+            title: DEBUG / disable Upgrade Notification
+            description: >-
+                Disables the notification when there are new entries in the changelog since last played
+        # -----------------------------------------------------------------------------------
+        debug_instantBelts:
+            title: DEBUG / instant Belts
+            description: >-
+                Makes belts almost infinitely fast
+        # -----------------------------------------------------------------------------------
+        debug_instantProcessors:
+            title: DEBUG / instant Processors
+            description: >-
+                Makes item processors almost infinitely fast
+        # -----------------------------------------------------------------------------------
+        debug_instantMiners:
+            title: DEBUG / instant Miners
+            description: >-
+                Makes miners almost infinitely fast
+        # -----------------------------------------------------------------------------------
+        debug_resumeGameOnFastEnter:
+            title: DEBUG / resume Game On Fast Enter
+            description: >-
+                When using fastGameEnter, controls whether a new game is started or the last one is resumed
+        # -----------------------------------------------------------------------------------
+        debug_renderForTrailer:
+            title: DEBUG / render For Trailer
+            description: >-
+                Special option used to render the trailer
+        # -----------------------------------------------------------------------------------
+        #/* dev:end */#
+
 
 keybindings:
     title: Keybindings

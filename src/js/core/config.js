@@ -84,7 +84,7 @@ export const globalConfig = {
     },
 
     rendering: {},
-    debug: require("./config.local").default,
+    debug: IS_DEBUG ? require("./config.local").default : {},
 
     // Secret vars
     info: {

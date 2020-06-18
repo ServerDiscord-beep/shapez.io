@@ -1,6 +1,7 @@
+import { globalConfig, IS_DEBUG } from "../core/config";
 import { TextualGameState } from "../core/textual_game_state";
 import { formatSecondsToTimeAgo } from "../core/utils";
-import { allApplicationSettings } from "../profile/application_settings";
+import { allApplicationSettings, allDebugSettings, categoryDebug } from "../profile/application_settings";
 import { T } from "../translations";
 
 export class SettingsState extends TextualGameState {
@@ -45,11 +46,17 @@ export class SettingsState extends TextualGameState {
 
             if (setting.categoryId !== lastCategory) {
                 lastCategory = setting.categoryId;
+                const isHidden = setting.categoryId == categoryDebug && !IS_DEBUG;
+
                 if (i !== 0) {
                     html += "</div>";
                 }
-                html += `<strong class="categoryLabel">${T.settings.categories[lastCategory]}</strong>`;
-                html += "<div class='settingsContainer'>";
+                html += `<strong class='categoryLabel categoryLabel_${lastCategory}'${
+                    isHidden ? " style='display:none'" : ""
+                }>${T.settings.categories[lastCategory]}</strong>`;
+                html += `<div class='settingsContainer settingsContainer_${lastCategory}'${
+                    isHidden ? " style='display:none'" : ""
+                }>`;
             }
 
             html += setting.getHtml();

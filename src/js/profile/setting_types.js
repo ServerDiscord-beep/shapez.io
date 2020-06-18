@@ -165,6 +165,9 @@ export class EnumSetting extends BaseSetting {
             })),
         });
         optionSelected.add(value => {
+            if (!this.enabled) {
+                return;
+            }
             this.app.settings.updateSetting(this.id, value);
             this.syncValueToElement();
 
@@ -185,18 +188,22 @@ export class BoolSetting extends BaseSetting {
     }
 
     getHtml() {
+        const label = T.settings.labels[this.id] || {
+            title: this.id.replace(/([a-z])([A-Z])/g, (s, a, b) => `${a}_${b}`),
+            description: "the consequences are unknown",
+        };
         return `
         <div class="setting cardbox ${this.enabled ? "enabled" : "disabled"}">
             ${this.enabled ? "" : `<span class="standaloneOnlyHint">${T.demo.settingNotAvailable}</span>`}
                 
             <div class="row">
-                <label>${T.settings.labels[this.id].title}</label>
+                <label>${label.title}</label>
                 <div class="value checkbox checked" data-setting="${this.id}">
                 <span class="knob"></span>
                 </div>
             </div>
             <div class="desc">
-                ${T.settings.labels[this.id].description}
+                ${label.description}
             </div>
         </div>`;
     }
@@ -207,6 +214,9 @@ export class BoolSetting extends BaseSetting {
     }
 
     modify() {
+        if (!this.enabled) {
+            return;
+        }
         const newValue = !this.app.settings.getSetting(this.id);
         this.app.settings.updateSetting(this.id, newValue);
         this.syncValueToElement();
