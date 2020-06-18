@@ -15,70 +15,70 @@ function key(str) {
 
 export const KEYMAPPINGS = {
     general: {
-        confirm: { keyCode: 13 }, // enter
-        back: { keyCode: 27, builtin: true }, // escape
+        confirm: { keyCodes: [13] }, // enter
+        back: { keyCodes: [27], builtin: true }, // escape
     },
 
     ingame: {
-        menuOpenShop: { keyCode: key("F") },
-        menuOpenStats: { keyCode: key("G") },
+        menuOpenShop: { keyCodes: [key("F")] },
+        menuOpenStats: { keyCodes: [key("G")] },
 
-        toggleHud: { keyCode: 113 }, // F2
-        exportScreenshot: { keyCode: 114 }, // F3
-        toggleFPSInfo: { keyCode: 115 }, // F4
+        toggleHud: { keyCodes: [113] }, // F2
+        exportScreenshot: { keyCodes: [114] }, // F3
+        toggleFPSInfo: { keyCodes: [115] }, // F4
     },
 
     navigation: {
-        mapMoveUp: { keyCode: key("W") },
-        mapMoveRight: { keyCode: key("D") },
-        mapMoveDown: { keyCode: key("S") },
-        mapMoveLeft: { keyCode: key("A") },
-        mapMoveFaster: { keyCode: 16 }, //shift
+        mapMoveUp: { keyCodes: [key("W")] },
+        mapMoveRight: { keyCodes: [key("D")] },
+        mapMoveDown: { keyCodes: [key("S")] },
+        mapMoveLeft: { keyCodes: [key("A")] },
+        mapMoveFaster: { keyCodes: [16] }, //shift
 
-        centerMap: { keyCode: 32 }, // SPACE
-        mapZoomIn: { keyCode: 187, repeated: true }, // "+"
-        mapZoomOut: { keyCode: 189, repeated: true }, // "-"
+        centerMap: { keyCodes: [32] }, // SPACE
+        mapZoomIn: { keyCodes: [187], repeated: true }, // "+"
+        mapZoomOut: { keyCodes: [189], repeated: true }, // "-"
 
-        createMarker: { keyCode: key("M") },
+        createMarker: { keyCodes: [key("M")] },
     },
 
     buildings: {
-        belt: { keyCode: key("1") },
-        splitter: { keyCode: key("2") },
-        underground_belt: { keyCode: key("3") },
-        miner: { keyCode: key("4") },
-        cutter: { keyCode: key("5") },
-        rotater: { keyCode: key("6") },
-        stacker: { keyCode: key("7") },
-        mixer: { keyCode: key("8") },
-        painter: { keyCode: key("9") },
-        trash: { keyCode: key("0") },
+        belt: { keyCodes: [key("1")] },
+        splitter: { keyCodes: [key("2")] },
+        underground_belt: { keyCodes: [key("3")] },
+        miner: { keyCodes: [key("4")] },
+        cutter: { keyCodes: [key("5")] },
+        rotater: { keyCodes: [key("6")] },
+        stacker: { keyCodes: [key("7")] },
+        mixer: { keyCodes: [key("8")] },
+        painter: { keyCodes: [key("9")] },
+        trash: { keyCodes: [key("0")] },
     },
 
     placement: {
-        abortBuildingPlacement: { keyCode: key("Q") },
-        rotateWhilePlacing: { keyCode: key("R") },
-        rotateInverseModifier: { keyCode: 16 }, // SHIFT
-        cycleBuildingVariants: { keyCode: key("T") },
-        cycleBuildings: { keyCode: 9 }, // TAB
-        switchDirectionLockSide: { keyCode: key("R") },
-        pipette: { keyCode: key("Q") },
+        abortBuildingPlacement: { keyCodes: [key("Q")] },
+        rotateWhilePlacing: { keyCodes: [key("R")] },
+        rotateInverseModifier: { keyCodes: [16] }, // SHIFT
+        cycleBuildingVariants: { keyCodes: [key("T")] },
+        cycleBuildings: { keyCodes: [9] }, // TAB
+        switchDirectionLockSide: { keyCodes: [key("R")] },
+        pipette: { keyCodes: [key("Q")] },
     },
 
     massSelect: {
-        massSelectStart: { keyCode: 17 }, // CTRL
-        massSelectSelectMultiple: { keyCode: 16 }, // SHIFT
-        massSelectCopy: { keyCode: key("C") },
-        massSelectCut: { keyCode: key("X") },
-        confirmMassDelete: { keyCode: 46 }, // DEL
-        pasteLastBlueprint: { keyCode: key("V") },
+        massSelectStart: { keyCodes: [17] }, // CTRL
+        massSelectSelectMultiple: { keyCodes: [16] }, // SHIFT
+        massSelectCopy: { keyCodes: [key("C")] },
+        massSelectCut: { keyCodes: [key("X")] },
+        confirmMassDelete: { keyCodes: [46] }, // DEL
+        pasteLastBlueprint: { keyCodes: [key("V")] },
     },
 
     placementModifiers: {
-        lockBeltDirection: { keyCode: 16 }, // SHIFT
-        placementDisableAutoOrientation: { keyCode: 17 }, // CTRL
-        placeMultiple: { keyCode: 16 }, // SHIFT
-        placeInverse: { keyCode: 18 }, // ALT
+        lockBeltDirection: { keyCodes: [16] }, // SHIFT
+        placementDisableAutoOrientation: { keyCodes: [17] }, // CTRL
+        placeMultiple: { keyCodes: [16] }, // SHIFT
+        placeInverse: { keyCodes: [18] }, // ALT
     },
 };
 
@@ -245,15 +245,17 @@ export class Keybinding {
      * @param {KeyActionMapper} keyMapper
      * @param {Application} app
      * @param {object} param0
-     * @param {number} param0.keyCode
+     * @param {number[]} param0.keyCodes
      * @param {boolean=} param0.builtin
      * @param {boolean=} param0.repeated
      */
-    constructor(keyMapper, app, { keyCode, builtin = false, repeated = false }) {
-        assert(keyCode && Number.isInteger(keyCode), "Invalid key code: " + keyCode);
+    constructor(keyMapper, app, { keyCodes, builtin = false, repeated = false }) {
+        for (let keyCode of keyCodes) {
+            assert(Number.isInteger(keyCode), "Invalid key code: " + keyCode);
+        }
         this.keyMapper = keyMapper;
         this.app = app;
-        this.keyCode = keyCode;
+        this.keyCodes = keyCodes;
         this.builtin = builtin;
         this.repeated = repeated;
 
@@ -267,10 +269,12 @@ export class Keybinding {
      */
     get pressed() {
         // Check if the key is down
-        if (this.app.inputMgr.keysDown.has(this.keyCode)) {
-            // Check if it is the top reciever
-            const reciever = this.keyMapper.inputReceiver;
-            return this.app.inputMgr.getTopReciever() === reciever;
+        for (let keyCode of this.keyCodes) {
+            if (this.app.inputMgr.keysDown.has(keyCode)) {
+                // Check if it is the top reciever
+                const reciever = this.keyMapper.inputReceiver;
+                return this.app.inputMgr.getTopReciever() === reciever;
+            }
         }
         return false;
     }
@@ -294,16 +298,17 @@ export class Keybinding {
         }
         const spacer = document.createElement("code");
         spacer.classList.add("keybinding");
-        spacer.innerHTML = getStringForKeyCode(this.keyCode);
+        spacer.innerHTML = getStringForKeyCode(this.keyCodes[0]);
         elem.appendChild(spacer);
         return spacer;
     }
 
     /**
      * Returns the key code as a nice string
+     * @param {number} index
      */
-    getKeyCodeString() {
-        return getStringForKeyCode(this.keyCode);
+    getKeyCodeString(index = 0) {
+        return getStringForKeyCode(this.keyCodes[index] || 0);
     }
 
     /**
@@ -335,8 +340,21 @@ export class KeyActionMapper {
         for (const category in KEYMAPPINGS) {
             for (const key in KEYMAPPINGS[category]) {
                 let payload = Object.assign({}, KEYMAPPINGS[category][key]);
+                payload.keyCodes = payload.keyCodes.slice();
                 if (overrides[key]) {
-                    payload.keyCode = overrides[key];
+                    payload.keyCodes[0] = overrides[key];
+                }
+                let index = 1;
+                while (overrides[`${key}_${index}`]) {
+                    if (!+overrides[`${key}_${index}`]) {
+                        break;
+                    }
+                    if (payload.keyCodes.length < index) {
+                        payload.keyCodes.push(overrides[`${key}_${index}`]);
+                    } else {
+                        payload.keyCodes[index] = overrides[`${key}_${index}`];
+                    }
+                    index++;
                 }
 
                 this.keybindings[key] = new Keybinding(this, this.root.app, payload);
@@ -404,7 +422,7 @@ export class KeyActionMapper {
         for (const key in this.keybindings) {
             /** @type {Keybinding} */
             const binding = this.keybindings[key];
-            if (binding.keyCode === keyCode && (initial || binding.repeated)) {
+            if (binding.keyCodes.includes(keyCode) && (initial || binding.repeated)) {
                 /** @type {Signal} */
                 const signal = this.keybindings[key].signal;
                 if (signal.dispatch() === STOP_PROPAGATION) {

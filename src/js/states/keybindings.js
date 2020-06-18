@@ -29,6 +29,24 @@ export class KeybindingsState extends TextualGameState {
         `;
     }
 
+    addEditField(elem, keybindingId, index = 0, builtin) {
+        if (index) {
+            keybindingId += "_" + index;
+        }
+        const mappingDiv = document.createElement("span");
+        mappingDiv.classList.add("mapping", "mapping_" + index);
+
+        const editBtn = document.createElement("button");
+        editBtn.classList.add("styledButton", "editKeybinding", "editKeybinding_" + index);
+
+        if (builtin) {
+            editBtn.classList.add("disabled");
+        } else {
+            this.trackClicks(editBtn, () => this.editKeybinding(keybindingId));
+        }
+        elem.querySelector(".resetKeybinding,.addKeybinding").before(mappingDiv, editBtn);
+    }
+
     onEnter() {
         const keybindingsElem = this.htmlElement.querySelector(".keybindings");
 
@@ -40,7 +58,7 @@ export class KeybindingsState extends TextualGameState {
             keybindingsElem.appendChild(categoryDiv);
 
             const labelDiv = document.createElement("strong");
-            labelDiv.innerText = T.keybindings.categoryLabels[category];
+            labelDiv.innerText = T.keybindings.categoryLabels[category] || `unset(${category})`;
             labelDiv.classList.add("categoryLabel");
             categoryDiv.appendChild(labelDiv);
 
@@ -54,28 +72,32 @@ export class KeybindingsState extends TextualGameState {
 
                 const title = document.createElement("span");
                 title.classList.add("title");
-                title.innerText = T.keybindings.mappings[keybindingId];
+                title.innerText = T.keybindings.mappings[keybindingId] || `unset(${keybindingId})`;
                 elem.appendChild(title);
 
-                const mappingDiv = document.createElement("span");
-                mappingDiv.classList.add("mapping");
-                elem.appendChild(mappingDiv);
-
-                const editBtn = document.createElement("button");
-                editBtn.classList.add("styledButton", "editKeybinding");
+                const addBtn = document.createElement("button");
+                addBtn.classList.add("styledButton", "addKeybinding");
+                this.trackClicks(addBtn, () => {
+                    let index = mapped.keyCodes.length;
+                    mapped.keyCodes.push(0);
+                    this.addEditField(elem, keybindingId, index, mapped.builtin);
+                    this.editKeybinding(keybindingId + "_" + index);
+                });
+                elem.appendChild(addBtn);
 
                 const resetBtn = document.createElement("button");
                 resetBtn.classList.add("styledButton", "resetKeybinding");
-
                 if (mapped.builtin) {
-                    editBtn.classList.add("disabled");
                     resetBtn.classList.add("disabled");
                 } else {
-                    this.trackClicks(editBtn, () => this.editKeybinding(keybindingId));
                     this.trackClicks(resetBtn, () => this.resetKeybinding(keybindingId));
                 }
-                elem.appendChild(editBtn);
                 elem.appendChild(resetBtn);
+
+                mapped.keyCodes = mapped.keyCodes.filter(Boolean);
+                for (let i = 0; i < mapped.keyCodes.length; i++) {
+                    this.addEditField(elem, keybindingId, i, mapped.builtin);
+                }
             }
         }
         this.updateKeybindings();
@@ -140,17 +162,21 @@ export class KeybindingsState extends TextualGameState {
                 const container = this.htmlElement.querySelector("[data-keybinding='" + keybindingId + "']");
                 assert(container, "Container for keybinding not found: " + keybindingId);
 
-                let keyCode = mapped.keyCode;
-                if (overrides[keybindingId]) {
-                    keyCode = overrides[keybindingId];
+                let allRaw = true;
+                for (let i = 0; i < mapped.keyCodes.length; i++) {
+                    let raw = mapped.keyCodes[i];
+                    let kid = keybindingId + (!i ? "" : "_" + i);
+                    let over = overrides[kid];
+                    let mappingDiv = container.querySelector(".mapping_" + i);
+                    mappingDiv.innerHTML = getStringForKeyCode(over || raw);
+                    mappingDiv.classList.toggle("changed", over != raw);
+                    if (over && over != raw) {
+                        allRaw = false;
+                    }
                 }
 
-                const mappingDiv = container.querySelector(".mapping");
-                mappingDiv.innerHTML = getStringForKeyCode(keyCode);
-                mappingDiv.classList.toggle("changed", !!overrides[keybindingId]);
-
                 const resetBtn = container.querySelector("button.resetKeybinding");
-                resetBtn.classList.toggle("disabled", mapped.builtin || !overrides[keybindingId]);
+                resetBtn.classList.toggle("disabled", allRaw);
             }
         }
     }
