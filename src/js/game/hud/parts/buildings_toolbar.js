@@ -12,6 +12,10 @@ import { MetaUndergroundBeltBuilding } from "../../buildings/underground_belt";
 import { enumLayer } from "../../root";
 import { HUDBaseToolbar } from "./base_toolbar";
 import { MetaAdvancedProcessorBuilding } from "../../buildings/advanced_processor";
+import { MetaBuilding } from "../../meta_building";
+import { BaseHUDPart } from "../base_hud_part";
+import { KEYMAPPINGS } from "../../key_action_mapper";
+import { allCustomBuildingData } from "../../custom/buildings";
 
 const supportedBuildings = [
     MetaBeltBaseBuilding,
@@ -28,6 +32,13 @@ const supportedBuildings = [
     MetaEnergyGenerator,
     MetaAdvancedProcessorBuilding,
 ];
+
+for (let b in allCustomBuildingData) {
+    let data = allCustomBuildingData[b];
+    if (data.building && data.toolbar) {
+        supportedBuildings.push(data.building);
+    }
+}
 
 export class HUDBuildingsToolbar extends HUDBaseToolbar {
     constructor(root) {

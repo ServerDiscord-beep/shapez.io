@@ -6,6 +6,8 @@ import { Entity } from "../entity";
 import { GameSystemWithFilter } from "../game_system_with_filter";
 import { ColorItem } from "../items/color_item";
 import { ShapeItem } from "../items/shape_item";
+import { ShapeDefinition } from "../shape_definition";
+import { allCustomBuildingData } from "../custom/buildings";
 
 export class ItemProcessorSystem extends GameSystemWithFilter {
     constructor(root) {
@@ -370,8 +372,19 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
                 break;
             }
 
-            default:
+            default: {
+                if (allCustomBuildingData[processorComp.type]) {
+                    trackProduction = allCustomBuildingData[processorComp.type].process({
+                        items,
+                        trackProduction,
+                        entity,
+                        outItems,
+                        self: this,
+                    });
+                    break;
+                }
                 assertAlways(false, "Unkown item processor type: " + processorComp.type);
+            }
         }
 
         // Track produced items

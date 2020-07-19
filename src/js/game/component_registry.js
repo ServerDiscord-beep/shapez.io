@@ -13,6 +13,7 @@ import { StorageComponent } from "./components/storage";
 import { EnergyGeneratorComponent } from "./components/energy_generator";
 import { WiredPinsComponent } from "./components/wired_pins";
 import { EnergyConsumerComponent } from "./components/energy_consumer";
+import { allCustomBuildingData } from "./custom/buildings";
 
 export function initComponentRegistry() {
     gComponentRegistry.register(StaticMapEntityComponent);
@@ -30,13 +31,21 @@ export function initComponentRegistry() {
     gComponentRegistry.register(WiredPinsComponent);
     gComponentRegistry.register(EnergyConsumerComponent);
 
+    for (let b in allCustomBuildingData) {
+        let data = allCustomBuildingData[b];
+        if (data.component) {
+            gComponentRegistry.register(data.component);
+        }
+    }
+
     // IMPORTANT ^^^^^ UPDATE ENTITY COMPONENT STORAGE AFTERWARDS
 
     // Sanity check - If this is thrown, you (=me, lol) forgot to add a new component here
 
     assert(
         // @ts-ignore
-        require.context("./components", false, /.*\.js/i).keys().length ===
+        require.context("./components", false, /.*\.js/i).keys().length +
+            Object.values(allCustomBuildingData).filter(data => data.component).length ===
             gComponentRegistry.getNumEntries(),
         "Not all components are registered"
     );

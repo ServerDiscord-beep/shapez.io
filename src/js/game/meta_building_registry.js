@@ -15,6 +15,7 @@ import { MetaWireBaseBuilding } from "./buildings/wire_base";
 import { MetaAdvancedProcessorBuilding } from "./buildings/advanced_processor";
 import { MetaBeltBuilding } from "./buildings/belt";
 import { MetaWireCrossingsBuilding } from "./buildings/wire_crossings";
+import { allCustomBuildingData } from "./custom/buildings";
 
 export function initMetaBuildingRegistry() {
     gMetaBuildingRegistry.register(MetaSplitterBuilding);
@@ -32,4 +33,10 @@ export function initMetaBuildingRegistry() {
     gMetaBuildingRegistry.register(MetaWireBaseBuilding);
     gMetaBuildingRegistry.register(MetaAdvancedProcessorBuilding);
     gMetaBuildingRegistry.register(MetaWireCrossingsBuilding);
+    for (let b in allCustomBuildingData) {
+        let data = allCustomBuildingData[b];
+        if (data.building) {
+            gMetaBuildingRegistry.register(data.building);
+        }
+    }
 }
