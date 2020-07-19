@@ -345,7 +345,8 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                 context.fillStyle = enumColorsToHexCode[color];
                 context.strokeStyle = THEME.items.outline;
-                context.lineWidth = THEME.items.outlineWidth * Math.pow(0.8, layerIndex);
+                const lineWidth = THEME.items.outlineWidth * Math.pow(0.8, layerIndex);
+                context.lineWidth = lineWidth;
 
                 const insetPadding = 0.0;
 
@@ -353,10 +354,12 @@ export class ShapeDefinition extends BasicSerializableObject {
                 const innerDims = insetPadding - quadrantHalfSize;
                 let began = null;
 
+                // eslint-disable-next-line no-inner-declarations
                 function begin(args) {
                     context.save();
                     context.translate(innerDims, -innerDims);
                     context.scale(dims, -dims);
+                    context.lineWidth = lineWidth / dims / (args.size || 1);
                     if (args.size) {
                         context.scale(args.size, args.size);
                     }
@@ -368,6 +371,7 @@ export class ShapeDefinition extends BasicSerializableObject {
                     }
                     began = args;
                 }
+                // eslint-disable-next-line no-inner-declarations
                 function end() {
                     if (!began) {
                         return;
@@ -379,7 +383,22 @@ export class ShapeDefinition extends BasicSerializableObject {
                 }
 
                 let shape = allShapeData[subShape];
-                if (shape.draw) {
+                assertAlways(shape.draw, "stape should be drawable!");
+                if (typeof shape.draw == "string") {
+                    let draw = shape.draw;
+                    let scale = parseFloat(draw);
+                    if (scale) {
+                        draw = draw.replace(scale, "");
+                        scale = 1 / scale;
+                    } else {
+                        scale = 1;
+                    }
+                    begin({ size: scale });
+                    let p = new Path2D(draw);
+                    context.fill(p);
+                    context.stroke(p);
+                    end();
+                } else {
                     shape.draw({
                         dims,
                         innerDims,
@@ -390,10 +409,9 @@ export class ShapeDefinition extends BasicSerializableObject {
                         begin,
                     });
                     end();
+                    context.fill();
+                    context.stroke();
                 }
-
-                context.fill();
-                context.stroke();
 
                 context.restore();
             }

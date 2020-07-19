@@ -39,7 +39,7 @@ for (const key in enumSubShapeToShortcode) {
  * @property {number} [minChance]
  * @property {number} [distChance]
  * @property {number} [maxChance]
- * @property {DrawShape} draw
+ * @property {DrawShape | string} draw
  */
 
 /** @enum {ShapeData} */
@@ -54,7 +54,7 @@ export const allShapeData = {
         minChance: 100,
         distChance: 0,
         maxChance: 100,
-        draw: drawRect,
+        draw: "M 0 0 v 1 h 1 v -1 z",
     },
     circle: {
         id: "circle",
@@ -66,7 +66,7 @@ export const allShapeData = {
         minChance: 50,
         distChance: 2,
         maxChance: 100,
-        draw: drawCircle,
+        draw: "M 0 0 l 1 0 a 1 1 0 0 1 -1 1 z ",
     },
     star: {
         id: "star",
@@ -78,7 +78,7 @@ export const allShapeData = {
         minChance: 20 + 7,
         distChance: 1,
         maxChance: 50,
-        draw: drawStar,
+        draw: "M 0 0 L 0 0.6 1 1 0.6 0 z",
     },
     windmill: {
         id: "windmill",
@@ -90,7 +90,7 @@ export const allShapeData = {
         minChance: 6 + 7 / 2,
         distChance: 1 / 2,
         maxChance: 26,
-        draw: drawWindmill,
+        draw: "M 0 0 L 0 0.6 1 1 1 0 z",
     },
 };
 
@@ -110,7 +110,7 @@ export function initShapes() {
     for (let k in enumShortcodeToSubShape) {
         delete enumShortcodeToSubShape[k];
     }
-    
+
     for (let s in allShapeData) {
         let data = allShapeData[s];
         assert(data.id == s);
@@ -129,36 +129,4 @@ export function initShapes() {
             data.maxChance = data.maxChance || 999999;
         }
     }
-}
-
-/** @type {DrawShape} */
-function drawRect({ dims, innerDims, layer, quad, context, color, begin }) {
-    begin({ size: 1, path: true, zero: true });
-    context.lineTo(0, 1);
-    context.lineTo(1, 1);
-    context.lineTo(1, 0);
-}
-
-/** @type {DrawShape} */
-function drawCircle({ dims, innerDims, layer, quad, context, color, begin }) {
-    begin({ size: 1, path: true, zero: true });
-    context.arc(0, 0, 1, 0, 0.5 * Math.PI);
-}
-
-/** @type {DrawShape} */
-function drawStar({ dims, innerDims, layer, quad, context, color, begin }) {
-    begin({ size: 1, path: true, zero: true });
-    const inner = 0.6;
-    context.lineTo(0, inner);
-    context.lineTo(1, 1);
-    context.lineTo(inner, 0);
-}
-
-/** @type {DrawShape} */
-function drawWindmill({ dims, innerDims, layer, quad, context, color, begin }) {
-    begin({ size: 1, path: true, zero: true });
-    const inner = 0.6;
-    context.lineTo(0, inner);
-    context.lineTo(1, 1);
-    context.lineTo(1, 0);
 }
