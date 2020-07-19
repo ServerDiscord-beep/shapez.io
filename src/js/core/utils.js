@@ -745,7 +745,7 @@ export function smartFadeNumber(current, newOne, minFade = 0.01, maxFade = 0.9) 
  * @param {number} value
  */
 export function quantizeFloat(value) {
-    return Math.round(value * 1000.0) / 1000.0;
+    return Math.round(value * 100000.0) / 100000.0;
 }
 
 /**
