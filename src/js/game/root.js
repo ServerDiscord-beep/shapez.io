@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { Signal } from "../core/signal";
+import { Rectangle } from "../core/rectangle";
 import { RandomNumberGenerator } from "../core/rng";
 import { createLogger } from "../core/logging";
 

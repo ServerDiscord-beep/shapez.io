@@ -68,8 +68,8 @@ export class BeltSystem extends GameSystemWithFilter {
         this.root.signals.entityDestroyed.add(this.updateSurroundingBeltPlacement, this);
 
         // Notice: These must come *after* the entity destroyed signals
+        this.root.signals.entityManuallyPlaced.add(this.updateSurroundingBeltPlacement, this);
         this.root.signals.entityAdded.add(this.onEntityAdded, this);
-        this.root.signals.entityAdded.add(this.updateSurroundingBeltPlacement, this);
 
         /** @type {Array<BeltPath>} */
         this.beltPaths = [];
@@ -116,6 +116,19 @@ export class BeltSystem extends GameSystemWithFilter {
         if (G_IS_DEV && globalConfig.debug.checkBeltPaths) {
             this.debug_verifyBeltPaths();
         }
+    }
+
+    /**
+     * Queue the recomputation of the belt cache for the given affected area the change happened
+     * @param {Rectangle} affectedArea
+     */
+    updateAreaToRecompute(affectedArea) {
+        if (this.areaToRecompute) {
+            this.areaToRecompute = this.areaToRecompute.getUnion(affectedArea);
+        } else {
+            this.areaToRecompute = affectedArea.clone();
+        }
+        logger.log("Queuing recompute:", this.areaToRecompute);
     }
 
     /**

@@ -88,7 +88,26 @@ export class MetaBeltBaseBuilding extends MetaBuilding {
     updateVariants(entity, rotationVariant) {
         entity.components.Belt.direction = arrayBeltVariantToRotation[rotationVariant];
         entity.components.ItemEjector.slots[0].direction = arrayBeltVariantToRotation[rotationVariant];
-        entity.components.StaticMapEntity.spriteKey = null;
+
+        const staticComp = entity.components.StaticMapEntity;
+        staticComp.spriteKey = null;
+        switch (arrayBeltVariantToRotation[rotationVariant]) {
+            case enumDirection.top: {
+                staticComp.blueprintSpriteKey = "sprites/blueprints/belt_top.png";
+                break;
+            }
+            case enumDirection.left: {
+                staticComp.blueprintSpriteKey = "sprites/blueprints/belt_left.png";
+                break;
+            }
+            case enumDirection.right: {
+                staticComp.blueprintSpriteKey = "sprites/blueprints/belt_right.png";
+                break;
+            }
+            default: {
+                assertAlways(false, "Invalid belt rotation variant");
+            }
+        }
     }
 
     /**
