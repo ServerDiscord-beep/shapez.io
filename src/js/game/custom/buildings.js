@@ -12,13 +12,7 @@ import {
     targetShapeCheckerProcess,
 } from "./targetShapeChecker";
 
-import {
-    MetaCounterBuilding,
-    ItemCounterComponent,
-    CounterSystem,
-    counterProcess,
-} from "./counter";
-
+import { MetaCounterBuilding, ItemCounterComponent, CounterSystem, counterProcess } from "./counter";
 
 allCustomBuildingData.targetShapeChecker = {
     id: "targetShapeChecker",
@@ -52,7 +46,6 @@ allCustomBuildingData.counter = {
     Tdesc: "Whatever...",
 };
 
-
 for (let b in allCustomBuildingData) {
     let data = allCustomBuildingData[b];
     if (!data.variant) {
@@ -68,7 +61,7 @@ for (let b in allCustomBuildingData) {
         T.buildings[data.id][data.variant] = {
             name: data.Tname,
             description: data.Tdesc || "",
-        }
+        };
     }
 }
 
@@ -216,11 +209,10 @@ Loader.drawSprite("sprites/buildings/targetShapeChecker.png", drawTSCSprite, { w
 
 Loader.drawSprite("sprites/blueprints/targetShapeChecker.png", drawTSCSpriteBp, { w: 192, h: 192 });
 
-
 function drawCounterSprite({ canvas, context, canvas2, context2, w, h, smooth, mipmap, resolution }) {
     let url = "./res/counter.png";
     let img = new Image();
-    img.onload = function() {
+    img.onload = function () {
         context.drawImage(img, 0, 0);
     };
     img.src = url;
@@ -228,7 +220,7 @@ function drawCounterSprite({ canvas, context, canvas2, context2, w, h, smooth, m
 function drawCounterBPSprite({ canvas, context, canvas2, context2, w, h, smooth, mipmap, resolution }) {
     let url = "./res/counter-bp.png";
     let img = new Image();
-    img.onload = function() {
+    img.onload = function () {
         context.drawImage(img, 0, 0);
     };
     img.src = url;
