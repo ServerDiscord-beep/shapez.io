@@ -16,6 +16,7 @@ import {
     MetaCounterBuilding,
     ItemCounterComponent,
     CounterSystem,
+    counterProcess,
 } from "./counter";
 
 
@@ -27,7 +28,7 @@ allCustomBuildingData.targetShapeChecker = {
     system: TargetShapeCheckerSystem,
     sysOrder: 4.5,
     process: targetShapeCheckerProcess,
-    speed: 1 / 1,
+    speed: 100,
     draw: true,
     sprite: drawTSCSprite,
     // TODO: keybinding in KEYMAPPINGS
@@ -41,10 +42,10 @@ allCustomBuildingData.counter = {
     toolbar: true,
     system: CounterSystem,
     sysOrder: 5.5,
-    speed: 1 / 1,
+    speed: 100,
     draw: true,
     sprite: drawCounterSprite,
-    process: targetShapeCheckerProcess,
+    process: counterProcess,
     // TODO: keybinding in KEYMAPPINGS
     // TODO: T
     Tname: "Counter",
