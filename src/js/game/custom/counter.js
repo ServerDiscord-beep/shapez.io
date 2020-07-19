@@ -21,9 +21,6 @@ import { enumItemType } from "../base_item";
 
 import { enumItemProcessorTypes, ItemProcessorComponent } from "../components/item_processor";
 
-
-
-
 export class ItemCounterComponent extends Component {
     static getId() {
         return "Counter";
@@ -61,14 +58,8 @@ export class ItemCounterComponent extends Component {
         this.lastResetTime = 0;
     }
 
-    getCurrentTime() {
-
-    }
-
+    getCurrentTime() {}
 }
-
-
-
 
 export class CounterSystem extends GameSystemWithFilter {
     constructor(root) {
@@ -76,13 +67,10 @@ export class CounterSystem extends GameSystemWithFilter {
     }
 
     update() {
-        for (let i = 0; i < this.allEntities.length; ++i) {
-            const entity = this.allEntities[i];
-            const counterComp = entity.components.Counter;
-
-            let time = this.root.time.timeSeconds;
-
-        }
+        // for (let i = 0; i < this.allEntities.length; ++i) {
+        //     const entity = this.allEntities[i];
+        //     const counterComp = entity.components.Counter;
+        // }
     }
 
     // Only render the items/s overlay if the entity is on screen
@@ -109,8 +97,10 @@ export class CounterSystem extends GameSystemWithFilter {
 
         const analyzedTime = 5;
         let now = this.root.time.timeSeconds;
+        // now = performance.now() / 1e3;
         let filtered = counterComp.itemTickHistory.map(e => now - e).filter(e => e < analyzedTime);
-        let min = Math.min(analyzedTime / 2, ...filtered), max = Math.max(analyzedTime / 10, ...filtered);
+        let min = Math.min(analyzedTime / 2, ...filtered),
+            max = Math.max(analyzedTime / 10, ...filtered);
         let avg = !filtered.length ? 0 : (filtered.length - 1) / (max - min);
         counterComp.averageItemsPerSecond = avg;
 
@@ -123,14 +113,12 @@ export class CounterSystem extends GameSystemWithFilter {
         context.textAlign = "center";
         context.fillStyle = "#64666e";
         context.fillStyle = "red";
-        context.fillText(counterComp.averageItemsPerSecond.toFixed(3), center.x, center.y + 3);
+        context.fillText(counterComp.averageItemsPerSecond.toFixed(2), center.x, center.y + 3);
 
         context.textAlign = "left";
         context.globalAlpha = 1;
     }
 }
-
-
 
 export class MetaCounterBuilding extends MetaBuilding {
     constructor() {
@@ -196,10 +184,9 @@ export class MetaCounterBuilding extends MetaBuilding {
     }
 }
 
-
 // returns trackProduction
 export function counterProcess({ items, trackProduction, entity, outItems, self }) {
-    console.log("counter PROCESSES");
+    // console.log("counter PROCESSES");
 
     const inputItem = items[0].item;
     trackProduction = false;
@@ -207,7 +194,9 @@ export function counterProcess({ items, trackProduction, entity, outItems, self 
     /** @type {ItemCounterComponent} */
     const counterComp = entity.components.Counter;
     counterComp.itemTickHistory.shift();
-    counterComp.itemTickHistory.push(self.root.time.timeSeconds);
+    let now = self.root.time.timeSeconds;
+    // now = performance.now() / 1e3;
+    counterComp.itemTickHistory.push(now);
 
     outItems.push({
         item: inputItem,
