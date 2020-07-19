@@ -98,25 +98,30 @@ export class CounterSystem extends GameSystemWithFilter {
         const analyzedTime = 5;
         let now = this.root.time.timeSeconds;
         // now = performance.now() / 1e3;
-        let filtered = counterComp.itemTickHistory.map(e => now - e).filter(e => e < analyzedTime);
-        let min = Math.min(analyzedTime / 2, ...filtered),
+        const filtered = counterComp.itemTickHistory.map(e => now - e).filter(e => e < analyzedTime);
+        const min = Math.min(analyzedTime / 2, ...filtered),
             max = Math.max(analyzedTime / 10, ...filtered);
-        let avg = !filtered.length ? 0 : (filtered.length - 1) / (max - min);
+        const avg = !filtered.length ? 0 : (filtered.length - 1) / (max - min);
         counterComp.averageItemsPerSecond = avg;
 
         // // // // //
 
+        context.save();
         context.globalAlpha = 1;
         const center = staticComp.getTileSpaceBounds().getCenter().toWorldSpace();
+        context.translate(center.x, center.y + 0.15);
+        context.scale(0.8, 1);
 
-        context.font = "bold 8.5px GameFont";
+        const size = counterComp.averageItemsPerSecond >= 10 ? 7 : 9;
+        context.font = `bold ${size}px GameFont`; // GameFont does not work
+        console.log;
         context.textAlign = "center";
+        context.textBaseline = "middle";
         context.fillStyle = "#64666e";
         context.fillStyle = "red";
-        context.fillText(counterComp.averageItemsPerSecond.toFixed(2), center.x, center.y + 3);
+        context.fillText(counterComp.averageItemsPerSecond.toFixed(1), 0, 0);
 
-        context.textAlign = "left";
-        context.globalAlpha = 1;
+        context.restore();
     }
 }
 
@@ -150,7 +155,7 @@ export class MetaCounterBuilding extends MetaBuilding {
      */
     getIsUnlocked(root) {
         const beltSpeed = root.hubGoals.getBeltBaseSpeed("regular");
-        return beltSpeed >= 20;
+        return beltSpeed >= 5;
     }
 
     /**
