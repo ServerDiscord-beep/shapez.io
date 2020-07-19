@@ -7,6 +7,7 @@ import { GameRoot, enumLayer } from "./root";
 import { findNiceIntegerValue } from "../core/utils";
 import { blueprintShape } from "./upgrades";
 import { globalConfig } from "../core/config";
+import { Rectangle } from "../core/rectangle";
 
 const logger = createLogger("blueprint");
 
@@ -164,6 +165,7 @@ export class Blueprint {
     tryPlace(root, tile) {
         return root.logic.performBulkOperation(() => {
             let anyPlaced = false;
+
             for (let i = 0; i < this.entities.length; ++i) {
                 const entity = this.entities[i];
                 if (!root.logic.checkCanPlaceEntity(entity, tile)) {
@@ -177,6 +179,7 @@ export class Blueprint {
                 root.entityMgr.registerEntity(clone);
                 anyPlaced = true;
             }
+
             return anyPlaced;
         });
     }
