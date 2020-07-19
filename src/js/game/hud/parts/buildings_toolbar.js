@@ -36,11 +36,11 @@ const supportedBuildings = [
 for (let b in allCustomBuildingData) {
     let data = allCustomBuildingData[b];
     if (data.building && data.toolbar) {
-        toolbarBuildings.push(data.building);
+        supportedBuildings.push(data.building);
     }
 }
 
-export class HUDBuildingsToolbar extends BaseHUDPart {
+export class HUDBuildingsToolbar extends HUDBaseToolbar {
     constructor(root) {
         super(root, {
             supportedBuildings,

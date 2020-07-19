@@ -424,7 +424,7 @@ export class GameCore {
 
             // Energy consumer (Battery icons)
             systems.energyConsumer.draw(params);
- 
+
             for (let b in allCustomBuildingData) {
                 let data = allCustomBuildingData[b];
                 if (data.draw) {

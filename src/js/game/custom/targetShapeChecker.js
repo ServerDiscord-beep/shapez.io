@@ -3,7 +3,6 @@ import { types } from "../../savegame/serialization";
 import { gItemRegistry } from "../../core/global_registries";
 import { BaseItem } from "../base_item";
 import { Vector, enumDirection } from "../../core/vector";
-import { Math_PI, Math_sin, Math_cos } from "../../core/builtins";
 import { globalConfig } from "../../core/config";
 
 import { ItemAcceptorComponent, enumItemAcceptorItemFilter } from "../components/item_acceptor";
@@ -231,7 +230,7 @@ export function targetShapeCheckerProcess({ items, trackProduction, entity, outI
         // uncolored:
         else if (
             item.match(
-                /(.u.[^u\-].[^u\-].[^u\-]|.[^u\-].u.[^u\-].[^u\-]|.[^u\-].[^u\-].u.[^u\-]|.[^u\-].[^u\-].[^u\-].u)$/
+                /(.u.[^u-].[^u-].[^u-]|.[^u-].u.[^u-].[^u-]|.[^u-].[^u-].u.[^u-]|.[^u-].[^u-].[^u-].u)$/
             )
         ) {
             let m = item.match(/(u)(.[^u])*$/);

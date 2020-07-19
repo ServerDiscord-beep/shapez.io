@@ -16,7 +16,6 @@ import { StorageSystem } from "./systems/storage";
 import { EnergyGeneratorSystem } from "./systems/energy_generator";
 import { WiredPinsSystem } from "./systems/wired_pins";
 import { EnergyConsumerSystem } from "./systems/energy_consumer";
-import { TargetShapeCheckerSystem } from "./systems/targetShapeChecker";
 import {
     allCustomBuildingData,
     getCustomBuildingSystemsNulled,
