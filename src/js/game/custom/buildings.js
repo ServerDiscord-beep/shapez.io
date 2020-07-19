@@ -1,6 +1,7 @@
 import { Loader } from "../../core/loader";
 import { enumItemProcessorTypes } from "../components/item_processor";
 import { ColorItem } from "../items/color_item";
+import { T } from "../../translations";
 
 export const allCustomBuildingData = {};
 
@@ -10,6 +11,13 @@ import {
     TargetShapeCheckerSystem,
     targetShapeCheckerProcess,
 } from "./targetShapeChecker";
+
+import {
+    MetaCounterBuilding,
+    ItemCounterComponent,
+    CounterSystem,
+} from "./counter";
+
 
 allCustomBuildingData.targetShapeChecker = {
     id: "targetShapeChecker",
@@ -26,10 +34,40 @@ allCustomBuildingData.targetShapeChecker = {
     // TODO: T
 };
 
+allCustomBuildingData.counter = {
+    id: "counter",
+    component: ItemCounterComponent,
+    building: MetaCounterBuilding,
+    toolbar: true,
+    system: CounterSystem,
+    sysOrder: 5.5,
+    speed: 1 / 1,
+    draw: true,
+    sprite: drawCounterSprite,
+    process: targetShapeCheckerProcess,
+    // TODO: keybinding in KEYMAPPINGS
+    // TODO: T
+    Tname: "Counter",
+    Tdesc: "Whatever...",
+};
+
+
 for (let b in allCustomBuildingData) {
     let data = allCustomBuildingData[b];
+    if (!data.variant) {
+        data.variant = "default";
+    }
     if (data.process) {
         enumItemProcessorTypes[data.id] = data.id;
+    }
+    if (data.Tname) {
+        if (!T.buildings[data.id]) {
+            T.buildings[data.id] = {};
+        }
+        T.buildings[data.id][data.variant] = {
+            name: data.Tname,
+            description: data.Tdesc || "",
+        }
     }
 }
 
@@ -176,3 +214,25 @@ function drawTSCSpriteBp({ canvas, context, canvas2, context2, w, h, smooth, mip
 Loader.drawSprite("sprites/buildings/targetShapeChecker.png", drawTSCSprite, { w: 192, h: 192 });
 
 Loader.drawSprite("sprites/blueprints/targetShapeChecker.png", drawTSCSpriteBp, { w: 192, h: 192 });
+
+
+function drawCounterSprite({ canvas, context, canvas2, context2, w, h, smooth, mipmap, resolution }) {
+    let url = "./res/counter.png";
+    let img = new Image();
+    img.onload = function() {
+        context.drawImage(img, 0, 0);
+    };
+    img.src = url;
+}
+function drawCounterBPSprite({ canvas, context, canvas2, context2, w, h, smooth, mipmap, resolution }) {
+    let url = "./res/counter-bp.png";
+    let img = new Image();
+    img.onload = function() {
+        context.drawImage(img, 0, 0);
+    };
+    img.src = url;
+}
+
+Loader.drawSprite("sprites/buildings/counter.png", drawCounterSprite, { w: 192, h: 192 });
+
+Loader.drawSprite("sprites/blueprints/counter.png", drawCounterBPSprite, { w: 192, h: 192 });
