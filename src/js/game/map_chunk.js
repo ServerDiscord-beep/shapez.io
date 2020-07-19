@@ -167,11 +167,7 @@ export class MapChunk {
         let weights = {};
         for (let s in allShapeData) {
             const data = allShapeData[s];
-            if (
-                data.disabled ||
-                !data.spawnable ||
-                distanceToOriginInChunks < data.minDistance
-            ) {
+            if (data.disabled || !data.spawnable || distanceToOriginInChunks < data.minDistance) {
                 continue;
             }
             const chance = Math.round(

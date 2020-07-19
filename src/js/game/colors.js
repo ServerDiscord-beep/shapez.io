@@ -41,7 +41,6 @@ export const enumColorsToHexCode = {};
 /** @enum {enumColors} */
 export const enumInvertedColors = {};
 
-
 const c = enumColors;
 /** @enum {Object.<string, Object>} */
 export const enumColorMixingResults = {};
@@ -179,7 +178,6 @@ const mix = enumColorMixingResults;
 initColors();
 
 export function initColors() {
-    
     for (let c1 in allColorData) {
         let data = allColorData[c1];
         assert(data);
