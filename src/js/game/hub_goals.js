@@ -8,6 +8,7 @@ import { GameRoot, enumLayer } from "./root";
 import { enumSubShape, ShapeDefinition } from "./shape_definition";
 import { enumHubGoalRewards, tutorialGoals } from "./tutorial_goals";
 import { UPGRADES, blueprintShape } from "./upgrades";
+import { allCustomBuildingData } from "./custom/buildings";
 
 export class HubGoals extends BasicSerializableObject {
     static getId() {
@@ -445,8 +446,14 @@ export class HubGoals extends BasicSerializableObject {
             case enumItemProcessorTypes.advancedProcessor: {
                 return globalConfig.beltSpeedItemsPerSecond * globalConfig.buildingSpeeds[processorType];
             }
-            default:
+            default: {
+                if (allCustomBuildingData[processorType]) {
+                    globalConfig.buildingSpeeds[processorType] = allCustomBuildingData[processorType].speed;
+                    return globalConfig.buildingSpeeds[processorType];
+                }
+
                 assertAlways(false, "invalid processor type: " + processorType);
+            }
         }
 
         return 1 / globalConfig.beltSpeedItemsPerSecond;
