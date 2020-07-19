@@ -1,8 +1,3 @@
-/** @typedef {object} TickCount
- * @property {number} gameTimeSeconds
- * @property {number} count
- */
-
 import { types } from "../../savegame/serialization";
 import { Component } from "../component";
 import { BaseItem } from "../base_item";
@@ -24,6 +19,8 @@ import { MetaBuilding } from "../meta_building";
 import { GameRoot } from "../root";
 import { enumItemType } from "../base_item";
 
+import { enumItemProcessorTypes, ItemProcessorComponent } from "../components/item_processor";
+
 
 
 
@@ -34,12 +31,13 @@ export class ItemCounterComponent extends Component {
 
     static getSchema() {
         return {
-            inputSlots: types.array(
-                types.structured({
-                    item: types.obj(gItemRegistry),
-                    sourceSlot: types.uint,
-                })
-            ),
+            // inputSlots: types.array(
+            //     types.structured({
+            //         item: types.obj(gItemRegistry),
+            //         sourceSlot: types.uint,
+            //     })
+            // ),
+            itemTickHistory: types.array(types.float),
         };
     }
 
@@ -51,19 +49,10 @@ export class ItemCounterComponent extends Component {
         super();
 
         /**
-         * Our current inputs
-         * @type {Array<{ item: BaseItem, sourceSlot: number }>}
+         * Maintained every TODO game tick, this aray contains the item counts for every tick in the past 1 second.
+         * @type {number[]}
          */
-        this.inputSlots = [];
-
-        /** @type {number} a count of items that have passed through the component since the last tick */
-        this.currentCount = 0;
-
-        /**
-         * Maintained every game tick, this aray contains the item counts for every tick in the past 1 second.
-         * @type {TickCount[]}
-         */
-        this.tickHistory = [];
+        this.itemTickHistory = Array(24).fill(0);
 
         /** @type {number} Calculated and set every second. This is a read only property. */
         this.averageItemsPerSecond = 0;
@@ -72,57 +61,10 @@ export class ItemCounterComponent extends Component {
         this.lastResetTime = 0;
     }
 
-    /**
-     * Called every time an item leaves the counter building
-     */
-    countNewItem() {
-        this.currentCount++;
+    getCurrentTime() {
+
     }
 
-    /**
-     * Called on every counter entity .update() call
-     * @param {GameTime} gameTime
-     */
-    tick(gameTime) {
-        const count = this.currentCount;
-        // Reset the count
-        this.currentCount = 0;
-
-        this.tickHistory.push({
-            gameTimeSeconds: gameTime.timeSeconds,
-            count: count,
-        });
-
-        // Only keep history for the last second.
-        // TODO: Possible optimisation to replace with a for loop. Unsure if the logic within the loop will
-        // counteract any speed gained by not using .filter
-        this.tickHistory = this.tickHistory.filter(tick => gameTime.timeSeconds - tick.gameTimeSeconds <= 1);
-
-        const delta = gameTime.timeSeconds - this.lastResetTime;
-        if (delta > 1) {
-            const sum = this.tickHistory.reduce((a, b) => a + b.count, 0);
-            this.averageItemsPerSecond = sum;
-            this.lastResetTime = gameTime.timeSeconds;
-        }
-    }
-
-    /**
-     * Tries to take the item
-     * @param {BaseItem} item
-     * @param {number} sourceSlot
-     */
-    tryTakeItem(item, sourceSlot) {
-        // Check that we only take one item per slot
-        for (let i = 0; i < this.inputSlots.length; ++i) {
-            const slot = this.inputSlots[i];
-            if (slot.sourceSlot === sourceSlot) {
-                return false;
-            }
-        }
-
-        this.inputSlots.push({ item, sourceSlot });
-        return true;
-    }
 }
 
 
@@ -137,29 +79,9 @@ export class CounterSystem extends GameSystemWithFilter {
         for (let i = 0; i < this.allEntities.length; ++i) {
             const entity = this.allEntities[i];
             const counterComp = entity.components.Counter;
-            const ejectorComp = entity.components.ItemEjector;
 
-            const items = counterComp.inputSlots;
+            let time = this.root.time.timeSeconds;
 
-            let outItem = null;
-
-            if (items.length > 0) {
-                const inputItem = /** @type {ShapeItem|ColorItem} */ (items[0].item);
-
-                outItem = inputItem;
-                let slot = ejectorComp.getFirstFreeSlot(entity.layer);
-
-                if (slot !== null) {
-                    if (!ejectorComp.tryEject(slot, outItem)) {
-                        assert(false, "Failed to eject");
-                    } else {
-                        counterComp.countNewItem();
-                        counterComp.inputSlots = [];
-                    }
-                }
-            }
-
-            counterComp.tick(this.root.time);
         }
     }
 
@@ -180,7 +102,19 @@ export class CounterSystem extends GameSystemWithFilter {
             return;
         }
 
+        /** @type {ItemCounterComponent} */
         const counterComp = entity.components.Counter;
+
+        // cal avg: //
+
+        const analyzedTime = 5;
+        let now = this.root.time.timeSeconds;
+        let filtered = counterComp.itemTickHistory.map(e => now - e).filter(e => e < analyzedTime);
+        let min = Math.min(analyzedTime / 2, ...filtered), max = Math.max(analyzedTime / 10, ...filtered);
+        let avg = !filtered.length ? 0 : (filtered.length - 1) / (max - min);
+        counterComp.averageItemsPerSecond = avg;
+
+        // // // // //
 
         context.globalAlpha = 1;
         const center = staticComp.getTileSpaceBounds().getCenter().toWorldSpace();
@@ -188,7 +122,8 @@ export class CounterSystem extends GameSystemWithFilter {
         context.font = "bold 8.5px GameFont";
         context.textAlign = "center";
         context.fillStyle = "#64666e";
-        context.fillText(counterComp.averageItemsPerSecond.toString(), center.x, center.y + 3);
+        context.fillStyle = "red";
+        context.fillText(counterComp.averageItemsPerSecond.toFixed(3), center.x, center.y + 3);
 
         context.textAlign = "left";
         context.globalAlpha = 1;
@@ -235,6 +170,12 @@ export class MetaCounterBuilding extends MetaBuilding {
      * @param {Entity} entity
      */
     setupEntityComponents(entity) {
+        entity.addComponent(
+            new ItemProcessorComponent({
+                inputsPerCharge: 1,
+                processorType: enumItemProcessorTypes.counter,
+            })
+        );
         entity.addComponent(new ItemCounterComponent());
 
         entity.addComponent(
@@ -256,4 +197,21 @@ export class MetaCounterBuilding extends MetaBuilding {
 }
 
 
+// returns trackProduction
+export function counterProcess({ items, trackProduction, entity, outItems, self }) {
+    console.log("counter PROCESSES");
 
+    const inputItem = items[0].item;
+    trackProduction = false;
+
+    /** @type {ItemCounterComponent} */
+    const counterComp = entity.components.Counter;
+    counterComp.itemTickHistory.shift();
+    counterComp.itemTickHistory.push(self.root.time.timeSeconds);
+
+    outItems.push({
+        item: inputItem,
+    });
+
+    return trackProduction;
+}
