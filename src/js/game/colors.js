@@ -12,6 +12,8 @@ export const enumColors = {
 
     white: "white",
     uncolored: "uncolored",
+
+    black: "black",
 };
 
 /** @enum {string} */
@@ -36,6 +38,10 @@ export const enumShortcodeToColor = {};
 /** @enum {string} */
 export const enumColorsToHexCode = {};
 
+/** @enum {enumColors} */
+export const enumInvertedColors = {};
+
+
 const c = enumColors;
 /** @enum {Object.<string, Object>} */
 export const enumColorMixingResults = {};
@@ -49,6 +55,7 @@ export const enumColorMixingResults = {};
  * @property {Object.<string, string>} [mixing]
  * @property {boolean} [spawnable]
  * @property {number} [minDistance]
+ * @property {string} [inverted]
  */
 
 /** @enum {ColorData} */
@@ -60,6 +67,7 @@ export const allColorData = {
         mixing: {
             any: "any",
         },
+        inverted: "this",
     },
     red: {
         id: "red",
@@ -92,6 +100,7 @@ export const allColorData = {
             green: "this",
             blue: "this",
         },
+        inverted: "red",
     },
     magenta: {
         id: "magenta",
@@ -102,6 +111,7 @@ export const allColorData = {
             red: "this",
             blue: "this",
         },
+        inverted: "green",
     },
     yellow: {
         id: "yellow",
@@ -112,6 +122,7 @@ export const allColorData = {
             red: "this",
             green: "this",
         },
+        inverted: "blue",
     },
     white: {
         id: "white",
@@ -128,6 +139,7 @@ export const allColorData = {
             ["cyan", "yellow"],
             ["magenta", "yellow"],
         ],
+        inverted: "black",
     },
     black: {
         id: "black",
@@ -204,6 +216,13 @@ export function initColors() {
                 mixing[c2] = result;
             }
         }
+        if (data.inverted) {
+            if (data.inverted == "this") {
+                enumInvertedColors[c1] = c1;
+            } else {
+                enumInvertedColors[c1] = data.inverted;
+            }
+        }
     }
     for (let id in allColorData) {
         let data = allColorData[id];
@@ -270,6 +289,11 @@ export function initColors() {
             if (!mix[c1][c2]) {
                 assertAlways(false, "Color mixing of", c1, "with", c2, "is not defined");
             }
+        }
+    }
+    for (let c1 in c) {
+        if (enumInvertedColors[c1] && !enumInvertedColors[enumInvertedColors[c1]]) {
+            enumInvertedColors[enumInvertedColors[c1]] = c1;
         }
     }
 }
