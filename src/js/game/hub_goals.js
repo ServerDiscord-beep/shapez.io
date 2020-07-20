@@ -449,7 +449,7 @@ export class HubGoals extends BasicSerializableObject {
             default: {
                 if (allCustomBuildingData[processorType]) {
                     globalConfig.buildingSpeeds[processorType] = allCustomBuildingData[processorType].speed;
-                    return globalConfig.buildingSpeeds[processorType];
+                    return globalConfig.buildingSpeeds[processorType] * this.upgradeImprovements.belt;
                 }
 
                 assertAlways(false, "invalid processor type: " + processorType);
