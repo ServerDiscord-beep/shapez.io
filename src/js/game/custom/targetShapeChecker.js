@@ -188,7 +188,7 @@ export class TargetShapeCheckerSystem extends GameSystemWithFilter {
 
 // returns trackProduction
 export function targetShapeCheckerProcess({ items, trackProduction, entity, outItems, self }) {
-    console.log("targetShapeChecker PROCESSES");
+    // console.log("targetShapeChecker PROCESSES");
 
     const inputItem = /** @type {ShapeItem} */ (items[0].item);
     trackProduction = false;
