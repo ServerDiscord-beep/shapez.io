@@ -129,6 +129,7 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
             this.buildingInfoElements.hotkey.innerHTML = "";
         }
 
+        this.buildingInfoElements.tutorialImage.style.backgroundImage = `url(./res/ui/building_tutorials/${ metaBuilding.getId() }${ (variant === defaultBuildingVariant ? "" : "-" + variant) }.png)`;
         this.buildingInfoElements.tutorialImage.setAttribute(
             "data-icon",
             "building_tutorials/" +
