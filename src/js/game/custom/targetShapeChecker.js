@@ -136,9 +136,22 @@ export class TargetShapeCheckerSystem extends GameSystemWithFilter {
         super(root, [TargetShapeCheckerComponent]);
 
         this.storageOverlaySprite = Loader.getSprite("sprites/misc/storage_overlay.png");
+        this.goal = "";
     }
 
-    update() {}
+    update() {
+        let newGoal = this.root.hubGoals.currentGoal.definition.getHash();
+        if (newGoal != this.goal) {
+            for (let i = 0; i < this.allEntities.length; ++i) {
+                const entity = this.allEntities[i];
+                let ejectorComp = entity.components.ItemEjector;
+                for (let slot of ejectorComp.slots) {
+                    slot.item = null;
+                }
+            }
+            this.goal = newGoal;
+        }
+    }
 
     draw(parameters) {
         this.forEachMatchingEntityOnScreen(parameters, this.drawEntity.bind(this));
