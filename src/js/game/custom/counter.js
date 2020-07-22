@@ -209,3 +209,33 @@ export function counterProcess({ items, trackProduction, entity, outItems, self 
 
     return trackProduction;
 }
+
+
+export const counterSprite = {
+    sprite: "sprites/buildings/counter.png",
+    url: "./res/counter.png",
+    w: 192, h: 192
+};
+export const counterSpriteBp = {
+    sprite: "sprites/blueprints/counter.png",
+    url: "./res/counter-bp.png",
+    w: 192, h: 192
+};
+
+export const counterBuildingData = {
+    id: "counter",
+    component: ItemCounterComponent,
+    building: MetaCounterBuilding,
+    toolbar: true,
+    system: CounterSystem,
+    sysOrder: 5.5,
+    speed: 100,
+    draw: true,
+    sprite: counterSprite,
+    spriteBp: counterSpriteBp,
+    process: counterProcess,
+    // TODO: keybinding in KEYMAPPINGS
+    // TODO: T
+    Tname: "Counter",
+    Tdesc: "Whatever...",
+};

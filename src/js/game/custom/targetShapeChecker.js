@@ -274,3 +274,54 @@ export function targetShapeCheckerProcess({ items, trackProduction, entity, outI
 
     return trackProduction;
 }
+
+
+export const tscSprite = [
+    { // data:
+        sprite: "sprites/buildings/targetShapeChecker.png",
+        w: 192,
+        h: 192,
+    }, { // base:
+        path: "M 11,31 v 130 l 20,20 h 130 l 20,-20 v -130 l -20,-20 h -130 z",
+    }, { // red cross:
+        path: "M 175,40 l 12,12 -12,12 12,12 -12,12 -12,-12 -12,12 -12,-12 12,-12 -12,-12 12,-12 12,12 z",
+        fill: "red",
+    }, { // green arrow:
+        path: "M 40,35 l 30,-30 30,30 z",
+        fill: "lightgreen",
+    },
+];
+export const tscSpriteBp = [
+    { // data:
+        sprite: "sprites/blueprints/targetShapeChecker.png",
+        w: 192,
+        h: 192,
+        transparent: true,
+    }, { // base:
+        path: "M 11,31 v 130 l 20,20 h 130 l 20,-20 v -130 l -20,-20 h -130 z",
+        fill: "#6CD1FF", stroke: "#56A7D8",
+    }, { // red cross:
+        path: "M 175,40 l 12,12 -12,12 12,12 -12,12 -12,-12 -12,12 -12,-12 12,-12 -12,-12 12,-12 12,12 z",
+        fill: "#5EB7ED", stroke: "#56A7D8",
+    }, { // green arrow:
+        path: "M 40,35 l 30,-30 30,30 z",
+        fill: "#5EB7ED", stroke: "#56A7D8",
+    },
+];
+
+
+export const tscBuildingData = {
+    id: "targetShapeChecker",
+    component: TargetShapeCheckerComponent,
+    building: MetaTargetShapeCheckerBuilding,
+    toolbar: true,
+    system: TargetShapeCheckerSystem,
+    sysOrder: 4.5,
+    process: targetShapeCheckerProcess,
+    speed: 100,
+    draw: true,
+    sprite: tscSprite,
+    spriteBp: tscSpriteBp,
+    // TODO: keybinding in KEYMAPPINGS
+    // TODO: T
+};

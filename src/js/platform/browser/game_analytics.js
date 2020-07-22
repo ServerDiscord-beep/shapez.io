@@ -88,7 +88,7 @@ export class ShapezGameAnalytics extends GameAnalyticsInterface {
         return Promise.race([
             new Promise((resolve, reject) => {
                 setTimeout(() => reject("Request to " + endpoint + " timed out"), 20000);
-            }),
+            }).catch(),
             fetch(analyticsUrl + endpoint, {
                 method: "POST",
                 mode: "cors",
