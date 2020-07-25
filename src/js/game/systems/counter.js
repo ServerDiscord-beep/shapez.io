@@ -30,7 +30,6 @@ export class CounterSystem extends GameSystemWithFilter {
                     if (!ejectorComp.tryEject(slot, outItem)) {
                         assert(false, "Failed to eject");
                     } else {
-                        counterComp.countNewItem();
                         counterComp.inputSlots = [];
                     }
                 }

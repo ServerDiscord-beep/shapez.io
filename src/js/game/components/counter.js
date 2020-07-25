@@ -1,8 +1,3 @@
-/** @typedef {object} TickCount
- * @property {number} gameTimeSeconds
- * @property {number} count
- */
-
 import { types } from "../../savegame/serialization";
 import { Component } from "../component";
 import { BaseItem } from "../base_item";
@@ -22,6 +17,7 @@ export class ItemCounterComponent extends Component {
                     sourceSlot: types.uint,
                 })
             ),
+            tickHistory: types.array(types.float),
         };
     }
 
@@ -38,27 +34,49 @@ export class ItemCounterComponent extends Component {
          */
         this.inputSlots = [];
 
-        /** @type {number} a count of items that have passed through the component since the last tick */
-        this.currentCount = 0;
-
-        /**
-         * Maintained every game tick, this aray contains the item counts for every tick in the past 1 second.
-         * @type {TickCount[]}
-         */
-        this.tickHistory = [];
+        /** @type {number[]} Array of times when item was taken. */
+        this.tickHistory = Array(25).fill(0);
 
         /** @type {number} Calculated and set every second. This is a read only property. */
         this.averageItemsPerSecond = 0;
 
-        /** @type {number} - Last time the averageItemsPerSecond property was reset. */
-        this.lastResetTime = 0;
+        /** @type {number} - Next time the averageItemsPerSecond property should be reset. */
+        this.nextResetTime = 0;
+
+        this.itemQueued = false;
     }
 
-    /**
-     * Called every time an item leaves the counter building
-     */
-    countNewItem() {
-        this.currentCount++;
+    calculateAverage(now) {
+
+        const analyzedTime = 5;
+
+        // fast quirk for fast speed
+        if (now < this.tickHistory[24] + analyzedTime) {
+            this.nextResetTime = this.tickHistory[24] + analyzedTime;
+            return 24 / (this.tickHistory[0] - this.tickHistory[24]);
+        }
+
+        // 0 when sleep for a long time
+        if (now > this.tickHistory[0] + analyzedTime) {
+            this.nextResetTime = now + 60;
+            return 0;
+        }
+
+        // find last item in analyzed interval
+        let i = 24;
+        for (i = 24; i > 0; --i) {
+            if (now < this.tickHistory[i] + analyzedTime) {
+                break;
+            }
+        }
+
+        this.nextResetTime = this.tickHistory[i] + analyzedTime;
+
+        if (i == 0) {
+            return (now - this.tickHistory[0]);
+        }
+
+        return i / (this.tickHistory[0] - this.tickHistory[i]);
     }
 
     /**
@@ -66,26 +84,20 @@ export class ItemCounterComponent extends Component {
      * @param {GameTime} gameTime
      */
     tick(gameTime) {
-        const count = this.currentCount;
-        // Reset the count
-        this.currentCount = 0;
+        const now = gameTime.timeSeconds;
 
-        this.tickHistory.push({
-            gameTimeSeconds: gameTime.timeSeconds,
-            count: count,
-        });
-
-        // Only keep history for the last second.
-        // TODO: Possible optimisation to replace with a for loop. Unsure if the logic within the loop will
-        // counteract any speed gained by not using .filter
-        this.tickHistory = this.tickHistory.filter(tick => gameTime.timeSeconds - tick.gameTimeSeconds <= 1);
-
-        const delta = gameTime.timeSeconds - this.lastResetTime;
-        if (delta > 1) {
-            const sum = this.tickHistory.reduce((a, b) => a + b.count, 0);
-            this.averageItemsPerSecond = sum;
-            this.lastResetTime = gameTime.timeSeconds;
+        if (!this.itemQueued && now < this.nextResetTime) {
+            return;
         }
+
+        if (this.itemQueued) {
+            this.itemQueued = false;
+            this.tickHistory.shift();
+            this.tickHistory.push(now);
+        }
+
+        this.averageItemsPerSecond = this.calculateAverage(now);
+
     }
 
     /**
@@ -103,6 +115,9 @@ export class ItemCounterComponent extends Component {
         }
 
         this.inputSlots.push({ item, sourceSlot });
+
+        this.itemQueued = true;
+
         return true;
     }
 }
