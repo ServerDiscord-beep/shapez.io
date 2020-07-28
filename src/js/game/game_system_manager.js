@@ -16,6 +16,7 @@ import { StorageSystem } from "./systems/storage";
 import { EnergyGeneratorSystem } from "./systems/energy_generator";
 import { WiredPinsSystem } from "./systems/wired_pins";
 import { EnergyConsumerSystem } from "./systems/energy_consumer";
+import { allCustomBuildingData } from "./custom/modBuildings";
 
 const logger = createLogger("game_system_manager");
 
@@ -70,6 +71,11 @@ export class GameSystemManager {
 
             /* typehints:end */
         };
+        for (let custom of allCustomBuildingData) {
+            if (custom.system) {
+                this.systems[custom.id] = null;
+            }
+        }
         this.systemUpdateOrder = [];
 
         this.internalInitSystems();
@@ -109,6 +115,12 @@ export class GameSystemManager {
         add("wiredPins", WiredPinsSystem);
 
         add("energyConsumer", EnergyConsumerSystem);
+
+        for (let custom of allCustomBuildingData) {
+            if (custom.system) {
+                add(custom.id, custom.system);
+            }
+        }
 
         // IMPORTANT: Must be after belt system since belt system can change the
         // orientation of an entity after it is placed -> the item acceptor cache

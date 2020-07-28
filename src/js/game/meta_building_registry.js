@@ -18,6 +18,7 @@ import { MetaWireBaseBuilding } from "./buildings/wire_base";
 import { enumWireCrossingVariants, MetaWireCrossingsBuilding } from "./buildings/wire_crossings";
 import { gBuildingVariants, registerBuildingVariant } from "./building_codes";
 import { defaultBuildingVariant } from "./meta_building";
+import { allCustomBuildingData } from "./custom/modBuildings";
 
 const logger = createLogger("building_registry");
 
@@ -37,6 +38,13 @@ export function initMetaBuildingRegistry() {
     gMetaBuildingRegistry.register(MetaWireBaseBuilding);
     gMetaBuildingRegistry.register(MetaAdvancedProcessorBuilding);
     gMetaBuildingRegistry.register(MetaWireCrossingsBuilding);
+
+    for (let custom of allCustomBuildingData) {
+        if (custom.meta && !custom.meta._registered) {
+            gMetaBuildingRegistry.register(custom.meta);
+            custom.meta._registered = true;
+        }
+    }
 
     // Belt
     registerBuildingVariant(1, MetaBeltBaseBuilding, defaultBuildingVariant, 0);
@@ -100,6 +108,17 @@ export function initMetaBuildingRegistry() {
     // Wire crossing
     registerBuildingVariant(32, MetaWireCrossingsBuilding);
     registerBuildingVariant(33, MetaWireCrossingsBuilding, enumWireCrossingVariants.merger);
+
+    for (let custom of allCustomBuildingData) {
+        if (custom.meta && custom.variantId) {
+            registerBuildingVariant(
+                custom.variantId,
+                custom.meta,
+                custom.variant || defaultBuildingVariant,
+                custom.rotationVariant || 0
+            );
+        }
+    }
 
     // Propagate instances
     for (const key in gBuildingVariants) {

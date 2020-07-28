@@ -13,7 +13,7 @@ import { enumLayer } from "../../root";
 import { HUDBaseToolbar } from "./base_toolbar";
 import { MetaAdvancedProcessorBuilding } from "../../buildings/advanced_processor";
 
-const supportedBuildings = [
+export const supportedBuildings = [
     MetaBeltBaseBuilding,
     MetaSplitterBuilding,
     MetaUndergroundBeltBuilding,

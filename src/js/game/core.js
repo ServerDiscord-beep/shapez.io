@@ -31,6 +31,7 @@ import { ProductionAnalytics } from "./production_analytics";
 import { randomInt } from "../core/utils";
 import { defaultBuildingVariant } from "./meta_building";
 import { DynamicTickrate } from "./dynamic_tickrate";
+import { allCustomBuildingData } from "./custom/modBuildings";
 
 const logger = createLogger("ingame/core");
 
@@ -423,6 +424,12 @@ export class GameCore {
 
             // Energy consumer (Battery icons)
             systems.energyConsumer.draw(params);
+
+            for (let custom of allCustomBuildingData) {
+                if (custom.system) {
+                    systems[custom.id].draw(params);
+                }
+            }
         }
 
         // Green wires overlay (not within the if because it can fade)
