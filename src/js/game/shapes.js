@@ -40,6 +40,7 @@ for (const key in enumSubShapeToShortcode) {
  * @property {number} [distChance]
  * @property {number} [maxChance]
  * @property {DrawShape | string} draw
+ * @property {number} tier
  */
 
 /** @enum {ShapeData} */
@@ -55,6 +56,7 @@ export const allShapeData = {
         distChance: 0,
         maxChance: 100,
         draw: "M 0 0 v 1 h 1 v -1 z",
+        tier: 0,
     },
     circle: {
         id: "circle",
@@ -67,6 +69,7 @@ export const allShapeData = {
         distChance: 2,
         maxChance: 100,
         draw: "M 0 0 l 1 0 a 1 1 0 0 1 -1 1 z ",
+        tier: 0,
     },
     star: {
         id: "star",
@@ -79,6 +82,7 @@ export const allShapeData = {
         distChance: 1,
         maxChance: 50,
         draw: "M 0 0 L 0 0.6 1 1 0.6 0 z",
+        tier: 1,
     },
     windmill: {
         id: "windmill",
@@ -91,6 +95,7 @@ export const allShapeData = {
         distChance: 1 / 2,
         maxChance: 26,
         draw: "M 0 0 L 0 0.6 1 1 1 0 z",
+        tier: 2,
     },
 };
 

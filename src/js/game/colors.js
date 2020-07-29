@@ -55,6 +55,7 @@ export const enumColorMixingResults = {};
  * @property {boolean} [spawnable]
  * @property {number} [minDistance]
  * @property {string} [inverted]
+ * @property {number} [tier]
  */
 
 /** @enum {ColorData} */
@@ -67,6 +68,7 @@ export const allColorData = {
             any: "any",
         },
         inverted: "this",
+        tier: 0,
     },
     red: {
         id: "red",
@@ -74,6 +76,7 @@ export const allColorData = {
         hex: "#ff666a",
         // no recipes
         spawnable: true,
+        tier: 1,
     },
     green: {
         id: "green",
@@ -81,6 +84,7 @@ export const allColorData = {
         hex: "#78ff66",
         // no recipes
         spawnable: true,
+        tier: 1,
     },
     blue: {
         id: "blue",
@@ -89,6 +93,7 @@ export const allColorData = {
         // no recipes
         spawnable: true,
         minDistance: 3,
+        tier: 1,
     },
     cyan: {
         id: "cyan",
@@ -100,6 +105,7 @@ export const allColorData = {
             blue: "this",
         },
         inverted: "red",
+        tier: 2,
     },
     magenta: {
         id: "magenta",
@@ -111,6 +117,7 @@ export const allColorData = {
             blue: "this",
         },
         inverted: "green",
+        tier: 2,
     },
     yellow: {
         id: "yellow",
@@ -122,6 +129,7 @@ export const allColorData = {
             green: "this",
         },
         inverted: "blue",
+        tier: 2,
     },
     white: {
         id: "white",
@@ -139,6 +147,7 @@ export const allColorData = {
             ["magenta", "yellow"],
         ],
         inverted: "black",
+        tier: 3,
     },
     black: {
         id: "black",
@@ -149,6 +158,7 @@ export const allColorData = {
             white: "uncolored",
             uncolored: "uncolored",
         },
+        tier: 4,
     },
 };
 

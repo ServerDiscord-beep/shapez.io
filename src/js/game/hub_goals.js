@@ -2,13 +2,15 @@ import { globalConfig } from "../core/config";
 import { queryParamOptions } from "../core/query_parameters";
 import { clamp, findNiceIntegerValue, randomChoice, randomInt } from "../core/utils";
 import { BasicSerializableObject, types } from "../savegame/serialization";
-import { enumColors } from "./colors";
+import { enumColors, allColorData } from "./colors";
+import { allShapeData } from "./shapes";
 import { enumItemProcessorTypes } from "./components/item_processor";
 import { GameRoot, enumLayer } from "./root";
 import { enumSubShape, ShapeDefinition } from "./shape_definition";
 import { enumHubGoalRewards, tutorialGoals } from "./tutorial_goals";
 import { UPGRADES, blueprintShape } from "./upgrades";
 import { customBuildingData } from "./custom/modBuildings";
+import { RandomNumberGenerator } from "../core/rng";
 
 export class HubGoals extends BasicSerializableObject {
     static getId() {
@@ -329,10 +331,20 @@ export class HubGoals extends BasicSerializableObject {
         /** @type {Array<import("./shape_definition").ShapeLayer>} */
         let layers = [];
 
+        const rng = new RandomNumberGenerator(this.level + "|" + this.root.map.seed);
+
+        const colorTier = 3; // white
+        const shapeTier = 2; // windmill
+        const holeTier = 3; // max 2
+
         // @ts-ignore
-        const randomColor = () => randomChoice(Object.values(enumColors));
+        const availableColors = Object.values(allColorData).filter(e => e.tier <= colorTier).map(e=>e.id);
         // @ts-ignore
-        const randomShape = () => randomChoice(Object.values(enumSubShape));
+        const availableShapes = Object.values(allShapeData).filter(e => e.tier <= shapeTier).map(e=>e.id);
+
+
+        const randomColor = () => rng.choice(availableColors);
+        const randomShape = () => rng.choice(availableShapes);
 
         let anyIsMissingTwo = false;
 
@@ -348,14 +360,14 @@ export class HubGoals extends BasicSerializableObject {
             }
 
             // Sometimes shapes are missing
-            if (Math.random() > 0.85) {
+            if (rng.next() > 0.85) {
                 layer[randomInt(0, 3)] = null;
             }
 
             // Sometimes they actually are missing *two* ones!
             // Make sure at max only one layer is missing it though, otherwise we could
             // create an uncreateable shape
-            if (Math.random() > 0.95 && !anyIsMissingTwo) {
+            if (rng.next() > 0.95 && !anyIsMissingTwo) {
                 layer[randomInt(0, 3)] = null;
                 anyIsMissingTwo = true;
             }

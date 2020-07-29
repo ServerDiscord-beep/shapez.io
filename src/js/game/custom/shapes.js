@@ -17,7 +17,8 @@ export const customShapes = [];
  * @property {number} [minChance]
  * @property {number} [distChance]
  * @property {number} [maxChance]
- * @property {DrawShape} draw
+ * @property {DrawShape|string} draw
+ * @property {number} tier
  */
 
 /**
@@ -28,13 +29,14 @@ export function registerCustomShape(shapeData) {
 }
 
 let customDefaults = {
-    spawnable: true,
+    spawnable: false,
     spawnColor: "uncolored",
     maxQuarters: 4,
     minDistance: 6,
     minChance: 4,
     distChance: 1 / 3,
     maxChance: 12,
+    tier: 3,
 };
 
 registerCustomShape({
@@ -50,6 +52,7 @@ registerCustomShape({
         context.bezierCurveTo(0, 1, inner, 1, inner_center, inner_center);
         context.bezierCurveTo(1, inner, 1, 0, inner, 0);
     },
+    tier: 3,
 });
 
 registerCustomShape({
@@ -65,6 +68,7 @@ registerCustomShape({
         context.lineTo(Math.sin((Math.PI * 3) / 8), Math.cos((Math.PI * 3) / 8));
         context.lineTo(inner, 0);
     },
+    tier: 3,
 });
 
 registerCustomShape({
@@ -78,6 +82,7 @@ registerCustomShape({
         context.arcTo(0, 1, 1, 0, rad);
         context.arcTo(1, 0, 0, 0, rad);
     },
+    tier: 4,
 });
 
 registerCustomShape({
@@ -85,6 +90,7 @@ registerCustomShape({
     code: "P",
     ...customDefaults,
     draw: "M 0 0 L 1.1 0 1.1 0.5 0.5 0.5 0.5 1.1 0 1.1 z",
+    tier: 3,
 });
 
 registerCustomShape({
@@ -115,6 +121,7 @@ registerCustomShape({
             inner * Math.SQRT1_2
         );
     },
+    tier: 3,
 });
 
 registerCustomShape({
@@ -137,4 +144,5 @@ registerCustomShape({
         context.rotate(-Math.PI / 4);
         context.arc(c, 0, b, PI - PI3, PI);
     },
+    tier: 4,
 });
