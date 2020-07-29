@@ -89,7 +89,7 @@ export class MetaUnstackerBuilding extends MetaBuilding {
 
 // returns trackProduction
 export function UnstackerProcess({ items, trackProduction, entity, outItems, self }) {
-    console.log("Unstacker PROCESSES");
+    // console.log("Unstacker PROCESSES");
 
     const inputItem = items[0].item;
     trackProduction = true;

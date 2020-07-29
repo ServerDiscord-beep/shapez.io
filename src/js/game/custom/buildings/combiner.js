@@ -93,7 +93,7 @@ export class MetaCombinerBuilding extends MetaBuilding {
 
 // returns trackProduction
 export function CombinerProcess({ items, trackProduction, entity, outItems, self }) {
-    console.log("Combiner PROCESSES");
+    // console.log("Combiner PROCESSES");
 
     const inputItem = items[0].item;
     trackProduction = true;

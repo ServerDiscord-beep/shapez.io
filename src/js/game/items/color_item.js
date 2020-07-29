@@ -3,7 +3,7 @@ import { smoothenDpi } from "../../core/dpi_manager";
 import { DrawParameters } from "../../core/draw_parameters";
 import { types } from "../../savegame/serialization";
 import { BaseItem, enumItemType } from "../base_item";
-import { enumColors, enumColorsToHexCode } from "../colors";
+import { enumColors, enumColorToShortcode, enumColorsToHexCode } from "../colors";
 import { THEME } from "../theme";
 
 export class ColorItem extends BaseItem {
@@ -21,6 +21,10 @@ export class ColorItem extends BaseItem {
 
     deserialize(data) {
         this.color = data;
+    }
+
+    getHash() {
+        return enumColorToShortcode[this.color];
     }
 
     getItemType() {

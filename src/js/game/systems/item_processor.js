@@ -115,6 +115,16 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
 
         // DO SOME MAGIC
 
+        if (customBuildingData[processorComp.type]) {
+            let custom = customBuildingData[processorComp.type];
+            trackProduction = custom.process({
+                items: itemsBySlot,
+                trackProduction,
+                entity,
+                outItems,
+                self: this,
+            });
+        } else
         switch (processorComp.type) {
             // SPLITTER
             case enumItemProcessorTypes.splitterWires:
@@ -385,20 +395,8 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
                 break;
             }
 
-            default: {
-                if (customBuildingData[processorComp.type]) {
-                    let custom = customBuildingData[processorComp.type];
-                    trackProduction = custom.process({
-                        items,
-                        trackProduction,
-                        entity,
-                        outItems,
-                        self: this,
-                    });
-                    break;
-                }
+            default:
                 assertAlways(false, "Unkown item processor type: " + processorComp.type);
-            }
         }
 
         // Track produced items
