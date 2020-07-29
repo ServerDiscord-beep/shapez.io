@@ -1,4 +1,3 @@
-;k;l
 import { MetaBuilding,
 	enumDirection,
 	enumItemProcessorTypes,
@@ -10,15 +9,16 @@ import { MetaBuilding,
 	formatItemsPerSecond,
 	ShapeItem,
 	ShapeDefinition,
+    enumItemType,
 } from "../gameData";
 
 
-const id = "merger";
+const id = "combiner";
 const color = "blue";
 
 
 
-export class MetaMergerBuilding extends MetaBuilding {
+export class MetaCombinerBuilding extends MetaBuilding {
     constructor() {
         super(id);
     }
@@ -55,7 +55,7 @@ export class MetaMergerBuilding extends MetaBuilding {
     setupEntityComponents(entity) {
         entity.addComponent(
             new ItemProcessorComponent({
-                inputsPerCharge: 1,
+                inputsPerCharge: 2,
                 processorType: id,
             })
         );
@@ -92,69 +92,79 @@ export class MetaMergerBuilding extends MetaBuilding {
 
 
 // returns trackProduction
-export function UnstackerProcess({ items, trackProduction, entity, outItems, self }) {
-    console.log("Unstacker PROCESSES");
+export function CombinerProcess({ items, trackProduction, entity, outItems, self }) {
+    console.log("Combiner PROCESSES");
 
     const inputItem = items[0].item;
-    trackProduction = false;
+    trackProduction = true;
 
 //     debugger;
     let input = items.map(e => e.item.definition.getHash());
 
 
-
-    let [it] = input;
+    let [it1, it2] = input;
     let out = [];
-    let a = it.split(':');
-    let top = a.shift();
-    let right = a.join(':');
-    out = [top, right]
-
-
-
-
-
-    for (let i = 0; i < out.length; ++i) {
-    	if (!out[i]) continue;
-    	outItems.push({
-    		item: new ShapeItem(ShapeDefinition.fromShortKey(out[i])),
-    		requiredSlot: i,
-    	})
+    const recipes = {
+        "CC": "L",
+        "RR": "P",
+        "SS": "T",
+        "WW": "Z",
+        "CR" : "B", "RC" : "B",
+        "CS" : "U", "SC" : "U",
+    };
+    let a = ""; 
+    for (let i = 0; i < 4; i++) {
+        let empty = it1[i*2] == "-" || it2[i*2] == "-";
+        let r = recipes[it1[i*2] + it2[i*2]] || "C";
+        a += empty ? "--" : r + "u";
     }
+
+    if (a != "--------") {
+        outItems.push({
+            item: new ShapeItem(ShapeDefinition.fromShortKey(a)),
+        })
+    }
+
+    // for (let i = 0; i < out.length; ++i) {
+    // 	if (!out[i]) continue;
+    // 	outItems.push({
+    // 		item: new ShapeItem(ShapeDefinition.fromShortKey(out[i])),
+    // 		requiredSlot: i,
+    // 	})
+    // }
 
     return trackProduction;
 }
 
 
 export const Sprite = {
-    sprite: "sprites/buildings/unstacker.png",
-    url: "./res/unstacker.png",
+    sprite: `sprites/buildings/${ id }.png`,
+    url: `./res/${ id }.png`,
     w: 192 * 2,
-    h: 192,
+    h: 192 * 2,
 };
 export const SpriteBp = {
-    sprite: "sprites/blueprints/unstacker.png",
-    url: "./res/unstacker-bp.png",
+    sprite: `sprites/blueprints/${ id }.png`,
+    url: `./res/${ id }-bp.png`,
     w: 192 * 2,
-    h: 192,
+    h: 192 * 2,
 };
 
 export const unstackerBuildingData = {
     id: id,
-    building: MetaMergerBuilding,
+    building: MetaCombinerBuilding,
     toolbar: 1,
-    speed: 100,
     sprite: Sprite,
     spriteBp: SpriteBp,
-    process: UnstackerProcess,
+    process: CombinerProcess,
     // TODO: keybinding in KEYMAPPINGS
     // TODO: T
     Tname: id,
     Tdesc: "Whatever...",
     speed: 1 / 5,
     speedClass: "processors",
-    meta: MetaMergerBuilding,
-    variantId: 530,
+    meta: MetaCombinerBuilding,
+    variantId: 540,
 };
 
 export default unstackerBuildingData;

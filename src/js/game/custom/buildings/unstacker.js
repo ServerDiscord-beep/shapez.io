@@ -9,6 +9,7 @@ import { MetaBuilding,
 	formatItemsPerSecond,
 	ShapeItem,
 	ShapeDefinition,
+    enumItemType,
 } from "../gameData";
 
 
@@ -75,6 +76,7 @@ export class MetaUnstackerBuilding extends MetaBuilding {
                     {
                         pos: new Vector(0, 0),
                         directions: [enumDirection.bottom],
+                        filter: enumItemType.shape,
                     },
                 ],
             })
@@ -90,7 +92,7 @@ export function UnstackerProcess({ items, trackProduction, entity, outItems, sel
     console.log("Unstacker PROCESSES");
 
     const inputItem = items[0].item;
-    trackProduction = false;
+    trackProduction = true;
 
 //     debugger;
     let input = items.map(e => e.item.definition.getHash());
