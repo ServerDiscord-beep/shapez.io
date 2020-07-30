@@ -5,7 +5,7 @@ export { BaseItem } from "../base_item";
 export { Vector, enumDirection } from "../../core/vector";
 export { globalConfig } from "../../core/config";
 
-export { ItemAcceptorComponent, enumItemAcceptorItemFilter } from "../components/item_acceptor";
+export { ItemAcceptorComponent } from "../components/item_acceptor";
 export { ItemEjectorComponent } from "../components/item_ejector";
 export { enumItemProcessorTypes, ItemProcessorComponent } from "../components/item_processor";
 export { Entity } from "../entity";

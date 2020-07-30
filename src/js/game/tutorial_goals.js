@@ -96,7 +96,7 @@ export const tutorialGoals = [
     // 9
     // Mixing (purple)
     {
-        shape: "CpCpCpCp", // belts t3
+        shape: "CmCmCmCm", // belts t3
         required: 1400,
         reward: enumHubGoalRewards.reward_splitter_compact,
     },
@@ -127,36 +127,36 @@ export const tutorialGoals = [
 
     // 13
     {
-        shape: "RpRpRpRp:CwCwCwCw", // painting t3
-        required: 12000,
+        shape: "RmRmRmRm:CwCwCwCw", // painting t3
+        required: 3000,
         reward: enumHubGoalRewards.reward_underground_belt_tier_2,
     },
 
     // 14
     {
         shape: "SrSrSrSr:CyCyCyCy", // unused
-        required: 16000,
+        required: 4000,
         reward: enumHubGoalRewards.reward_storage,
     },
 
     // 15
     {
         shape: "SrSrSrSr:CyCyCyCy:SwSwSwSw", // belts t4 (two variants)
-        required: 25000,
+        required: 5000,
         reward: enumHubGoalRewards.reward_cutter_quad,
     },
 
     // 16
     {
         shape: "CbRbRbCb:CwCwCwCw:WbWbWbWb", // miner t4 (two variants)
-        required: 50000,
+        required: 10000,
         reward: enumHubGoalRewards.reward_painter_double,
     },
 
     // 17
     {
         shape: "WrRgWrRg:CwCrCwCr:SgSgSgSg", // processors t4 (two variants)
-        required: 120000,
+        required: 15000,
         reward: enumHubGoalRewards.reward_painter_quad,
     },
 
