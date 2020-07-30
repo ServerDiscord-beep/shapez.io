@@ -21,9 +21,11 @@ import { enumItemType } from "../../base_item";
 
 import { enumItemProcessorTypes, ItemProcessorComponent } from "../../components/item_processor";
 
+const id = "counter";
+
 export class ItemCounterComponent extends Component {
     static getId() {
-        return "Counter";
+        return id;
     }
 
     static getSchema() {
@@ -91,7 +93,7 @@ export class CounterSystem extends GameSystemWithFilter {
         }
 
         /** @type {ItemCounterComponent} */
-        const counterComp = entity.components.Counter;
+        const counterComp = entity.components[id];
 
         // cal avg: //
 
@@ -126,7 +128,7 @@ export class CounterSystem extends GameSystemWithFilter {
 
 export class MetaCounterBuilding extends MetaBuilding {
     constructor() {
-        super("counter");
+        super(id);
     }
 
     /**
@@ -153,8 +155,7 @@ export class MetaCounterBuilding extends MetaBuilding {
      * @param {GameRoot} root
      */
     getIsUnlocked(root) {
-        const beltSpeed = root.hubGoals.getBeltBaseSpeed("regular");
-        return beltSpeed >= 5;
+        return root.hubGoals.isRewardUnlocked(`reward_${ id }`);
     }
 
     /**
@@ -165,7 +166,7 @@ export class MetaCounterBuilding extends MetaBuilding {
         entity.addComponent(
             new ItemProcessorComponent({
                 inputsPerCharge: 1,
-                processorType: enumItemProcessorTypes.counter,
+                processorType: enumItemProcessorTypes[id],
             })
         );
         entity.addComponent(new ItemCounterComponent());
@@ -223,7 +224,7 @@ export const counterSpriteBp = {
 };
 
 export const counterBuildingData = {
-    id: "counter",
+    id,
     component: ItemCounterComponent,
     building: MetaCounterBuilding,
     toolbar: 1,

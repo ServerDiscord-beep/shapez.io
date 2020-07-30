@@ -82,7 +82,7 @@ export class MetaTargetShapeCheckerBuilding extends MetaBuilding {
      * @param {GameRoot} root
      */
     getIsUnlocked(root) {
-        return true; // root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_sorter);
+        return root.hubGoals.isRewardUnlocked(`reward_${ id }`);
     }
 
     /**

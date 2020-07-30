@@ -38,9 +38,7 @@ export class MetaAdvancedProcessorBuilding extends MetaBuilding {
      * @param {GameRoot} root
      */
     getIsUnlocked(root) {
-        // TODO
-        return true;
-        // return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_and_trash);
+        return root.hubGoals.isRewardUnlocked("reward_inverter");
     }
 
     /**

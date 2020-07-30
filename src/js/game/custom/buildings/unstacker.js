@@ -13,11 +13,12 @@ import { MetaBuilding,
 } from "../gameData";
 
 
+const id = "unstacker";
 
 
 export class MetaUnstackerBuilding extends MetaBuilding {
     constructor() {
-        super("unstacker");
+        super(id);
     }
 
     getDimensions() {
@@ -32,7 +33,7 @@ export class MetaUnstackerBuilding extends MetaBuilding {
      * @param {GameRoot} root
      */
     getIsUnlocked(root) {
-        return true; // root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_sorter);
+        return root.hubGoals.isRewardUnlocked(`reward_${ id }`);
     }
 
     /**
@@ -41,7 +42,7 @@ export class MetaUnstackerBuilding extends MetaBuilding {
      * @returns {Array<[string, string]>}
      */
     getAdditionalStatistics(root, variant) {
-        const speed = root.hubGoals.getProcessorBaseSpeed("unstacker");
+        const speed = root.hubGoals.getProcessorBaseSpeed(id);
         return [[T.ingame.buildingPlacement.infoTexts.speed, formatItemsPerSecond(speed)]];
     }
 
@@ -53,7 +54,7 @@ export class MetaUnstackerBuilding extends MetaBuilding {
         entity.addComponent(
             new ItemProcessorComponent({
                 inputsPerCharge: 1,
-                processorType: "unstacker",
+                processorType: id,
             })
         );
         entity.addComponent(
@@ -136,10 +137,9 @@ export const SpriteBp = {
 };
 
 export const unstackerBuildingData = {
-    id: "unstacker",
+    id,
     building: MetaUnstackerBuilding,
     toolbar: 1,
-    speed: 100,
     sprite: Sprite,
     spriteBp: SpriteBp,
     process: UnstackerProcess,
