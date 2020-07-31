@@ -206,14 +206,5 @@ export class GameTime extends BasicSerializableObject {
         if (errorCode) {
             return errorCode;
         }
-
-        // Adjust realtime now difference so they match
-        this.realtimeAdjust = this.realtimeSeconds - performance.now() / 1000.0;
-        this.updateRealtimeNow();
-
-        // Make sure we have a quantizied time
-        this.timeSeconds = quantizeFloat(this.timeSeconds);
-
-        this.speed.initializeAfterDeserialize(this.root);
     }
 }
